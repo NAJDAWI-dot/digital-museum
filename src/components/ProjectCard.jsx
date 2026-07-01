@@ -11,12 +11,13 @@ export default function ProjectCard({ project, index, onEdit }) {
   // 3D Tilt Logic
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 300, damping: 30 });
-  const springY = useSpring(y, { stiffness: 300, damping: 30 });
+  // Softer spring for smoother, more premium tilt
+  const springX = useSpring(x, { stiffness: 150, damping: 20 });
+  const springY = useSpring(y, { stiffness: 150, damping: 20 });
   
   // Only apply tilt on desktop to avoid mobile glitches
-  const rotateX = useTransform(springY, [-0.5, 0.5], ["5deg", "-5deg"]);
-  const rotateY = useTransform(springX, [-0.5, 0.5], ["-5deg", "5deg"]);
+  const rotateX = useTransform(springY, [-0.5, 0.5], ["6deg", "-6deg"]);
+  const rotateY = useTransform(springX, [-0.5, 0.5], ["-6deg", "6deg"]);
 
   const handleMouseMove = (e) => {
     if (!ref.current || window.matchMedia('(pointer: coarse)').matches) return;
@@ -66,7 +67,12 @@ export default function ProjectCard({ project, index, onEdit }) {
       initial={{ opacity: 0, y: 56 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.9, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+      style={{ 
+        rotateX, 
+        rotateY, 
+        transformPerspective: 1200, 
+        transformStyle: "preserve-3d" 
+      }}
       data-cursor
     >
       {/* ── Swatch / Cover ── */}
