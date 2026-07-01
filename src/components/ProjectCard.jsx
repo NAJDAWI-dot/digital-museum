@@ -36,26 +36,40 @@ export default function ProjectCard({ project, index, onEdit }) {
   };
 
   // Appreciate Button Logic
-  const [likes, setLikes] = useState(() => {
-    try {
-      const saved = localStorage.getItem(`likes_${project.id}`);
-      return saved ? parseInt(saved, 10) : (project.likes || 0);
-    } catch { return 0; }
-  });
+  const [likes, setLikes] = useState(project.likes || 0);
   const [hasLiked, setHasLiked] = useState(() => {
     try { return localStorage.getItem(`hasLiked_${project.id}`) === 'true'; } catch { return false; }
   });
 
+  useEffect(() => {
+    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && typeof data.count === 'number') {
+          setLikes(data.count);
+        }
+      })
+      .catch(() => {});
+  }, [project.id]);
+
   const handleLike = (e) => {
     e.stopPropagation();
     if (hasLiked) return;
-    const newLikes = likes + 1;
-    setLikes(newLikes);
+    
+    // Optimistic local update
+    setLikes(prev => prev + 1);
     setHasLiked(true);
-    try {
-      localStorage.setItem(`likes_${project.id}`, newLikes);
-      localStorage.setItem(`hasLiked_${project.id}`, 'true');
-    } catch {}
+    try { localStorage.setItem(`hasLiked_${project.id}`, 'true'); } catch {}
+    
+    // Global API update
+    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}/up`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && typeof data.count === 'number') {
+          setLikes(data.count);
+        }
+      })
+      .catch(() => {});
   };
 
   return (
