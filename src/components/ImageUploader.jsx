@@ -1,6 +1,34 @@
 import React, { useRef, useState } from 'react';
 import './ImageUploader.css';
 
+const compressImage = (file, maxWidth = 1600) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        // Compress to 80% quality JPEG to save massive amounts of space
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = () => reject(new Error('Image load error'));
+    };
+    reader.onerror = () => reject(new Error('File read error'));
+  });
+};
+
 /**
  * ImageUploader — converts files to base64 and stores them.
  *
@@ -9,22 +37,25 @@ import './ImageUploader.css';
  *  onChange    – (base64) => void
  *  label       – string label
  *  aspectHint  – e.g. "16:9" shown as hint
- *  maxSizeMB   – max file size allowed (default 5)
+ *  maxSizeMB   – max file size allowed (default 10)
  */
-export default function ImageUploader({ value, onChange, label = 'Image', aspectHint, maxSizeMB = 5 }) {
+export default function ImageUploader({ value, onChange, label = 'Image', aspectHint, maxSizeMB = 10 }) {
   const inputRef  = useRef(null);
   const [dragging, setDragging] = useState(false);
   const [error, setError]       = useState('');
 
-  const processFile = (file) => {
+  const processFile = async (file) => {
     setError('');
     if (!file) return;
     if (!file.type.startsWith('image/')) { setError('File must be an image.'); return; }
     if (file.size > maxSizeMB * 1024 * 1024) { setError(`Max size is ${maxSizeMB}MB.`); return; }
 
-    const reader = new FileReader();
-    reader.onload = (e) => onChange(e.target.result);
-    reader.readAsDataURL(file);
+    try {
+      const compressed = await compressImage(file, 1600);
+      onChange(compressed);
+    } catch (e) {
+      setError('Error processing image');
+    }
   };
 
   const onDrop = (e) => {
@@ -118,17 +149,17 @@ export function MultiImageUploader({ values = [], onChange, maxImages = 6 }) {
       return;
     }
 
-    const readers = toProcess.map(file => {
-      return new Promise((resolve) => {
-        if (!file.type.startsWith('image/')) { resolve(null); return; }
-        if (file.size > 8 * 1024 * 1024) { resolve(null); return; }
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
-        reader.readAsDataURL(file);
-      });
+    const processors = toProcess.map(async file => {
+      if (!file.type.startsWith('image/')) return null;
+      if (file.size > 8 * 1024 * 1024) return null;
+      try {
+        return await compressImage(file, 1600);
+      } catch {
+        return null;
+      }
     });
 
-    Promise.all(readers).then(results => {
+    Promise.all(processors).then(results => {
       const valid = results.filter(Boolean);
       onChange([...values, ...valid]);
     });
