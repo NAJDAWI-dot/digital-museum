@@ -60,22 +60,30 @@ export default function ProjectCard({ project, index, onEdit }) {
 
   const handleLike = (e) => {
     e.stopPropagation();
-    if (hasLiked) return;
+    
+    const isLiking = !hasLiked;
+    const action = isLiking ? 'up' : 'down';
     
     // Optimistic local update
-    setLikes(prev => prev + 1);
-    setHasLiked(true);
-    try { localStorage.setItem(`hasLiked_${project.id}`, 'true'); } catch {}
+    setLikes(prev => isLiking ? prev + 1 : Math.max(0, prev - 1));
+    setHasLiked(isLiking);
+    try { 
+      if (isLiking) {
+        localStorage.setItem(`hasLiked_${project.id}`, 'true'); 
+      } else {
+        localStorage.removeItem(`hasLiked_${project.id}`);
+      }
+    } catch {}
     
     // Global API update
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), 2500);
     
-    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}/up`, { signal: controller.signal })
+    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}/${action}`, { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
         if (data && typeof data.count === 'number') {
-          setLikes(data.count);
+          setLikes(Math.max(0, data.count));
         }
       })
       .catch(() => {})
