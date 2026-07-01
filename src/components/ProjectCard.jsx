@@ -42,20 +42,14 @@ export default function ProjectCard({ project, index, onEdit }) {
   });
 
   useEffect(() => {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), 10000); // 10s timeout for initial load
-    
-    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}`, { signal: controller.signal })
+    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}`)
       .then(res => res.json())
       .then(data => {
         if (data && typeof data.count === 'number') {
           setLikes(Math.max(0, data.count));
         }
       })
-      .catch(() => {})
-      .finally(() => clearTimeout(id));
-      
-    return () => controller.abort();
+      .catch(() => {});
   }, [project.id]);
 
   const handleLike = (e) => {
