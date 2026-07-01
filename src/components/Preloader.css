@@ -1,0 +1,183 @@
+/* ── Shell ── */
+.preloader {
+  position: fixed;
+  inset: 0;
+  background: var(--ink);
+  z-index: 99998;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: none;
+}
+
+/* ── Exit animation ── */
+.preloader.exit {
+  animation: pl-exit 1.1s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+@keyframes pl-exit {
+  0%   { clip-path: inset(0 0 0 0); opacity: 1; }
+  60%  { clip-path: inset(0 0 0 0); opacity: 1; }
+  100% { clip-path: inset(50% 0 50% 0); opacity: 0; }
+}
+
+/* ── Background grid lines ── */
+.pl-grid {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.pl-grid-line {
+  width: 1px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  transform: scaleY(0);
+  transform-origin: top;
+  animation: pl-grid-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pl-grid-reveal {
+  to { transform: scaleY(1); }
+}
+
+/* ── Corner marks ── */
+.pl-corner {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  opacity: 0;
+  animation: pl-corner-fade 0.6s ease 0.2s forwards;
+}
+
+@keyframes pl-corner-fade {
+  to { opacity: 1; }
+}
+
+.pl-corner--tl { top: 2.5rem; left: 2.5rem; border-top: 1px solid rgba(201, 169, 110, 0.4); border-left: 1px solid rgba(201, 169, 110, 0.4); }
+.pl-corner--tr { top: 2.5rem; right: 2.5rem; border-top: 1px solid rgba(201, 169, 110, 0.4); border-right: 1px solid rgba(201, 169, 110, 0.4); }
+.pl-corner--bl { bottom: 2.5rem; left: 2.5rem; border-bottom: 1px solid rgba(201, 169, 110, 0.4); border-left: 1px solid rgba(201, 169, 110, 0.4); }
+.pl-corner--br { bottom: 2.5rem; right: 2.5rem; border-bottom: 1px solid rgba(201, 169, 110, 0.4); border-right: 1px solid rgba(201, 169, 110, 0.4); }
+
+/* ── Center block ── */
+.pl-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Name: letter-by-letter ── */
+.pl-name {
+  display: flex;
+  font-size: clamp(2.8rem, 7vw, 6rem);
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--linen);
+  line-height: 1;
+  overflow: hidden;
+}
+
+.pl-letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(60px) rotate(4deg);
+  animation: pl-letter-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pl-letter-in {
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+/* ── Drawing line ── */
+.pl-line-wrap {
+  width: 100%;
+  height: 1px;
+  overflow: hidden;
+}
+
+.pl-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pl-line.draw {
+  transform: scaleX(1);
+}
+
+/* Shimmer sweep over the line */
+.pl-line.draw::after {
+  content: '';
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+  animation: pl-shimmer 1.8s ease 0.9s infinite;
+}
+
+@keyframes pl-shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(350%); }
+}
+
+/* ── Subtitle ── */
+.pl-sub {
+  font-size: 0.6rem;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0;
+  animation: pl-fade-up 0.8s ease 0.7s forwards;
+}
+
+@keyframes pl-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Bottom counter ── */
+.pl-bottom {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  z-index: 2;
+  opacity: 0;
+  animation: pl-fade-up 0.6s ease 0.8s forwards;
+}
+
+.pl-counter {
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  color: var(--dust);
+  font-variant-numeric: tabular-nums;
+}
+
+.pl-loading {
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  animation: pl-blink 1.4s ease-in-out 1s infinite;
+}
+
+@keyframes pl-blink {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 1; }
+}

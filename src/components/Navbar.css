@@ -1,0 +1,137 @@
+/* Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0; right: 0;
+  z-index: 100;
+  transition: background 0.5s ease, border-color 0.5s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.navbar--scrolled {
+  background: rgba(13, 13, 13, 0.85);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border-bottom-color: rgba(255,255,255,0.05);
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+
+.navbar-logo {
+  font-size: 1.4rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: var(--linen);
+  transition: color 0.3s;
+  white-space: nowrap;
+}
+.navbar-logo:hover { color: var(--gold); }
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.navbar-link {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dust);
+  background: none;
+  border: none;
+  transition: color 0.3s;
+  padding: 0;
+}
+.navbar-link:hover { color: var(--gold); }
+
+.navbar-admin-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar-editor-btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.4rem 1.1rem;
+  border: 1px solid var(--gold-dark);
+  background: transparent;
+  color: var(--gold);
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+.navbar-editor-btn:hover,
+.navbar-editor-btn.active {
+  background: var(--gold-dark);
+  color: var(--ink);
+}
+
+.navbar-logout-btn {
+  background: none;
+  border: none;
+  color: var(--silver);
+  padding: 0.3rem;
+  transition: color 0.3s;
+}
+.navbar-logout-btn:hover { color: var(--gold); }
+
+.navbar-admin-link {
+  border: 1px solid rgba(201, 169, 110, 0.3);
+  padding: 0.4rem 1.1rem;
+  border-radius: 2px;
+  color: var(--gold) !important;
+  transition: all 0.3s !important;
+}
+.navbar-admin-link:hover {
+  background: rgba(201, 169, 110, 0.1);
+}
+
+/* Hamburger */
+.navbar-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0.25rem;
+}
+.navbar-hamburger span {
+  display: block;
+  width: 22px;
+  height: 1px;
+  background: var(--linen);
+  transition: all 0.3s var(--ease-smooth);
+  transform-origin: center;
+}
+.navbar-hamburger span.open:first-child {
+  transform: translateY(6px) rotate(45deg);
+}
+.navbar-hamburger span.open:last-child {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+@media (max-width: 768px) {
+  .navbar-hamburger { display: flex; }
+  .navbar-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    background: var(--ink);
+    border-bottom: 1px solid var(--ink-mid);
+    padding: 1.5rem 2rem;
+  }
+  .navbar-links.open { display: flex; }
+  .navbar-links .navbar-link { padding: 0.75rem 0; font-size: 0.85rem; }
+}

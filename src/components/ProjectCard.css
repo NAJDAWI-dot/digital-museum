@@ -1,0 +1,235 @@
+.pcard {
+  background: var(--ink-light);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.5s ease, transform 0.6s var(--ease-smooth), box-shadow 0.6s ease;
+  cursor: none;
+  will-change: transform;
+}
+
+.pcard:hover {
+  border-color: rgba(201,169,110,0.25);
+  transform: translateY(-8px);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.55);
+}
+
+/* Swatch */
+.pcard-swatch {
+  position: relative;
+  height: 190px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.1rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: height 0.5s var(--ease-smooth);
+  background-size: cover;
+  background-position: center;
+}
+
+.pcard:hover .pcard-swatch { height: 210px; }
+
+.pcard-swatch.has-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.6) 100%);
+  z-index: 1;
+}
+
+/* zoom cover on hover */
+.pcard-swatch.has-cover {
+  background-size: 100%;
+  transition: height 0.5s var(--ease-smooth), background-size 0.7s var(--ease-smooth);
+}
+.pcard:hover .pcard-swatch.has-cover { background-size: 108%; }
+
+.pcard-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  transition: background 0.4s ease;
+  z-index: 1;
+}
+.pcard:hover .pcard-cover-overlay {
+  background: rgba(0,0,0,0.15);
+}
+
+.pcard-accent-dot {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  opacity: 0.35;
+  filter: blur(35px);
+  transition: opacity 0.5s ease, width 0.5s ease, height 0.5s ease;
+}
+.pcard:hover .pcard-accent-dot { opacity: 0.65; width: 110px; height: 110px; }
+
+.pcard-swatch-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* Year badge — white pill */
+.pcard-year {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: #ffffff;
+  padding: 0.28rem 0.75rem;
+  border-radius: 30px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Gold gradient text inside the year pill */
+.pcard-year-text {
+  background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Status badge — white pill */
+.pcard-status {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.8rem;
+  border-radius: 30px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  border: none;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Purple→pink gradient text inside the status pill */
+.pcard-status-text {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pcard-photos-badge {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.6);
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  padding: 0.3rem 0.6rem;
+  border-radius: 2px;
+}
+
+/* Body */
+.pcard-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.85rem;
+}
+
+.pcard-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pcard-cat {
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.pcard-index {
+  font-size: 0.58rem;
+  color: var(--ink-mid);
+  letter-spacing: 0.08em;
+}
+
+.pcard-title-wrap { display: flex; flex-direction: column; gap: 0.2rem; }
+
+.pcard-title {
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--linen);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  transition: color 0.4s ease;
+}
+.pcard:hover .pcard-title { color: var(--gold-light); }
+
+.pcard-subtitle { font-size: 0.78rem; color: var(--silver); }
+
+.pcard-desc { font-size: 0.88rem; color: var(--dust); line-height: 1.75; flex: 1; }
+
+.pcard-tech { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.pcard-tech-tag {
+  font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 2px; color: var(--silver);
+  transition: border-color 0.3s, color 0.3s;
+}
+.pcard:hover .pcard-tech-tag { border-color: rgba(201,169,110,0.2); }
+
+.pcard-footer {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  flex-wrap: wrap;
+}
+
+.pcard-view-btn {
+  display: flex; align-items: center; gap: 0.45rem;
+  font-family: var(--font-mono); font-size: 0.6rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  background: none; border: none; color: var(--gold);
+  transition: gap 0.35s ease, color 0.3s ease; padding: 0;
+}
+.pcard-view-btn:hover { gap: 0.85rem; color: var(--gold-light); }
+
+.pcard-links { display: flex; gap: 0.65rem; margin-left: auto; }
+.pcard-icon-link {
+  color: rgba(255,255,255,0.15);
+  transition: color 0.3s, transform 0.3s; display: flex;
+}
+.pcard-icon-link:hover { color: var(--gold); transform: translateY(-2px); }
+
+/* Admin */
+.pcard-admin-btns { display: flex; gap: 0.35rem; }
+.pcard-admin-btn {
+  width: 26px; height: 26px; border-radius: 2px; border: 1px solid;
+  background: none; display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s ease;
+}
+.pcard-admin-btn.edit { border-color: rgba(201,169,110,0.25); color: var(--gold); }
+.pcard-admin-btn.edit:hover { background: var(--gold-dark); border-color: var(--gold-dark); color: var(--ink); }
+.pcard-admin-btn.delete { border-color: rgba(239,68,68,0.2); color: rgba(239,68,68,0.6); }
+.pcard-admin-btn.delete:hover { background: #ef4444; border-color: #ef4444; color: white; }
