@@ -402,6 +402,77 @@ function SettingsForm({ settings, onSave }) {
   );
 }
 
+/* ── Timeline Form ────────────────────────── */
+function TimelineForm({ timeline, onSave }) {
+  const [items, setItems] = useState([...timeline]);
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    onSave(items);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const updateItem = (index, key, value) => {
+    const newItems = [...items];
+    newItems[index] = { ...newItems[index], [key]: value };
+    setItems(newItems);
+  };
+
+  const addItem = () => {
+    setItems([{ id: `t${Date.now()}`, year: 'Year', title: 'Role', organization: 'Company', description: 'Description...' }, ...items]);
+  };
+
+  const removeItem = (index) => {
+    setItems(items.filter((_, i) => i !== index));
+  };
+
+  return (
+    <form className="project-form" onSubmit={handleSave}>
+      <div className="form-tabs">
+        <button type="button" className="form-tab mono active">Career Journey</button>
+        <button type="button" className="form-tab mono" onClick={addItem} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)' }}>+ Add Milestone</button>
+      </div>
+
+      <div className="form-section" style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        {items.map((item, i) => (
+          <div key={item.id} style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px', position: 'relative' }}>
+            <button type="button" onClick={() => removeItem(i)} style={{ position: 'absolute', top: '10px', right: '10px', background: 'none', border: 'none', color: '#ff4444', cursor: 'pointer', fontSize: '1.2rem' }}>×</button>
+            <div className="form-row">
+              <div className="form-group" style={{ flex: '0 0 100px' }}>
+                <label className="form-label mono">Year</label>
+                <input className="admin-input" value={item.year} onChange={e => updateItem(i, 'year', e.target.value)} placeholder="2024" />
+              </div>
+              <div className="form-group">
+                <label className="form-label mono">Title / Role</label>
+                <input className="admin-input" value={item.title} onChange={e => updateItem(i, 'title', e.target.value)} />
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label mono">Organization</label>
+                <input className="admin-input" value={item.organization} onChange={e => updateItem(i, 'organization', e.target.value)} />
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label mono">Description</label>
+              <textarea className="admin-input admin-textarea" rows={2} value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} />
+            </div>
+          </div>
+        ))}
+        {items.length === 0 && <p className="mono" style={{ opacity: 0.5 }}>No milestones added yet.</p>}
+      </div>
+
+      <div className="form-actions">
+        <button type="submit" className={`form-btn-save mono ${saved ? 'saved' : ''}`}>
+          {saved ? '✓ Saved' : 'Save Timeline →'}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 /* ── Main Panel ──────────────────────────── */
 export default function AdminPanel() {
   const {
@@ -410,11 +481,12 @@ export default function AdminPanel() {
     addProject, updateProject, deleteProject, moveProject,
     projects, resetToDefaults,
     settings, updateSettings,
+    timeline, updateTimeline,
     githubToken, setGithubToken
   } = useMuseum();
 
   const [localEditing, setLocalEditing] = useState(null);
-  const [activeView, setActiveView] = useState('projects'); // 'projects' or 'settings'
+  const [activeView, setActiveView] = useState('projects'); // 'projects', 'settings', 'timeline'
 
   useEffect(() => { setLocalEditing(editingProject); setActiveView('projects'); }, [editingProject]);
   useEffect(() => {
@@ -458,6 +530,9 @@ export default function AdminPanel() {
               <div className="admin-top-actions">
                 {isAdmin && (
                   <>
+                    <button className={`admin-reset-btn mono ${activeView === 'timeline' ? 'active' : ''}`} onClick={() => setActiveView('timeline')}>
+                      ⏳ Timeline
+                    </button>
                     <button className={`admin-reset-btn mono ${activeView === 'settings' ? 'active' : ''}`} onClick={() => setActiveView('settings')}>
                       ⚙ Settings
                     </button>
@@ -474,7 +549,7 @@ export default function AdminPanel() {
                       className="admin-export-btn mono"
                       title="Download projects as projects.js — paste into src/data/ before deploying"
                       onClick={() => {
-                        const content = `// Auto-generated by Museum Editor\nexport const INITIAL_PROJECTS = ${JSON.stringify(projects, null, 2)};\n\nexport const SITE_SETTINGS = ${JSON.stringify(settings, null, 2)};\n`;
+                        const content = `// Auto-generated by Museum Editor\nexport const INITIAL_PROJECTS = ${JSON.stringify(projects, null, 2)};\n\nexport const SITE_SETTINGS = ${JSON.stringify(settings, null, 2)};\n\nexport const INITIAL_TIMELINE = ${JSON.stringify(timeline, null, 2)};\n`;
                         const blob = new Blob([content], { type: 'text/javascript' });
                         const url = URL.createObjectURL(blob);
                         const a = document.createElement('a');
@@ -518,6 +593,8 @@ export default function AdminPanel() {
                   <div className="admin-content">
                     {activeView === 'settings' ? (
                       <SettingsForm settings={settings} onSave={updateSettings} />
+                    ) : activeView === 'timeline' ? (
+                      <TimelineForm timeline={timeline} onSave={updateTimeline} />
                     ) : (
                       <ProjectForm
                         project={localEditing}

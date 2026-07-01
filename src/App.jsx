@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import FeaturedBanner from './components/FeaturedBanner';
 import Gallery from './components/Gallery';
+import Timeline from './components/Timeline';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AdminPanel from './components/AdminPanel';
@@ -43,6 +44,7 @@ function MuseumApp() {
           <Hero />
           <FeaturedBanner />
           <Gallery />
+          <Timeline />
           <Contact />
         </main>
         <Footer />

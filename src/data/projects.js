@@ -120,3 +120,27 @@ export const SITE_SETTINGS = {
     "linkedin": "https://linkedin.com/in/hashemnajdawi"
   }
 };
+
+export const INITIAL_TIMELINE = [
+  {
+    "id": "t1",
+    "year": "2025 - Present",
+    "title": "Software Engineer",
+    "organization": "Tech Innovations",
+    "description": "Building scalable applications and immersive web experiences."
+  },
+  {
+    "id": "t2",
+    "year": "2023 - 2025",
+    "title": "Frontend Developer",
+    "organization": "Creative Agency",
+    "description": "Developed highly interactive portfolios and award-winning digital campaigns."
+  },
+  {
+    "id": "t3",
+    "year": "2019 - 2023",
+    "title": "B.Sc. in Computer Science",
+    "organization": "University of Technology",
+    "description": "Graduated with honors, specialized in human-computer interaction and web architecture."
+  }
+];
