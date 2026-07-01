@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import './ProjectCard.css';
@@ -42,14 +42,20 @@ export default function ProjectCard({ project, index, onEdit }) {
   });
 
   useEffect(() => {
-    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}`)
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 2500); // 2.5s timeout
+    
+    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}`, { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
         if (data && typeof data.count === 'number') {
           setLikes(data.count);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => clearTimeout(id));
+      
+    return () => controller.abort();
   }, [project.id]);
 
   const handleLike = (e) => {
@@ -62,14 +68,18 @@ export default function ProjectCard({ project, index, onEdit }) {
     try { localStorage.setItem(`hasLiked_${project.id}`, 'true'); } catch {}
     
     // Global API update
-    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}/up`)
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 2500);
+    
+    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}/up`, { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
         if (data && typeof data.count === 'number') {
           setLikes(data.count);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => clearTimeout(id));
   };
 
   return (
