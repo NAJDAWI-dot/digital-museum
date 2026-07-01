@@ -8,12 +8,7 @@ const ADMIN_KEY      = 'arch_admin_session';
 export const ADMIN_PASS = 'arch2026'; // ← change this
 
 export function MuseumProvider({ children }) {
-  const [projects, setProjects] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : INITIAL_PROJECTS;
-    } catch { return INITIAL_PROJECTS; }
-  });
+  const [projects, setProjects] = useState(INITIAL_PROJECTS);
 
   const safeGetAdmin = () => {
     try { return localStorage.getItem(ADMIN_KEY) === 'true'; }
@@ -24,10 +19,6 @@ export function MuseumProvider({ children }) {
   const [adminPanel,    setAdminPanel]    = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [viewingProject, setViewingProject] = useState(null);
-
-  useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(projects)); } catch {}
-  }, [projects]);
 
   const login = (pass) => {
     if (pass === ADMIN_PASS) {
