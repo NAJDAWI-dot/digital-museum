@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { useMuseum } from '../context/MuseumContext';
 import './Contact.css';
 
 export default function Contact() {
+  const { settings } = useMuseum();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-50px' });
 
@@ -23,12 +25,14 @@ export default function Contact() {
             </p>
             
             <div className="contact-actions">
-              <a href="mailto:hashem.najdawi@example.com" className="contact-btn primary">
+              <a href={`mailto:${settings.email}`} className="contact-btn primary">
                 <span className="mono">Get in touch</span>
               </a>
-              <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="contact-btn secondary">
-                <span className="mono">Download CV</span>
-              </a>
+              {settings.cvLink && (
+                <a href={settings.cvLink} target="_blank" rel="noopener noreferrer" className="contact-btn secondary">
+                  <span className="mono">Download CV</span>
+                </a>
+              )}
             </div>
           </div>
           

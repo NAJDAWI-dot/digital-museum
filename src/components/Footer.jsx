@@ -1,7 +1,9 @@
 import React from 'react';
+import { useMuseum } from '../context/MuseumContext';
 import './Footer.css';
 
 export default function Footer() {
+  const { settings } = useMuseum();
   const year = new Date().getFullYear();
   return (
     <footer id="about" className="footer">
@@ -24,9 +26,9 @@ export default function Footer() {
 
           <div className="footer-links-col">
             <p className="footer-col-title mono">Connect</p>
-            <a href="#">GitHub</a>
-            <a href="#">LinkedIn</a>
-            <a href="#">Email</a>
+            {settings.social?.github && <a href={settings.social.github} target="_blank" rel="noreferrer">GitHub</a>}
+            {settings.social?.linkedin && <a href={settings.social.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>}
+            <a href={`mailto:${settings.email}`}>Email</a>
           </div>
         </div>
 
