@@ -139,6 +139,7 @@
 }
 
 @media (max-width: 900px) {
+  .featured-section { padding: 2rem 0 4rem; }
   .featured-inner {
     grid-template-columns: 1fr;
     gap: 1.5rem;
@@ -146,5 +147,8 @@
   .featured-label-col {
     position: static;
   }
-  .featured-card-inner { padding: 2rem; }
+  .featured-card-inner { padding: 1.5rem; gap: 1.2rem; }
+  .featured-title { font-size: clamp(2rem, 8vw, 2.5rem); }
+  .featured-footer { flex-wrap: wrap; gap: 1.5rem; }
+  .featured-desc { font-size: 0.85rem; }
 }

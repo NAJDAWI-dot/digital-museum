@@ -202,8 +202,16 @@
 
 @media (max-width: 768px) {
   .modal-overlay { padding: 0; align-items: flex-end; }
-  .modal-panel { border-radius: 12px 12px 0 0; max-height: 95vh; }
-  .modal-gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .modal-panel { border-radius: 16px 16px 0 0; max-height: 90vh; }
+  .modal-header { padding: 1.5rem 1.5rem 0; }
+  .modal-title { font-size: 2rem; }
+  .modal-content { padding: 1.5rem; gap: 2rem; }
+  .modal-gallery-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .modal-actions { flex-direction: column; width: 100%; }
+  .modal-btn { justify-content: center; width: 100%; }
   .lightbox-arrow--prev { left: 0.5rem; }
   .lightbox-arrow--next { right: 0.5rem; }
+  .lightbox-close { top: -3rem; right: 1rem; }
+  .lightbox-inner { padding: 0 1rem; max-height: 80vh; }
+  .lightbox-img { max-height: 80vh; }
 }

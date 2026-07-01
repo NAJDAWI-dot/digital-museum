@@ -56,6 +56,9 @@ input, textarea, select { font-family: inherit; }
   margin: 0 auto;
   padding: 0 clamp(1.5rem, 5vw, 5rem);
 }
+@media (max-width: 768px) {
+  .container { padding: 0 1.2rem; }
+}
 
 .serif { font-family: var(--font-serif); }
 .mono  { font-family: var(--font-mono); }
