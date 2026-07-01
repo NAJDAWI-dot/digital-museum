@@ -14,7 +14,7 @@ export default function Preloader({ onComplete }) {
     /* ── Phase 1: draw the horizontal line ── */
     const t1 = setTimeout(() => {
       if (lineRef.current) lineRef.current.classList.add('draw');
-    }, 300);
+    }, 100);
 
     /* ── Phase 2: count up ── */
     let count  = 0;
@@ -22,7 +22,7 @@ export default function Preloader({ onComplete }) {
     const t2 = setTimeout(() => {
       setPhase('counting');
       const tick = () => {
-        count += Math.ceil(Math.random() * 4);
+        count += Math.ceil(Math.random() * 8 + 3); // Faster count
         if (count >= 100) count = 100;
         if (counterRef.current) counterRef.current.textContent = String(count).padStart(3, '0');
         if (count < 100) raf = requestAnimationFrame(tick);
@@ -33,12 +33,12 @@ export default function Preloader({ onComplete }) {
             if (wrapRef.current) {
               wrapRef.current.classList.add('exit');
             }
-            setTimeout(onComplete, 1100);
-          }, 400);
+            setTimeout(onComplete, 600); // Faster exit
+          }, 150);
         }
       };
       raf = requestAnimationFrame(tick);
-    }, 900);
+    }, 400);
 
     return () => {
       clearTimeout(t1);
