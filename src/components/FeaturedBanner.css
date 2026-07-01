@@ -151,4 +151,5 @@
   .featured-title { font-size: clamp(2rem, 8vw, 2.5rem); }
   .featured-footer { flex-wrap: wrap; gap: 1.5rem; }
   .featured-desc { font-size: 0.85rem; }
+  .featured-glow { display: none; }
 }

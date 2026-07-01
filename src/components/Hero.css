@@ -178,4 +178,5 @@
   .hero-line { font-size: clamp(2.8rem, 12vw, 4rem); }
   .hero-btn { width: 100%; justify-content: center; }
   .hero-desc { font-size: 0.9rem; }
+  .hero-bg { display: none; } /* Huge performance saver on mobile */
 }

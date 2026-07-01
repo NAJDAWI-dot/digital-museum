@@ -5,6 +5,11 @@ export default function Cursor() {
   const dotRef  = useRef(null);
   const ringRef = useRef(null);
 
+  // Disable on mobile/touch devices completely to save CPU
+  if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) {
+    return null;
+  }
+
   useEffect(() => {
     let mx = 0, my = 0;
     let rx = 0, ry = 0;
