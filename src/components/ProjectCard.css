@@ -217,10 +217,50 @@
 
 .pcard-links { display: flex; gap: 0.65rem; margin-left: auto; }
 .pcard-icon-link {
-  color: rgba(255,255,255,0.15);
-  transition: color 0.3s, transform 0.3s; display: flex;
+  background: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.4);
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+  gap: 0.25rem;
 }
-.pcard-icon-link:hover { color: var(--gold); transform: translateY(-2px); }
+
+.pcard-icon-link:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--linen);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.heart-btn {
+  width: auto;
+  padding: 0 0.5rem;
+  overflow: hidden;
+}
+
+.heart-btn.liked {
+  border-color: rgba(201,169,110,0.4);
+  color: var(--gold);
+}
+
+.heart-btn.liked svg {
+  animation: heart-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.likes-count {
+  font-size: 0.65rem;
+}
+
+@keyframes heart-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
 
 /* Admin */
 .pcard-admin-btns { display: flex; gap: 0.35rem; }

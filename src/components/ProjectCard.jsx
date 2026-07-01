@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import React, { useRef, useState } from 'react';
+import { motion, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import './ProjectCard.css';
 
@@ -8,13 +8,65 @@ export default function ProjectCard({ project, index, onEdit }) {
   const ref    = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-60px' });
 
+  // 3D Tilt Logic
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 300, damping: 30 });
+  const springY = useSpring(y, { stiffness: 300, damping: 30 });
+  
+  // Only apply tilt on desktop to avoid mobile glitches
+  const rotateX = useTransform(springY, [-0.5, 0.5], ["5deg", "-5deg"]);
+  const rotateY = useTransform(springX, [-0.5, 0.5], ["-5deg", "5deg"]);
+
+  const handleMouseMove = (e) => {
+    if (!ref.current || window.matchMedia('(pointer: coarse)').matches) return;
+    const rect = ref.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    x.set(mouseX / width - 0.5);
+    y.set(mouseY / height - 0.5);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  // Appreciate Button Logic
+  const [likes, setLikes] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`likes_${project.id}`);
+      return saved ? parseInt(saved, 10) : (project.likes || 0);
+    } catch { return 0; }
+  });
+  const [hasLiked, setHasLiked] = useState(() => {
+    try { return localStorage.getItem(`hasLiked_${project.id}`) === 'true'; } catch { return false; }
+  });
+
+  const handleLike = (e) => {
+    e.stopPropagation();
+    if (hasLiked) return;
+    const newLikes = likes + 1;
+    setLikes(newLikes);
+    setHasLiked(true);
+    try {
+      localStorage.setItem(`likes_${project.id}`, newLikes);
+      localStorage.setItem(`hasLiked_${project.id}`, 'true');
+    } catch {}
+  };
+
   return (
     <motion.article
       ref={ref}
       className="pcard"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, y: 56 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.9, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
       data-cursor
     >
       {/* ── Swatch / Cover ── */}
@@ -49,7 +101,7 @@ export default function ProjectCard({ project, index, onEdit }) {
       </div>
 
       {/* ── Body ── */}
-      <div className="pcard-body">
+      <div className="pcard-body" style={{ transform: "translateZ(30px)" }}>
         <div className="pcard-meta">
           <span className="pcard-cat mono">{project.category}</span>
           <span className="pcard-index mono">— {String(index + 1).padStart(2, '0')}</span>
@@ -77,17 +129,33 @@ export default function ProjectCard({ project, index, onEdit }) {
           </button>
 
           <div className="pcard-links">
-            <a href={project.repo} className="pcard-icon-link" aria-label="Repository" title="Repo">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            <button 
+              className={`pcard-icon-link heart-btn ${hasLiked ? 'liked' : ''}`} 
+              onClick={handleLike} 
+              aria-label="Appreciate" 
+              title="Appreciate"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill={hasLiked ? "var(--gold)" : "none"} stroke={hasLiked ? "var(--gold)" : "currentColor"} strokeWidth="1.5">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
-            </a>
-            <a href={project.link} className="pcard-icon-link" aria-label="Live" title="Live">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-              </svg>
-            </a>
+              <span className="likes-count mono">{likes > 0 ? likes : ''}</span>
+            </button>
+            
+            {project.repo && (
+              <a href={project.repo} className="pcard-icon-link" aria-label="Repository" title="Repo" target="_blank" rel="noopener noreferrer">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                </svg>
+              </a>
+            )}
+            {project.link && (
+              <a href={project.link} className="pcard-icon-link" aria-label="Live" title="Live" target="_blank" rel="noopener noreferrer">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </a>
+            )}
           </div>
 
           {isAdmin && (

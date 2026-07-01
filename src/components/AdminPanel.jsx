@@ -354,6 +354,7 @@ export default function AdminPanel() {
     editingProject, setEditingProject,
     addProject, updateProject, deleteProject, moveProject,
     projects, resetToDefaults,
+    githubToken, setGithubToken
   } = useMuseum();
 
   const [localEditing, setLocalEditing] = useState(null);
@@ -400,6 +401,15 @@ export default function AdminPanel() {
               <div className="admin-top-actions">
                 {isAdmin && (
                   <>
+                    <input 
+                      type="password" 
+                      placeholder="GitHub PAT (for auto-sync)" 
+                      className="admin-input mono" 
+                      style={{ width: '220px', height: '28px', fontSize: '0.65rem', margin: 0, padding: '0 0.5rem', background: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.1)' }}
+                      value={githubToken}
+                      onChange={(e) => setGithubToken(e.target.value)}
+                      title="Paste your GitHub Personal Access Token here to automatically commit edits to the live site."
+                    />
                     <button
                       className="admin-export-btn mono"
                       title="Download projects as projects.js — paste into src/data/ before deploying"
