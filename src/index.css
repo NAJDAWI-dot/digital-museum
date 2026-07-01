@@ -73,6 +73,10 @@ input, textarea, select { font-family: inherit; }
   z-index: 9998;
 }
 
+@media (max-width: 768px) {
+  .grain-overlay::before { display: none; }
+}
+
 /* ── Section Labels ── */
 .section-label {
   font-family: var(--font-mono);
