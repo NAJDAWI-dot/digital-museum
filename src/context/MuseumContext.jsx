@@ -15,19 +15,24 @@ export function MuseumProvider({ children }) {
     } catch { return INITIAL_PROJECTS; }
   });
 
-  const [isAdmin,       setIsAdmin]       = useState(() => localStorage.getItem(ADMIN_KEY) === 'true');
+  const safeGetAdmin = () => {
+    try { return localStorage.getItem(ADMIN_KEY) === 'true'; }
+    catch { return false; }
+  };
+
+  const [isAdmin,       setIsAdmin]       = useState(safeGetAdmin);
   const [adminPanel,    setAdminPanel]    = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [viewingProject, setViewingProject] = useState(null);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(projects)); } catch {}
   }, [projects]);
 
   const login = (pass) => {
     if (pass === ADMIN_PASS) {
       setIsAdmin(true);
-      localStorage.setItem(ADMIN_KEY, 'true');
+      try { localStorage.setItem(ADMIN_KEY, 'true'); } catch {}
       return true;
     }
     return false;
@@ -35,7 +40,7 @@ export function MuseumProvider({ children }) {
 
   const logout = () => {
     setIsAdmin(false);
-    localStorage.removeItem(ADMIN_KEY);
+    try { localStorage.removeItem(ADMIN_KEY); } catch {}
     setAdminPanel(false);
   };
 
