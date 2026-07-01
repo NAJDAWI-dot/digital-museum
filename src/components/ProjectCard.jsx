@@ -43,13 +43,13 @@ export default function ProjectCard({ project, index, onEdit }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), 2500); // 2.5s timeout
+    const id = setTimeout(() => controller.abort(), 10000); // 10s timeout for initial load
     
     fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}`, { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
         if (data && typeof data.count === 'number') {
-          setLikes(data.count);
+          setLikes(Math.max(0, data.count));
         }
       })
       .catch(() => {})
@@ -75,19 +75,15 @@ export default function ProjectCard({ project, index, onEdit }) {
       }
     } catch {}
     
-    // Global API update
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), 2500);
-    
-    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}/${action}`, { signal: controller.signal })
+    // Global API update (No abort timeout for writes so they are guaranteed to reach the server)
+    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}/${action}`)
       .then(res => res.json())
       .then(data => {
         if (data && typeof data.count === 'number') {
           setLikes(Math.max(0, data.count));
         }
       })
-      .catch(() => {})
-      .finally(() => clearTimeout(id));
+      .catch(() => {});
   };
 
   return (
