@@ -4,22 +4,27 @@ import './Preloader.css';
 const NAME    = "Hashem Najdawi";
 const LETTERS = NAME.split('');
 
-export default function Preloader({ onComplete }) {
+/* Curtain-lift duration — must match @keyframes pl-lift in Preloader.css. */
+const LIFT_MS = 1000;
+
+export default function Preloader({ onReveal, onDone }) {
   const wrapRef    = useRef(null);
   const lineRef    = useRef(null);
   const counterRef = useRef(null);
   const [phase, setPhase] = useState('entering'); // entering → counting → exiting
 
   useEffect(() => {
+    const timers = [];
+
     /* ── Phase 1: draw the horizontal line ── */
-    const t1 = setTimeout(() => {
+    timers.push(setTimeout(() => {
       if (lineRef.current) lineRef.current.classList.add('draw');
-    }, 100);
+    }, 100));
 
     /* ── Phase 2: count up ── */
     let count  = 0;
     let raf;
-    const t2 = setTimeout(() => {
+    timers.push(setTimeout(() => {
       setPhase('counting');
       const tick = () => {
         count += Math.ceil(Math.random() * 8 + 3); // Faster count
@@ -27,25 +32,26 @@ export default function Preloader({ onComplete }) {
         if (counterRef.current) counterRef.current.textContent = String(count).padStart(3, '0');
         if (count < 100) raf = requestAnimationFrame(tick);
         else {
-          /* ── Phase 3: exit animation ── */
-          setTimeout(() => {
+          /* ── Phase 3: curtain lift ── */
+          timers.push(setTimeout(() => {
             setPhase('exiting');
-            if (wrapRef.current) {
-              wrapRef.current.classList.add('exit');
-            }
-            setTimeout(onComplete, 600); // Faster exit
-          }, 150);
+            if (wrapRef.current) wrapRef.current.classList.add('exit');
+            // Hand off the instant the curtain starts moving so the hero rises
+            // into view behind it — the reveal and the lift are one gesture.
+            onReveal?.();
+            // Unmount only once the lift has fully cleared the viewport.
+            timers.push(setTimeout(() => onDone?.(), LIFT_MS));
+          }, 150));
         }
       };
       raf = requestAnimationFrame(tick);
-    }, 400);
+    }, 400));
 
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
+      timers.forEach(clearTimeout);
       cancelAnimationFrame(raf);
     };
-  }, [onComplete]);
+  }, [onReveal, onDone]);
 
   return (
     <div className={`preloader ${phase}`} ref={wrapRef}>

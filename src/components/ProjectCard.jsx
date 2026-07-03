@@ -98,14 +98,16 @@ export default function ProjectCard({ project, index, onEdit }) {
       }}
       data-cursor
     >
-      {/* ── Swatch / Cover ── */}
-      <div
+      {/* ── Swatch / Cover ── shares a layoutId with the modal hero so the
+           image morphs seamlessly between the two on open/close. ── */}
+      <motion.div
+        layoutId={`cover-${project.id}`}
         className={`pcard-swatch ${project.coverImage ? 'has-cover' : ''}`}
         style={project.coverImage
           ? { backgroundImage: `url(${resolveAsset(project.coverImage)})` }
           : { background: project.color }
         }
-        onClick={() => setViewingProject(project)}
+        onClick={() => { x.set(0); y.set(0); setViewingProject(project); }}
       >
         {!project.coverImage && (
           <div className="pcard-accent-dot" style={{ background: project.accentColor }}></div>
@@ -127,7 +129,7 @@ export default function ProjectCard({ project, index, onEdit }) {
             {project.screenshots.length}
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* ── Body ── */}
       <div className="pcard-body" style={{ transform: "translateZ(30px)" }}>

@@ -4,9 +4,14 @@
   top: 0;
   left: 0; right: 0;
   z-index: var(--z-nav);
-  transition: background 0.5s ease, border-color 0.5s ease;
+  transition: background 0.5s ease, border-color 0.5s ease,
+              opacity 0.7s var(--ease-smooth), transform 0.9s var(--ease-smooth);
   border-bottom: 1px solid transparent;
 }
+
+/* Drops into place once the curtain lifts. */
+.navbar--out { opacity: 0; transform: translateY(-14px); pointer-events: none; }
+.navbar--in  { opacity: 1; transform: translateY(0); transition-delay: 0.25s; }
 
 .navbar--scrolled {
   background: rgba(13, 13, 13, 0.95);

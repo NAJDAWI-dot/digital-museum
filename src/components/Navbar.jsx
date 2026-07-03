@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useMuseum } from '../context/MuseumContext';
 import './Navbar.css';
 
-export default function Navbar() {
+export default function Navbar({ revealed = true }) {
   const { isAdmin, logout, setAdminPanel, adminPanel } = useMuseum();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -21,7 +21,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
+    <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''} ${revealed ? 'navbar--in' : 'navbar--out'}`}>
       <div className="container navbar-inner">
         <a href="#" className="navbar-logo serif" aria-label="Hashem Najdawi Museum Home">
           Hashem Najdawi
@@ -29,7 +29,16 @@ export default function Navbar() {
 
         <div className={`navbar-links ${menuOpen ? 'open' : ''}`}>
           {navLinks.map(l => (
-            <a key={l.href} href={l.href} className="navbar-link mono" onClick={() => setMenuOpen(false)}>
+            <a
+              key={l.href}
+              href={l.href}
+              className="navbar-link mono"
+              onClick={(e) => {
+                e.preventDefault();
+                setMenuOpen(false);
+                window.dispatchEvent(new CustomEvent('liquid-nav', { detail: { target: l.href } }));
+              }}
+            >
               {l.label}
             </a>
           ))}

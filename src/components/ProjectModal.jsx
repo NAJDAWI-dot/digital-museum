@@ -125,15 +125,19 @@ export default function ProjectModal() {
               ref={panelRef}
               onKeyDown={trapFocus}
               data-lenis-prevent="true"
-              initial={{ opacity: 0, y: 56, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 28, scale: 0.97 }}
-              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              /* Opacity-only: a scale/translate here would distort the cover's
+                 layout morph. The morphing hero carries the motion instead. */
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
               onClick={e => e.stopPropagation()}
             >
-              {/* Hero image / swatch */}
-              <div
+              {/* Hero image / swatch — morphs from the gallery card via layoutId */}
+              <motion.div
+                layoutId={`cover-${proj.id}`}
                 className="modal-swatch"
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 style={proj.coverImage
                   ? { backgroundImage: `url(${resolveAsset(proj.coverImage)})` }
                   : { background: proj.color }
@@ -156,7 +160,7 @@ export default function ProjectModal() {
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                   </svg>
                 </button>
-              </div>
+              </motion.div>
 
               <div className="modal-body">
                 {/* Header */}

@@ -1,15 +1,8 @@
 * { cursor: none; }
 
+/* The site renders in place beneath the preloader; the curtain lift reveals it,
+   so no opacity gate is needed here (that only caused a flat crossfade and let
+   the hero choreography play unseen behind the curtain). */
 .site-wrapper {
   min-height: 100vh;
-  transition: opacity 0.6s ease;
-}
-
-.site--hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.site--visible {
-  opacity: 1;
 }

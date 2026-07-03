@@ -12,6 +12,8 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AdminPanel from './components/AdminPanel';
 import ProjectModal from './components/ProjectModal';
+import MorphDivider from './components/MorphDivider';
+import LiquidTransition from './components/LiquidTransition';
 import Lenis from 'lenis';
 import './App.css';
 
@@ -19,11 +21,18 @@ const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function MuseumApp() {
-  // Reduced-motion visitors skip the preloader entirely.
-  const [loaded, setLoaded] = useState(prefersReducedMotion);
+  // Read the preference once so it stays stable across renders and effect deps.
+  const [reduced] = useState(prefersReducedMotion);
+
+  // Two moments, deliberately separate so the hand-off is seamless:
+  //  · revealed      → the curtain is lifting; the hero choreography may start.
+  //  · preloaderGone → the lift has finished; the preloader can unmount.
+  // Reduced-motion visitors start past both (no curtain, no choreography wait).
+  const [revealed, setRevealed] = useState(reduced);
+  const [preloaderGone, setPreloaderGone] = useState(reduced);
 
   useEffect(() => {
-    if (prefersReducedMotion()) return; // native scrolling; Lenis smoothing off
+    if (reduced) return; // native scrolling; Lenis smoothing off
 
     const lenis = new Lenis({
       lerp: 0.07,
@@ -38,26 +47,37 @@ function MuseumApp() {
     }
     requestAnimationFrame(raf);
 
-    return () => lenis.destroy();
-  }, []);
+    // Exposed so the liquid page-transition can jump scroll without fighting Lenis.
+    window.__lenis = lenis;
 
-  // Safety net: content must never stay hidden if the preloader stalls
+    return () => { lenis.destroy(); delete window.__lenis; };
+  }, [reduced]);
+
+  // Safety net: never leave the curtain up if the preloader stalls
   // (hidden tab pausing rAF, an extension breaking timers, etc).
   useEffect(() => {
-    const failsafe = setTimeout(() => setLoaded(true), 6000);
+    if (reduced) return;
+    const failsafe = setTimeout(() => { setRevealed(true); setPreloaderGone(true); }, 6000);
     return () => clearTimeout(failsafe);
-  }, []);
+  }, [reduced]);
 
   return (
     <>
       <Cursor />
-      {!loaded && <Preloader onComplete={() => setLoaded(true)} />}
-      <div className={`site-wrapper grain-overlay ${loaded ? 'site--visible' : 'site--hidden'}`}>
-        <Navbar />
+      {!preloaderGone && (
+        <Preloader
+          onReveal={() => setRevealed(true)}
+          onDone={() => setPreloaderGone(true)}
+        />
+      )}
+      <div className="site-wrapper grain-overlay">
+        <Navbar revealed={revealed} />
         <main>
-          <Hero />
+          <Hero revealed={revealed} />
           <FeaturedBanner />
+          <MorphDivider />
           <Gallery />
+          <MorphDivider />
           <Timeline />
           <Contact />
         </main>
@@ -65,6 +85,7 @@ function MuseumApp() {
       </div>
       <AdminPanel />
       <ProjectModal />
+      <LiquidTransition />
     </>
   );
 }

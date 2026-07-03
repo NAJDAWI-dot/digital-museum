@@ -86,22 +86,24 @@
   position: relative;
 }
 
-.gallery-filter::after {
-  content: '';
+/* The morphing gold pill that slides between the active filter. */
+.gallery-filter-pill {
   position: absolute;
-  bottom: -1px;
-  left: 0; right: 0;
-  height: 1px;
-  background: var(--gold);
-  transform: scaleX(0);
-  transition: transform 0.3s var(--ease-smooth);
+  inset: 0.45rem 0.35rem;
+  border-radius: 999px;
+  background: rgba(201, 169, 110, 0.13);
+  border: 1px solid rgba(201, 169, 110, 0.38);
+  z-index: 0;
 }
+
+.gallery-filter-label { position: relative; z-index: 1; }
 
 .gallery-filter:hover { color: var(--linen); }
 .gallery-filter.active { color: var(--gold); }
-.gallery-filter.active::after { transform: scaleX(1); }
 
 .gallery-filter-count {
+  position: relative;
+  z-index: 1;
   margin-left: 0.4rem;
   font-size: 0.55rem;
   color: var(--dust);

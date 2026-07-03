@@ -1,0 +1,13 @@
+.morph-divider {
+  width: 100%;
+  height: 60px;
+  margin: clamp(1rem, 4vw, 3rem) 0;
+  pointer-events: none;
+}
+
+.morph-divider-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}

@@ -54,7 +54,7 @@ export default function Gallery() {
 
         <div className="gallery-divider"></div>
 
-        {/* Filters */}
+        {/* Filters — the gold pill morphs between the active option */}
         <div className="gallery-filters">
           {CATS.map(cat => (
             <button
@@ -62,7 +62,14 @@ export default function Gallery() {
               className={`gallery-filter mono ${filter === cat ? 'active' : ''}`}
               onClick={() => setFilter(cat)}
             >
-              {cat}
+              {filter === cat && (
+                <motion.span
+                  layoutId="filter-pill"
+                  className="gallery-filter-pill"
+                  transition={{ type: 'spring', stiffness: 400, damping: 34 }}
+                />
+              )}
+              <span className="gallery-filter-label">{cat}</span>
               {cat !== 'All' && (
                 <span className="gallery-filter-count">
                   {projects.filter(p => p.category === cat).length}
