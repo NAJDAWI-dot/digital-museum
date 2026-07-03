@@ -1,16 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import './Cursor.css';
 
+const isCoarsePointer = () =>
+  typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+
 export default function Cursor() {
   const dotRef  = useRef(null);
   const ringRef = useRef(null);
 
-  // Disable on mobile/touch devices completely to save CPU
-  if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) {
-    return null;
-  }
-
   useEffect(() => {
+    // Disable on mobile/touch devices completely to save CPU
+    if (isCoarsePointer()) return;
     let mx = 0, my = 0;
     let rx = 0, ry = 0;
     let raf;
@@ -62,6 +62,9 @@ export default function Cursor() {
       observer.disconnect();
     };
   }, []);
+
+  // Hooks above always run; only the render is skipped on touch devices.
+  if (isCoarsePointer()) return null;
 
   return (
     <>

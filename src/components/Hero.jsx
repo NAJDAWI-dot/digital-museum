@@ -1,39 +1,19 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useMuseum } from '../context/MuseumContext';
 import './Hero.css';
 
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-function ScrambleText({ text, delay = 0, className }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    let frame = 0, raf;
-    const timeout = setTimeout(() => {
-      const tick = () => {
-        el.textContent = text.split('').map((ch, i) => {
-          if (ch === ' ') return ' ';
-          if (i < frame / 2.5) return text[i];
-          return CHARS[Math.floor(Math.random() * CHARS.length)];
-        }).join('');
-        frame++;
-        if (frame < text.length * 2.5 + 8) raf = requestAnimationFrame(tick);
-        else el.textContent = text;
-      };
-      raf = requestAnimationFrame(tick);
-    }, delay);
-    return () => { clearTimeout(timeout); cancelAnimationFrame(raf); };
-  }, [text, delay]);
-  return <span className={className} ref={ref}>{text}</span>;
-}
-
 export default function Hero() {
+  const { projects } = useMuseum();
   const particlesRef = useRef(null);
+
+  const exhibitCount = String(projects.length).padStart(2, '0');
+  const disciplineCount = new Set(projects.map(p => p.category)).size;
 
   useEffect(() => {
     const canvas = particlesRef.current;
     if (!canvas) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const ctx = canvas.getContext('2d');
     let w = canvas.width = window.innerWidth;
     let h = canvas.height = window.innerHeight;
@@ -90,8 +70,8 @@ export default function Hero() {
           Digital Museum &nbsp;·&nbsp; Est. 2023
         </motion.div>
 
-        <div className="hero-headline-wrap">
-          <div className="hero-headline serif">
+        <h1 className="hero-headline-wrap">
+          <span className="hero-headline serif">
             <motion.span
               className="hero-line"
               initial={{ y: '105%' }}
@@ -100,8 +80,8 @@ export default function Hero() {
             >
               A museum
             </motion.span>
-          </div>
-          <div className="hero-headline serif hero-headline--italic">
+          </span>
+          <span className="hero-headline serif hero-headline--italic">
             <motion.span
               className="hero-line"
               initial={{ y: '105%' }}
@@ -111,8 +91,8 @@ export default function Hero() {
               of infinite&nbsp;
               <span className="hero-gold-outline">creations</span>
             </motion.span>
-          </div>
-        </div>
+          </span>
+        </h1>
 
         <div className="hero-bottom">
           <motion.p
@@ -140,26 +120,16 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Animated counters */}
+      {/* Catalogue line — real counts, placard voice */}
       <motion.div
         className="hero-meta"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.1, duration: 0.9, ease: [0.16,1,0.3,1] }}
       >
-        {[
-          { num: '06', label: 'Projects'     },
-          { num: '4',  label: 'Categories'   },
-          { num: '3',  label: 'Years Active' },
-        ].map((item, i) => (
-          <React.Fragment key={item.label}>
-            {i > 0 && <div className="hero-meta-sep"></div>}
-            <div className="hero-meta-item">
-              <ScrambleText text={item.num} className="hero-num serif" delay={1200 + i * 180} />
-              <span className="mono">{item.label}</span>
-            </div>
-          </React.Fragment>
-        ))}
+        <span className="mono hero-catalogue">
+          Catalogue&nbsp;—&nbsp;{exhibitCount} exhibits&nbsp;·&nbsp;{disciplineCount} disciplines&nbsp;·&nbsp;est. 2023
+        </span>
       </motion.div>
 
       {/* Scroll indicator */}

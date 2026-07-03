@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { MotionConfig } from 'framer-motion';
 import { MuseumProvider } from './context/MuseumContext';
 import Cursor from './components/Cursor';
 import Preloader from './components/Preloader';
@@ -14,12 +15,18 @@ import ProjectModal from './components/ProjectModal';
 import Lenis from 'lenis';
 import './App.css';
 
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 function MuseumApp() {
-  const [loaded, setLoaded] = useState(false);
+  // Reduced-motion visitors skip the preloader entirely.
+  const [loaded, setLoaded] = useState(prefersReducedMotion);
 
   useEffect(() => {
+    if (prefersReducedMotion()) return; // native scrolling; Lenis smoothing off
+
     const lenis = new Lenis({
-      lerp: 0.07, 
+      lerp: 0.07,
       smoothWheel: true,
       wheelMultiplier: 1.1,
       touchMultiplier: 2,
@@ -32,6 +39,13 @@ function MuseumApp() {
     requestAnimationFrame(raf);
 
     return () => lenis.destroy();
+  }, []);
+
+  // Safety net: content must never stay hidden if the preloader stalls
+  // (hidden tab pausing rAF, an extension breaking timers, etc).
+  useEffect(() => {
+    const failsafe = setTimeout(() => setLoaded(true), 6000);
+    return () => clearTimeout(failsafe);
   }, []);
 
   return (
@@ -57,8 +71,10 @@ function MuseumApp() {
 
 export default function App() {
   return (
-    <MuseumProvider>
-      <MuseumApp />
-    </MuseumProvider>
+    <MotionConfig reducedMotion="user">
+      <MuseumProvider>
+        <MuseumApp />
+      </MuseumProvider>
+    </MotionConfig>
   );
 }

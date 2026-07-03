@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import ImageUploader, { MultiImageUploader } from './ImageUploader';
+import { resolveAsset } from '../lib/assets';
 import './AdminPanel.css';
 
 const EMPTY = {
@@ -130,7 +131,7 @@ function ProjectList({ projects, onSelect, onDelete, onNew, onMove, selectedId }
 
             <div
               className="proj-list-swatch"
-              style={{ background: p.coverImage ? `url(${p.coverImage}) center/cover` : p.color }}
+              style={{ background: p.coverImage ? `url(${resolveAsset(p.coverImage)}) center/cover` : p.color }}
             ></div>
 
             <div className="proj-list-info">
@@ -197,7 +198,7 @@ function ProjectForm({ project, onSave, onCancel }) {
 
       {/* Live preview mini card */}
       <div className="form-preview">
-        <div className="fp-swatch" style={{ background: form.coverImage ? `url(${form.coverImage}) center/cover` : form.color }}>
+        <div className="fp-swatch" style={{ background: form.coverImage ? `url(${resolveAsset(form.coverImage)}) center/cover` : form.color }}>
           {!form.coverImage && <div className="fp-glow" style={{ background: form.accentColor }}></div>}
           <span className="mono fp-cat">{form.category}</span>
           <span className="mono fp-year">{form.year}</span>
@@ -518,6 +519,9 @@ export default function AdminPanel() {
           <motion.div className="admin-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleClose} />
           <motion.aside
             className="admin-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-label={!isAdmin ? 'Editor access' : 'Museum editor'}
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}

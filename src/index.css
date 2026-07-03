@@ -6,7 +6,7 @@
   --ink:        #0d0d0d;
   --ink-light:  #1a1a1a;
   --ink-mid:    #2e2e2e;
-  --silver:     #6b6b6b;
+  --silver:     #8a8a8a; /* ≥4.5:1 on --ink for AA body text */
   --dust:       #9a9a9a;
   --mist:       #c8c8c8;
   --linen:      #f0ede8;
@@ -23,11 +23,21 @@
 
   --ease-smooth:  cubic-bezier(0.16, 1, 0.3, 1);
   --ease-precise: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Stacking order, lowest to highest */
+  --z-nav:            10;
+  --z-admin-backdrop: 20;
+  --z-admin:          21;
+  --z-modal:          30;
+  --z-lightbox:       40;
+  --z-grain:          50;
+  --z-preloader:      60;
+  --z-cursor:         70;
 }
 
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+/* Smooth scrolling is owned by Lenis; a CSS rule here would fight it on anchor jumps. */
 
 body {
   font-family: var(--font-sans);
@@ -70,7 +80,7 @@ input, textarea, select { font-family: inherit; }
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
   opacity: 0.025;
   pointer-events: none;
-  z-index: 9998;
+  z-index: var(--z-grain);
 }
 
 @media (max-width: 768px) {
@@ -149,3 +159,15 @@ input, textarea, select { font-family: inherit; }
 .stagger-3 { animation-delay: 0.3s; }
 .stagger-4 { animation-delay: 0.4s; }
 .stagger-5 { animation-delay: 0.5s; }
+
+/* ── Balanced headings ── */
+h1, h2, h3 { text-wrap: balance; }
+
+/* ── Reduced motion: everything settles instantly ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

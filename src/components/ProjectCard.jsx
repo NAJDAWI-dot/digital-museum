@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
+import { resolveAsset, isRealLink } from '../lib/assets';
 import './ProjectCard.css';
 
 export default function ProjectCard({ project, index, onEdit }) {
@@ -101,7 +102,7 @@ export default function ProjectCard({ project, index, onEdit }) {
       <div
         className={`pcard-swatch ${project.coverImage ? 'has-cover' : ''}`}
         style={project.coverImage
-          ? { backgroundImage: `url(${project.coverImage})` }
+          ? { backgroundImage: `url(${resolveAsset(project.coverImage)})` }
           : { background: project.color }
         }
         onClick={() => setViewingProject(project)}
@@ -136,7 +137,7 @@ export default function ProjectCard({ project, index, onEdit }) {
         </div>
 
         <div className="pcard-title-wrap">
-          <h2 className="pcard-title serif">{project.title}</h2>
+          <h3 className="pcard-title serif">{project.title}</h3>
           {project.subtitle && <p className="pcard-subtitle">{project.subtitle}</p>}
         </div>
 
@@ -169,14 +170,14 @@ export default function ProjectCard({ project, index, onEdit }) {
               <span className="likes-count mono">{likes}</span>
             </button>
             
-            {project.repo && (
+            {isRealLink(project.repo) && (
               <a href={project.repo} className="pcard-icon-link" aria-label="Repository" title="Repo" target="_blank" rel="noopener noreferrer">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
                 </svg>
               </a>
             )}
-            {project.link && (
+            {isRealLink(project.link) && (
               <a href={project.link} className="pcard-icon-link" aria-label="Live" title="Live" target="_blank" rel="noopener noreferrer">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>

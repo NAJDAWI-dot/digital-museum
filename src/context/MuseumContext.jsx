@@ -7,10 +7,24 @@ const STORAGE_KEY    = 'arch_museum_projects_v2';
 const ADMIN_KEY      = 'arch_admin_session';
 export const ADMIN_PASS = 'arch2026'; // ← change this
 
+// Hydrate editor drafts saved in this browser; fall back to the deployed data.
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const draft = JSON.parse(raw);
+    if (!Array.isArray(draft.projects)) return null;
+    return draft;
+  } catch {
+    return null;
+  }
+}
+
 export function MuseumProvider({ children }) {
-  const [projects, setProjects] = useState(INITIAL_PROJECTS);
-  const [timeline, setTimeline] = useState(INITIAL_TIMELINE || []);
-  const [settings, setSettings] = useState(SITE_SETTINGS || {
+  const draft = loadDraft();
+  const [projects, setProjects] = useState(draft?.projects || INITIAL_PROJECTS);
+  const [timeline, setTimeline] = useState(draft?.timeline || INITIAL_TIMELINE || []);
+  const [settings, setSettings] = useState(draft?.settings || SITE_SETTINGS || {
     email: 'najdawihashem01@gmail.com',
     cvLink: '#',
     social: { github: '#', linkedin: '#' }
@@ -41,14 +55,29 @@ export function MuseumProvider({ children }) {
     setAdminPanel(false);
   };
 
+  // Editor drafts survive reloads. Non-admin visitors never write, so this
+  // only ever contains the owner's own local edits.
+  useEffect(() => {
+    if (!isAdmin) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ projects, settings, timeline, savedAt: Date.now() }));
+    } catch {}
+  }, [isAdmin, projects, settings, timeline]);
+
+  // The GitHub PAT is kept in sessionStorage only: it dies with the tab
+  // instead of persisting on the machine. (One-time migration clears the
+  // old localStorage copy.)
   const [githubToken, setGithubToken] = useState(() => {
-    try { return localStorage.getItem('arch_github_token') || ''; } catch { return ''; }
+    try {
+      localStorage.removeItem('arch_github_token');
+      return sessionStorage.getItem('arch_github_token') || '';
+    } catch { return ''; }
   });
 
   useEffect(() => {
     try {
-      if (githubToken) localStorage.setItem('arch_github_token', githubToken);
-      else localStorage.removeItem('arch_github_token');
+      if (githubToken) sessionStorage.setItem('arch_github_token', githubToken);
+      else sessionStorage.removeItem('arch_github_token');
     } catch {}
   }, [githubToken]);
 
@@ -115,8 +144,11 @@ export function MuseumProvider({ children }) {
 
   const resetToDefaults = () => {
     if (confirm('Reset all projects to factory defaults? This cannot be undone.')) {
+      try { localStorage.removeItem(STORAGE_KEY); } catch {}
       setProjects(INITIAL_PROJECTS);
-      pushToGithub(INITIAL_PROJECTS, settings, timeline);
+      setTimeline(INITIAL_TIMELINE || []);
+      setSettings(SITE_SETTINGS);
+      pushToGithub(INITIAL_PROJECTS, SITE_SETTINGS, INITIAL_TIMELINE);
     }
   };
 

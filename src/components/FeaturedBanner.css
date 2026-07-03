@@ -87,13 +87,13 @@
   font-size: 0.6rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.75);
 }
 
 .featured-year {
   font-size: 0.6rem;
   letter-spacing: 0.2em;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.6);
 }
 
 .featured-text {
@@ -113,12 +113,12 @@
 
 .featured-subtitle {
   font-size: 1rem;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.72);
 }
 
 .featured-desc {
   font-size: 0.95rem;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.68);
   line-height: 1.75;
   max-width: 520px;
 }
@@ -145,7 +145,7 @@
   padding: 0.25rem 0.65rem;
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 2px;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.65);
 }
 
 .featured-cta {

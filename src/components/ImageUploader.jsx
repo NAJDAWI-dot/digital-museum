@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { resolveAsset } from '../lib/assets';
 import './ImageUploader.css';
 
 const compressImage = (file, maxWidth = 1600) => {
@@ -91,7 +92,7 @@ export default function ImageUploader({ value, onChange, label = 'Image', aspect
       >
         {value ? (
           <>
-            <img src={value} alt={label} className="img-preview" />
+            <img src={resolveAsset(value)} alt={label} className="img-preview" />
             <div className="img-overlay">
               <span className="mono img-overlay-text">Change Image</span>
             </div>
@@ -188,7 +189,7 @@ export function MultiImageUploader({ values = [], onChange, maxImages = 6 }) {
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => { e.preventDefault(); moveImage(Number(e.dataTransfer.getData('text')), i); }}
           >
-            <img src={src} alt={`screenshot ${i+1}`} />
+            <img src={resolveAsset(src)} alt={`screenshot ${i+1}`} />
             <div className="multi-thumb-overlay">
               <span className="mono">⠿ drag</span>
               <button type="button" className="multi-remove" onClick={() => removeImage(i)}>×</button>

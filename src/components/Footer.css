@@ -69,7 +69,7 @@
   font-size: 0.6rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--ink-mid);
+  color: var(--dust);
 }
 
 @media (max-width: 768px) {

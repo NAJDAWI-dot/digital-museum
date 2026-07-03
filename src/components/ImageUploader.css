@@ -12,7 +12,7 @@
 }
 
 .img-uploader-hint {
-  color: var(--ink-mid);
+  color: var(--dust);
   text-transform: none;
   letter-spacing: 0;
   font-size: 0.55rem;
@@ -82,7 +82,7 @@
 }
 .img-placeholder svg { opacity: 0.4; }
 .img-placeholder p { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
-.img-sub { color: var(--ink-mid) !important; }
+.img-sub { color: var(--dust) !important; }
 
 .img-error {
   font-size: 0.6rem;

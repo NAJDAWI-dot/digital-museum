@@ -79,9 +79,10 @@
 
 .hero-headline-wrap {
   overflow: hidden; display: flex; flex-direction: column; gap: 0;
+  font-weight: 300;
 }
 
-.hero-headline { overflow: hidden; line-height: 1.05; }
+.hero-headline { display: block; overflow: hidden; line-height: 1.05; }
 
 .hero-line {
   display: block;
@@ -134,16 +135,11 @@
   border-top: 1px solid rgba(255,255,255,0.05);
 }
 
-.hero-meta-sep { width: 1px; height: 2rem; background: rgba(255,255,255,0.08); }
-
-.hero-meta-item { display: flex; flex-direction: column; gap: 0.3rem; }
-
-.hero-num {
-  font-size: 2.5rem; font-weight: 300; color: var(--linen); line-height: 1;
-}
-
-.hero-meta-item .mono {
-  font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--silver);
+.hero-catalogue {
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dust);
 }
 
 /* Scroll hint */

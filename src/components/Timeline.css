@@ -1,7 +1,7 @@
 .timeline-section {
   padding: 8rem 0;
   position: relative;
-  background-color: var(--color-bg);
+  background-color: var(--ink);
   overflow: hidden;
 }
 
@@ -12,12 +12,12 @@
 
 .timeline-title {
   font-size: clamp(2.5rem, 5vw, 4rem);
-  color: var(--color-text);
+  color: var(--linen);
   margin-bottom: 1rem;
 }
 
 .timeline-subtitle {
-  color: var(--color-accent);
+  color: var(--gold);
   font-size: 0.9rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -46,9 +46,9 @@
   top: 0;
   left: 50%;
   width: 1px;
-  background: var(--color-accent);
+  background: var(--gold);
   transform: translateX(-50%);
-  box-shadow: 0 0 10px var(--color-accent), 0 0 20px var(--color-accent);
+  box-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold);
   transform-origin: top;
 }
 
@@ -77,8 +77,8 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--color-bg);
-  border: 2px solid var(--color-accent);
+  background: var(--ink);
+  border: 2px solid var(--gold);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -90,7 +90,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--color-accent);
+  background: var(--gold);
 }
 
 .timeline-content {
@@ -119,7 +119,7 @@
 
 .timeline-year {
   display: inline-block;
-  color: var(--color-accent);
+  color: var(--gold);
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   margin-bottom: 0.5rem;

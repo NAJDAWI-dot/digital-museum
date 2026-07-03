@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useMuseum } from '../context/MuseumContext';
+import { resolveAsset } from '../lib/assets';
 import './FeaturedBanner.css';
 
 export default function FeaturedBanner() {
@@ -66,10 +67,12 @@ export default function FeaturedBanner() {
 
               {(featured.coverImage || (featured.images && featured.images.length > 0)) && (
                 <div className="featured-image-wrap">
-                  <img 
-                    src={featured.coverImage || featured.images[0]} 
-                    alt={featured.title} 
-                    className="featured-image" 
+                  <img
+                    src={resolveAsset(featured.coverImage || featured.images[0])}
+                    alt={featured.title}
+                    className="featured-image"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               )}

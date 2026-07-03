@@ -26,7 +26,6 @@ export default function Gallery() {
         {/* Header */}
         <div className="gallery-header">
           <div className="gallery-header-left">
-            <div className="section-label">Archive</div>
             <h2 className="gallery-title serif">
               The Complete<br />
               <em>Collection</em>
