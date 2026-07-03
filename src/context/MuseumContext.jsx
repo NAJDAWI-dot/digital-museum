@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { INITIAL_PROJECTS, SITE_SETTINGS, INITIAL_TIMELINE } from '../data/projects';
 
 const MuseumContext = createContext(null);
@@ -7,13 +7,29 @@ const STORAGE_KEY    = 'arch_museum_projects_v2';
 const ADMIN_KEY      = 'arch_admin_session';
 export const ADMIN_PASS = 'arch2026'; // ← change this
 
+// A cheap, stable signature of the data bundled into this build. Stored with
+// each draft so a draft can tell whether the deployed data has changed since
+// it was saved.
+function hashString(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+const DEPLOY_SIG = hashString(
+  JSON.stringify({ p: INITIAL_PROJECTS, t: INITIAL_TIMELINE, s: SITE_SETTINGS })
+);
+
 // Hydrate editor drafts saved in this browser; fall back to the deployed data.
+// A draft is only honoured while it matches the bundle it was based on — once a
+// new deploy changes the bundled data, the un-pushed draft is stale and the
+// freshly published content wins.
 function loadDraft() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const draft = JSON.parse(raw);
     if (!Array.isArray(draft.projects)) return null;
+    if (draft.baseSig !== DEPLOY_SIG) return null;
     return draft;
   } catch {
     return null;
@@ -21,7 +37,12 @@ function loadDraft() {
 }
 
 export function MuseumProvider({ children }) {
-  const draft = loadDraft();
+  // Read localStorage exactly once for the life of the provider; useState only
+  // consumes the initial value, so re-reading on every render is wasted work.
+  const draftRef = useRef(undefined);
+  if (draftRef.current === undefined) draftRef.current = loadDraft();
+  const draft = draftRef.current;
+
   const [projects, setProjects] = useState(draft?.projects || INITIAL_PROJECTS);
   const [timeline, setTimeline] = useState(draft?.timeline || INITIAL_TIMELINE || []);
   const [settings, setSettings] = useState(draft?.settings || SITE_SETTINGS || {
@@ -60,7 +81,7 @@ export function MuseumProvider({ children }) {
   useEffect(() => {
     if (!isAdmin) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ projects, settings, timeline, savedAt: Date.now() }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ projects, settings, timeline, baseSig: DEPLOY_SIG, savedAt: Date.now() }));
     } catch {}
   }, [isAdmin, projects, settings, timeline]);
 
@@ -144,7 +165,8 @@ export function MuseumProvider({ children }) {
 
   const resetToDefaults = () => {
     if (confirm('Reset all projects to factory defaults? This cannot be undone.')) {
-      try { localStorage.removeItem(STORAGE_KEY); } catch {}
+      // No need to clear STORAGE_KEY here — the persist effect re-writes it with
+      // the current DEPLOY_SIG, and the next deploy's signature change retires it.
       setProjects(INITIAL_PROJECTS);
       setTimeline(INITIAL_TIMELINE || []);
       setSettings(SITE_SETTINGS);
