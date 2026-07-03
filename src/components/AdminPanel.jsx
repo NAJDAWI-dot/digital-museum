@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import ImageUploader, { MultiImageUploader } from './ImageUploader';

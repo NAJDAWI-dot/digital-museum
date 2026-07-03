@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset, isRealLink } from '../lib/assets';
