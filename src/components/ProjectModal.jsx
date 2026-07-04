@@ -235,6 +235,30 @@ export default function ProjectModal() {
                   </div>
                 </motion.div>
 
+                {/* Collaborators */}
+                {proj.collaborators && proj.collaborators.length > 0 && (
+                  <motion.div
+                    className="modal-collab-row"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.38, duration: 0.6 }}
+                  >
+                    <h3 className="modal-heading serif">Collaborators</h3>
+                    <ul className="modal-collab-list">
+                      {proj.collaborators.map((c, i) => (
+                        <li key={i} className="modal-collab-item">
+                          {isRealLink(c.url) ? (
+                            <a href={c.url} className="modal-collab-name" target="_blank" rel="noreferrer">{c.name}</a>
+                          ) : (
+                            <span className="modal-collab-name">{c.name}</span>
+                          )}
+                          {c.role && <span className="modal-collab-role mono">{c.role}</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                )}
+
                 {/* CTA */}
                 {(isRealLink(proj.repo) || isRealLink(proj.link)) && (
                   <motion.div

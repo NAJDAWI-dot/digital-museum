@@ -1,0 +1,51 @@
+.guestbook-section {
+  padding: 8rem 0;
+  position: relative;
+  background-color: var(--ink);
+  overflow: hidden;
+}
+
+.guestbook-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.guestbook-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  color: var(--linen);
+}
+
+.guestbook-subtitle {
+  color: var(--dust);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+}
+
+.guestbook-widget {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.giscus-container {
+  min-height: 240px;
+}
+
+.guestbook-placeholder {
+  padding: 3rem 2rem;
+  text-align: center;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--dust);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 768px) {
+  .guestbook-section { padding: 5rem 0; }
+  .guestbook-header { margin-bottom: 2.5rem; }
+}
