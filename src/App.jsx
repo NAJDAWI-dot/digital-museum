@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { MotionConfig } from 'framer-motion';
 import { MuseumProvider } from './context/MuseumContext';
 import Cursor from './components/Cursor';
@@ -42,6 +42,13 @@ function MuseumApp() {
     setReplayKey((k) => k + 1);
   };
 
+  // Stable identity across renders — Preloader's effect depends on these, and
+  // onReveal() itself triggers a parent re-render; an inline arrow here would
+  // hand Preloader a new function every time, re-running its effect mid-animation
+  // and restarting the whole entering→counting→exiting sequence from scratch.
+  const handleReveal = useCallback(() => setRevealed(true), []);
+  const handleDone = useCallback(() => setPreloaderGone(true), []);
+
   useEffect(() => {
     if (reduced) return; // native scrolling; Lenis smoothing off
 
@@ -70,7 +77,7 @@ function MuseumApp() {
     if (reduced) return;
     const failsafe = setTimeout(() => { setRevealed(true); setPreloaderGone(true); }, 6000);
     return () => clearTimeout(failsafe);
-  }, [reduced]);
+  }, [reduced, replayKey]);
 
   return (
     <>
@@ -79,8 +86,8 @@ function MuseumApp() {
         <Preloader
           key={replayKey}
           variant={transitionVariant}
-          onReveal={() => setRevealed(true)}
-          onDone={() => setPreloaderGone(true)}
+          onReveal={handleReveal}
+          onDone={handleDone}
         />
       )}
       <div className="site-wrapper grain-overlay">

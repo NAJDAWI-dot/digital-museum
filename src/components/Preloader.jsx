@@ -52,7 +52,6 @@ export default function Preloader({ onReveal, onDone, variant = 'curtain' }) {
           /* ── Phase 3: exit ── */
           timers.push(setTimeout(() => {
             setPhase('exiting');
-            if (wrapRef.current) wrapRef.current.classList.add('exit');
             if ((variant === 'liquid' || variant === 'blob') && wrapRef.current) {
               wrapRef.current.querySelectorAll('animate').forEach((el) => {
                 if (typeof el.beginElement === 'function') el.beginElement();
@@ -81,7 +80,7 @@ export default function Preloader({ onReveal, onDone, variant = 'curtain' }) {
   }, [onReveal, onDone, variant]);
 
   return (
-    <div className={`preloader ${phase} variant-${variant}`} ref={wrapRef}>
+    <div className={`preloader ${phase} variant-${variant} ${phase === 'exiting' ? 'exit' : ''}`} ref={wrapRef}>
       {/* Background lines */}
       <div className="pl-grid">
         {Array.from({ length: 6 }).map((_, i) => (
