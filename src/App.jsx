@@ -3,7 +3,6 @@ import { MotionConfig } from 'framer-motion';
 import { MuseumProvider } from './context/MuseumContext';
 import Cursor from './components/Cursor';
 import Preloader from './components/Preloader';
-import TransitionPicker from './components/TransitionPicker';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import FeaturedBanner from './components/FeaturedBanner';
@@ -31,16 +30,6 @@ function MuseumApp() {
   // Reduced-motion visitors start past both (no curtain, no choreography wait).
   const [revealed, setRevealed] = useState(reduced);
   const [preloaderGone, setPreloaderGone] = useState(reduced);
-  const [transitionVariant, setTransitionVariant] = useState('curtain');
-  const [replayKey, setReplayKey] = useState(0);
-
-  // Dev-only: replay the full splash→landing sequence with a different variant.
-  const replayWithVariant = (nextVariant) => {
-    setTransitionVariant(nextVariant);
-    setRevealed(false);
-    setPreloaderGone(false);
-    setReplayKey((k) => k + 1);
-  };
 
   // Stable identity across renders — Preloader's effect depends on these, and
   // onReveal() itself triggers a parent re-render; an inline arrow here would
@@ -77,21 +66,16 @@ function MuseumApp() {
     if (reduced) return;
     const failsafe = setTimeout(() => { setRevealed(true); setPreloaderGone(true); }, 6000);
     return () => clearTimeout(failsafe);
-  }, [reduced, replayKey]);
+  }, [reduced]);
 
   return (
     <>
       <Cursor />
       {!preloaderGone && (
-        <Preloader
-          key={replayKey}
-          variant={transitionVariant}
-          onReveal={handleReveal}
-          onDone={handleDone}
-        />
+        <Preloader onReveal={handleReveal} onDone={handleDone} />
       )}
       <div className="site-wrapper grain-overlay">
-        <Navbar revealed={revealed} wordmarkMorph={transitionVariant === 'wordmark'} />
+        <Navbar revealed={revealed} />
         <main>
           <Hero revealed={revealed} />
           <FeaturedBanner />
@@ -106,9 +90,6 @@ function MuseumApp() {
       <AdminPanel />
       <ProjectModal />
       <LiquidTransition />
-      {import.meta.env.DEV && !reduced && (
-        <TransitionPicker variant={transitionVariant} onSelect={replayWithVariant} />
-      )}
     </>
   );
 }
