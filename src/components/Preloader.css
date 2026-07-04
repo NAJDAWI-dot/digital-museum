@@ -46,7 +46,7 @@
 /* ── Variant: liquid-crest morph ──
    The panel's trailing (bottom) edge grows an animated wave as it lifts, and
    the panel fades out in the final third instead of cutting hard. ── */
-.preloader.variant-liquid::before {
+.preloader.exit.variant-liquid::before {
   display: none; /* the crest replaces the flat seam line */
 }
 
@@ -58,6 +58,7 @@
 
 .preloader.variant-liquid.exit {
   animation: pl-lift-liquid 1.15s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  overflow: visible;
 }
 
 .pl-crest {
