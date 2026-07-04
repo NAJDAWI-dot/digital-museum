@@ -53,7 +53,7 @@ export default function Preloader({ onReveal, onDone, variant = 'curtain' }) {
           timers.push(setTimeout(() => {
             setPhase('exiting');
             if (wrapRef.current) wrapRef.current.classList.add('exit');
-            if (variant === 'liquid' && wrapRef.current) {
+            if ((variant === 'liquid' || variant === 'blob') && wrapRef.current) {
               wrapRef.current.querySelectorAll('animate').forEach((el) => {
                 if (typeof el.beginElement === 'function') el.beginElement();
               });
@@ -155,6 +155,20 @@ export default function Preloader({ onReveal, onDone, variant = 'curtain' }) {
                 values="M0,60 C240,100 480,20 720,55 C960,90 1200,15 1440,55;
                         M0,30 C240,70 480,110 720,35 C960,75 1200,110 1440,35;
                         M0,10 C240,25 480,5 720,15 C960,25 1200,5 1440,15" />
+            </path>
+          </svg>
+        </div>
+      )}
+
+      {variant === 'blob' && (
+        <div className="pl-blob-wrap" aria-hidden="true">
+          <svg className="pl-blob" viewBox="0 0 600 600">
+            <path fill="var(--ink)" stroke="var(--gold)" strokeWidth="1.5">
+              <animate attributeName="d" begin="indefinite" id="pl-blob-morph"
+                dur="1.6s" fill="freeze"
+                values="M300,90 C420,90 520,180 520,300 C520,420 420,510 300,510 C180,510 80,420 80,300 C80,180 180,90 300,90 Z;
+                        M300,60 C460,60 540,160 540,300 C540,440 460,540 300,540 C140,540 60,440 60,300 C60,160 140,60 300,60 Z;
+                        M300,40 C480,40 560,150 560,300 C560,450 480,560 300,560 C120,560 40,450 40,300 C40,150 120,40 300,40 Z" />
             </path>
           </svg>
         </div>

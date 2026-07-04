@@ -112,6 +112,52 @@
   animation: pl-fade-only 0.6s ease forwards;
 }
 
+/* ── Variant: blob takeover ──
+   Splash chrome fades fast; an organic blob grows from center to fully
+   cover the screen, then the blob (and the backdrop behind it) fades out
+   together to reveal the landing page. ── */
+.preloader.variant-blob::before {
+  display: none;
+}
+
+.preloader.variant-blob.exit .pl-grid,
+.preloader.variant-blob.exit .pl-corner,
+.preloader.variant-blob.exit .pl-center,
+.preloader.variant-blob.exit .pl-bottom {
+  animation: pl-fade-only 0.35s ease forwards;
+}
+
+.preloader.variant-blob.exit {
+  animation: pl-bg-fade 0.5s ease 1.4s forwards;
+}
+
+.pl-blob-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.pl-blob {
+  width: 60vmax;
+  height: 60vmax;
+  transform: scale(0.05);
+  opacity: 1;
+}
+
+.preloader.variant-blob.exit .pl-blob {
+  animation: pl-blob-grow 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.3s forwards;
+}
+
+@keyframes pl-blob-grow {
+  0%   { transform: scale(0.05); opacity: 1; }
+  56%  { transform: scale(3);    opacity: 1; }
+  100% { transform: scale(3.4);  opacity: 0; }
+}
+
 /* ── Background grid lines ── */
 .pl-grid {
   position: absolute;
