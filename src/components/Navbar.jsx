@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import './Navbar.css';
 
-export default function Navbar({ revealed = true }) {
+export default function Navbar({ revealed = true, wordmarkMorph = false }) {
   const { isAdmin, logout, setAdminPanel, adminPanel } = useMuseum();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -23,9 +24,14 @@ export default function Navbar({ revealed = true }) {
   return (
     <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''} ${revealed ? 'navbar--in' : 'navbar--out'}`}>
       <div className="container navbar-inner">
-        <a href="#" className="navbar-logo serif" aria-label="Hashem Najdawi Museum Home">
+        <motion.a
+          href="#"
+          className="navbar-logo serif"
+          aria-label="Hashem Najdawi Museum Home"
+          layoutId={wordmarkMorph ? 'wordmark' : undefined}
+        >
           Hashem Najdawi
-        </a>
+        </motion.a>
 
         <div className={`navbar-links ${menuOpen ? 'open' : ''}`}>
           {navLinks.map(l => (

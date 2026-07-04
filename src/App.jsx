@@ -84,7 +84,7 @@ function MuseumApp() {
         />
       )}
       <div className="site-wrapper grain-overlay">
-        <Navbar revealed={revealed} />
+        <Navbar revealed={revealed} wordmarkMorph={transitionVariant === 'wordmark'} />
         <main>
           <Hero revealed={revealed} />
           <FeaturedBanner />

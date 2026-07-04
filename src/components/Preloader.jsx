@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import './Preloader.css';
 
 const NAME    = "Hashem Najdawi";
@@ -96,7 +97,11 @@ export default function Preloader({ onReveal, onDone, variant = 'curtain' }) {
 
       {/* Main name — letter by letter */}
       <div className="pl-center">
-        <div className="pl-name serif" aria-label={NAME}>
+        <motion.div
+          className="pl-name serif"
+          aria-label={NAME}
+          layoutId={variant === 'wordmark' ? 'wordmark' : undefined}
+        >
           {LETTERS.map((ch, i) => (
             <span
               key={i}
@@ -109,7 +114,7 @@ export default function Preloader({ onReveal, onDone, variant = 'curtain' }) {
               {ch === ' ' ? '\u00a0' : ch}
             </span>
           ))}
-        </div>
+        </motion.div>
 
         {/* Line that draws in */}
         <div className="pl-line-wrap">
