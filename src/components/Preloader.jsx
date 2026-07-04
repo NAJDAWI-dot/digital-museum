@@ -52,6 +52,11 @@ export default function Preloader({ onReveal, onDone, variant = 'curtain' }) {
           timers.push(setTimeout(() => {
             setPhase('exiting');
             if (wrapRef.current) wrapRef.current.classList.add('exit');
+            if (variant === 'liquid' && wrapRef.current) {
+              wrapRef.current.querySelectorAll('animate').forEach((el) => {
+                if (typeof el.beginElement === 'function') el.beginElement();
+              });
+            }
             const revealDelay = REVEAL_DELAY[variant] ?? 0;
             if (revealDelay > 0) {
               timers.push(setTimeout(() => onReveal?.(), revealDelay));
@@ -119,6 +124,36 @@ export default function Preloader({ onReveal, onDone, variant = 'curtain' }) {
         <span className="pl-counter mono" ref={counterRef}>000</span>
         <span className="pl-loading mono">Loading</span>
       </div>
+
+      {variant === 'liquid' && (
+        <div className="pl-crest" aria-hidden="true">
+          <svg className="pl-crest-svg" viewBox="0 0 1440 200" preserveAspectRatio="none">
+            <path className="pl-crest-fill" d="M0,60 C240,100 480,20 720,55 C960,90 1200,15 1440,55 L1440,200 L0,200 Z">
+              <animate
+                attributeName="d"
+                begin="indefinite"
+                id="pl-crest-anim"
+                dur="1.15s"
+                fill="freeze"
+                values="M0,60 C240,100 480,20 720,55 C960,90 1200,15 1440,55 L1440,200 L0,200 Z;
+                        M0,30 C240,70 480,110 720,35 C960,75 1200,110 1440,35 L1440,200 L0,200 Z;
+                        M0,10 C240,25 480,5 720,15 C960,25 1200,5 1440,15 L1440,200 L0,200 Z" />
+            </path>
+            <path className="pl-crest-line" fill="none"
+              d="M0,60 C240,100 480,20 720,55 C960,90 1200,15 1440,55">
+              <animate
+                attributeName="d"
+                begin="indefinite"
+                id="pl-crest-line-anim"
+                dur="1.15s"
+                fill="freeze"
+                values="M0,60 C240,100 480,20 720,55 C960,90 1200,15 1440,55;
+                        M0,30 C240,70 480,110 720,35 C960,75 1200,110 1440,35;
+                        M0,10 C240,25 480,5 720,15 C960,25 1200,5 1440,15" />
+            </path>
+          </svg>
+        </div>
+      )}
     </div>
   );
 }
