@@ -3,6 +3,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import ImageUploader, { MultiImageUploader } from './ImageUploader';
 import { resolveAsset } from '../lib/assets';
+import CollaboratorsField from './admin/CollaboratorsField';
+import TestimonialsTab from './admin/TestimonialsTab';
+import NowBlockTab from './admin/NowBlockTab';
+import AnalyticsTab from './admin/AnalyticsTab';
 import './AdminPanel.css';
 
 const EMPTY = {
@@ -11,12 +15,12 @@ const EMPTY = {
   description: '', longDescription: '',
   tech: [], color: '#1a1a2e', accentColor: '#c9a96e',
   link: '#', repo: '#', featured: false, status: 'Live',
-  coverImage: '', screenshots: [],
+  coverImage: '', screenshots: [], collaborators: [],
 };
 
 const CATEGORIES = ['Engineering', 'Web Application', 'Website', 'Application'];
 const STATUSES   = ['Live', 'Beta', 'Deployed', 'Open Source', 'Archived'];
-const TABS       = ['Info', 'Description', 'Media', 'Links & Style'];
+const TABS       = ['Info', 'Description', 'Media', 'Links & Style', 'Collaborators'];
 
 /* ── Login ───────────────────────────────── */
 function LoginForm({ onLogin }) {
@@ -336,6 +340,13 @@ function ProjectForm({ project, onSave, onCancel }) {
             </div>
           </motion.div>
         )}
+
+        {/* ── Tab 4: Collaborators ── */}
+        {tab === 4 && (
+          <motion.div key="collab" className="form-section" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }}>
+            <CollaboratorsField value={form.collaborators} onChange={v => set('collaborators', v)} />
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <div className="form-actions">
@@ -390,6 +401,14 @@ function SettingsForm({ settings, onSave }) {
           <div className="form-group">
             <label className="form-label mono">LinkedIn URL</label>
             <input className="admin-input" value={form.social?.linkedin || ''} onChange={e => setSocial('linkedin', e.target.value)} placeholder="https://linkedin.com/in/..." />
+          </div>
+        </div>
+
+        <p className="section-label" style={{ marginTop: '2rem', marginBottom: '1rem' }}>Analytics</p>
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label mono">GoatCounter Site Code</label>
+            <input className="admin-input" value={form.goatcounterSiteCode || ''} onChange={e => set('goatcounterSiteCode', e.target.value)} placeholder="e.g. my-site" />
           </div>
         </div>
       </div>
@@ -483,11 +502,13 @@ export default function AdminPanel() {
     projects, resetToDefaults,
     settings, updateSettings,
     timeline, updateTimeline,
-    githubToken, setGithubToken
+    testimonials, updateTestimonials,
+    githubToken, setGithubToken,
+    goatcounterApiToken, setGoatcounterApiToken
   } = useMuseum();
 
   const [localEditing, setLocalEditing] = useState(null);
-  const [activeView, setActiveView] = useState('projects'); // 'projects', 'settings', 'timeline'
+  const [activeView, setActiveView] = useState('projects'); // 'projects', 'settings', 'timeline', 'testimonials', 'nowblock', 'analytics'
 
   useEffect(() => { setLocalEditing(editingProject); setActiveView('projects'); }, [editingProject]);
   useEffect(() => {
@@ -536,6 +557,15 @@ export default function AdminPanel() {
                   <>
                     <button className={`admin-reset-btn mono ${activeView === 'timeline' ? 'active' : ''}`} onClick={() => setActiveView('timeline')}>
                       ⏳ Timeline
+                    </button>
+                    <button className={`admin-reset-btn mono ${activeView === 'testimonials' ? 'active' : ''}`} onClick={() => setActiveView('testimonials')}>
+                      💬 Testimonials
+                    </button>
+                    <button className={`admin-reset-btn mono ${activeView === 'nowblock' ? 'active' : ''}`} onClick={() => setActiveView('nowblock')}>
+                      🔨 Now Building
+                    </button>
+                    <button className={`admin-reset-btn mono ${activeView === 'analytics' ? 'active' : ''}`} onClick={() => setActiveView('analytics')}>
+                      📈 Analytics
                     </button>
                     <button className={`admin-reset-btn mono ${activeView === 'settings' ? 'active' : ''}`} onClick={() => setActiveView('settings')}>
                       ⚙ Settings
@@ -599,6 +629,16 @@ export default function AdminPanel() {
                       <SettingsForm settings={settings} onSave={updateSettings} />
                     ) : activeView === 'timeline' ? (
                       <TimelineForm timeline={timeline} onSave={updateTimeline} />
+                    ) : activeView === 'testimonials' ? (
+                      <TestimonialsTab testimonials={testimonials} onSave={updateTestimonials} />
+                    ) : activeView === 'nowblock' ? (
+                      <NowBlockTab value={settings.nowBuilding} onSave={(nb) => updateSettings({ ...settings, nowBuilding: nb })} />
+                    ) : activeView === 'analytics' ? (
+                      <AnalyticsTab
+                        goatcounterSiteCode={settings.goatcounterSiteCode}
+                        goatcounterApiToken={goatcounterApiToken}
+                        setGoatcounterApiToken={setGoatcounterApiToken}
+                      />
                     ) : (
                       <ProjectForm
                         project={localEditing}

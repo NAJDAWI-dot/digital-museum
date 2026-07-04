@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { MotionConfig } from 'framer-motion';
-import { MuseumProvider } from './context/MuseumContext';
+import { MuseumProvider, useMuseum } from './context/MuseumContext';
 import Cursor from './components/Cursor';
 import Preloader from './components/Preloader';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import FeaturedBanner from './components/FeaturedBanner';
+import NowBlock from './components/NowBlock';
 import Gallery from './components/Gallery';
 import Timeline from './components/Timeline';
+import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
+import Guestbook from './components/Guestbook';
 import Footer from './components/Footer';
 import AdminPanel from './components/AdminPanel';
 import ProjectModal from './components/ProjectModal';
@@ -21,6 +24,8 @@ const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function MuseumApp() {
+  const { settings } = useMuseum();
+
   // Read the preference once so it stays stable across renders and effect deps.
   const [reduced] = useState(prefersReducedMotion);
 
@@ -68,6 +73,21 @@ function MuseumApp() {
     return () => clearTimeout(failsafe);
   }, [reduced]);
 
+  // GoatCounter analytics: activates automatically the moment an owner fills in
+  // a real site code via the admin Settings panel — does nothing until then.
+  useEffect(() => {
+    const siteCode = settings?.goatcounterSiteCode;
+    if (!siteCode) return;
+
+    const script = document.createElement('script');
+    script.src = '//gc.zgo.at/count.js';
+    script.async = true;
+    script.setAttribute('data-goatcounter', `https://${siteCode}.goatcounter.com/count`);
+    document.head.appendChild(script);
+
+    return () => { document.head.removeChild(script); };
+  }, [settings?.goatcounterSiteCode]);
+
   return (
     <>
       <Cursor />
@@ -78,12 +98,15 @@ function MuseumApp() {
         <Navbar revealed={revealed} />
         <main>
           <Hero revealed={revealed} />
+          <NowBlock />
           <FeaturedBanner />
           <MorphDivider />
           <Gallery />
           <MorphDivider />
           <Timeline />
+          <Testimonials />
           <Contact />
+          <Guestbook />
         </main>
         <Footer />
       </div>
