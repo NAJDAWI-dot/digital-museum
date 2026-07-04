@@ -4,10 +4,26 @@ import './Preloader.css';
 const NAME    = "Hashem Najdawi";
 const LETTERS = NAME.split('');
 
-/* Curtain-lift duration — must match @keyframes pl-lift in Preloader.css. */
-const LIFT_MS = 1000;
+/* Exit duration per variant — each must match the CSS animation duration
+   (plus any internal delay) used by `.preloader.variant-<name>.exit`. */
+const EXIT_MS = {
+  curtain:  1000,
+  liquid:   1150,
+  wordmark: 900,
+  blob:     1900,
+};
 
-export default function Preloader({ onReveal, onDone }) {
+/* How long after the 'exit' class is added before onReveal() fires — i.e.
+   how long the hero stays hidden behind the splash once the exit starts.
+   Zero for variants where the hero should rise the instant the exit begins. */
+const REVEAL_DELAY = {
+  curtain:  0,
+  liquid:   0,
+  wordmark: 0,
+  blob:     1400,
+};
+
+export default function Preloader({ onReveal, onDone, variant = 'curtain' }) {
   const wrapRef    = useRef(null);
   const lineRef    = useRef(null);
   const counterRef = useRef(null);
@@ -32,15 +48,20 @@ export default function Preloader({ onReveal, onDone }) {
         if (counterRef.current) counterRef.current.textContent = String(count).padStart(3, '0');
         if (count < 100) raf = requestAnimationFrame(tick);
         else {
-          /* ── Phase 3: curtain lift ── */
+          /* ── Phase 3: exit ── */
           timers.push(setTimeout(() => {
             setPhase('exiting');
             if (wrapRef.current) wrapRef.current.classList.add('exit');
-            // Hand off the instant the curtain starts moving so the hero rises
-            // into view behind it — the reveal and the lift are one gesture.
-            onReveal?.();
-            // Unmount only once the lift has fully cleared the viewport.
-            timers.push(setTimeout(() => onDone?.(), LIFT_MS));
+            const revealDelay = REVEAL_DELAY[variant] ?? 0;
+            if (revealDelay > 0) {
+              timers.push(setTimeout(() => onReveal?.(), revealDelay));
+            } else {
+              // Hand off the instant the exit starts so the hero rises
+              // into view behind it — the reveal and the exit are one gesture.
+              onReveal?.();
+            }
+            // Unmount only once the exit animation has fully finished.
+            timers.push(setTimeout(() => onDone?.(), EXIT_MS[variant] ?? EXIT_MS.curtain));
           }, 150));
         }
       };
@@ -51,10 +72,10 @@ export default function Preloader({ onReveal, onDone }) {
       timers.forEach(clearTimeout);
       cancelAnimationFrame(raf);
     };
-  }, [onReveal, onDone]);
+  }, [onReveal, onDone, variant]);
 
   return (
-    <div className={`preloader ${phase}`} ref={wrapRef}>
+    <div className={`preloader ${phase} variant-${variant}`} ref={wrapRef}>
       {/* Background lines */}
       <div className="pl-grid">
         {Array.from({ length: 6 }).map((_, i) => (

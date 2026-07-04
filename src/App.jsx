@@ -3,6 +3,7 @@ import { MotionConfig } from 'framer-motion';
 import { MuseumProvider } from './context/MuseumContext';
 import Cursor from './components/Cursor';
 import Preloader from './components/Preloader';
+import TransitionPicker from './components/TransitionPicker';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import FeaturedBanner from './components/FeaturedBanner';
@@ -30,6 +31,16 @@ function MuseumApp() {
   // Reduced-motion visitors start past both (no curtain, no choreography wait).
   const [revealed, setRevealed] = useState(reduced);
   const [preloaderGone, setPreloaderGone] = useState(reduced);
+  const [transitionVariant, setTransitionVariant] = useState('curtain');
+  const [replayKey, setReplayKey] = useState(0);
+
+  // Dev-only: replay the full splash→landing sequence with a different variant.
+  const replayWithVariant = (nextVariant) => {
+    setTransitionVariant(nextVariant);
+    setRevealed(false);
+    setPreloaderGone(false);
+    setReplayKey((k) => k + 1);
+  };
 
   useEffect(() => {
     if (reduced) return; // native scrolling; Lenis smoothing off
@@ -66,6 +77,8 @@ function MuseumApp() {
       <Cursor />
       {!preloaderGone && (
         <Preloader
+          key={replayKey}
+          variant={transitionVariant}
           onReveal={() => setRevealed(true)}
           onDone={() => setPreloaderGone(true)}
         />
@@ -86,6 +99,9 @@ function MuseumApp() {
       <AdminPanel />
       <ProjectModal />
       <LiquidTransition />
+      {import.meta.env.DEV && !reduced && (
+        <TransitionPicker variant={transitionVariant} onSelect={replayWithVariant} />
+      )}
     </>
   );
 }
