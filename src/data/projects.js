@@ -29,7 +29,8 @@ export const INITIAL_PROJECTS = [
       "images/p1782929859694-shot-3.jpg",
       "images/p1782929859694-shot-4.jpg"
     ],
-    "id": "p1782929859694"
+    "id": "p1782929859694",
+    "collaborators": []
   },
   {
     "title": "Sumo Robot",
@@ -59,7 +60,8 @@ export const INITIAL_PROJECTS = [
       "images/p1782930214093-shot-4.jpg",
       "images/p1782930214093-shot-5.jpg"
     ],
-    "id": "p1782930214093"
+    "id": "p1782930214093",
+    "collaborators": []
   },
   {
     "title": "STEM wall tracking robot",
@@ -88,7 +90,8 @@ export const INITIAL_PROJECTS = [
       "images/p1782929034421-shot-4.jpg",
       "images/p1782929034421-shot-5.jpg"
     ],
-    "id": "p1782929034421"
+    "id": "p1782929034421",
+    "collaborators": []
   },
   {
     "title": "ANS | Artificial Nervous System",
@@ -108,7 +111,8 @@ export const INITIAL_PROJECTS = [
     "screenshots": [
       "images/p1782928799984-shot-1.jpg"
     ],
-    "id": "p1782928799984"
+    "id": "p1782928799984",
+    "collaborators": []
   }
 ];
 
@@ -118,6 +122,18 @@ export const SITE_SETTINGS = {
   "social": {
     "github": "https://github.com/NAJDAWI-dot",
     "linkedin": "https://linkedin.com/in/hashemnajdawi"
+  },
+  "nowBuilding": {
+    "title": "",
+    "description": "",
+    "updatedAt": ""
+  },
+  "goatcounterSiteCode": "",
+  "giscus": {
+    "repo": "NAJDAWI-dot/digital-museum",
+    "repoId": "R_kgDOTK02-Q",
+    "category": "General",
+    "categoryId": "DIC_kwDOTK02-c4DAgZs"
   }
 };
 
@@ -144,3 +160,5 @@ export const INITIAL_TIMELINE = [
     "description": "Working As A Technical Assistant at the HTU HackerSpace, Working On Various Engineering Projects, Helping Students, And Self Improving."
   }
 ];
+
+export const INITIAL_TESTIMONIALS = [];
