@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset, isRealLink } from '../lib/assets';
+import { getCount, incrementCount } from '../utils/counterApi';
 import './ProjectCard.css';
 
 export default function ProjectCard({ project, index, onEdit }) {
@@ -43,14 +44,9 @@ export default function ProjectCard({ project, index, onEdit }) {
   });
 
   useEffect(() => {
-    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && typeof data.count === 'number') {
-          setLikes(Math.max(0, data.count));
-        }
-      })
-      .catch(() => {});
+    getCount(project.id).then(count => {
+      if (count !== null) setLikes(count);
+    });
   }, [project.id]);
 
   const handleLike = (e) => {
@@ -71,14 +67,9 @@ export default function ProjectCard({ project, index, onEdit }) {
     } catch {}
     
     // Global API update (No abort timeout for writes so they are guaranteed to reach the server)
-    fetch(`https://api.counterapi.dev/v1/najdawi-museum/${project.id}/${action}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && typeof data.count === 'number') {
-          setLikes(Math.max(0, data.count));
-        }
-      })
-      .catch(() => {});
+    incrementCount(project.id, action).then(count => {
+      if (count !== null) setLikes(count);
+    });
   };
 
   return (

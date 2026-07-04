@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useMuseum } from '../context/MuseumContext';
+import { getCount, incrementCount } from '../utils/counterApi';
 import './Contact.css';
+
+const CV_COUNTER_KEY = 'cv-downloads';
 
 export default function Contact() {
   const { settings } = useMuseum();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-50px' });
+
+  const [cvDownloads, setCvDownloads] = useState(null);
+
+  useEffect(() => {
+    getCount(CV_COUNTER_KEY).then(count => {
+      if (count !== null) setCvDownloads(count);
+    });
+  }, []);
+
+  const handleCvClick = () => {
+    incrementCount(CV_COUNTER_KEY, 'up').then(count => {
+      if (count !== null) setCvDownloads(count);
+    });
+  };
 
   return (
     <section id="contact" className="contact-section" ref={ref}>
@@ -29,13 +46,23 @@ export default function Contact() {
                 <span className="mono">Get in touch</span>
               </a>
               {settings.cvLink && (
-                <a href={settings.cvLink} target="_blank" rel="noopener noreferrer" className="contact-btn secondary">
+                <a
+                  href={settings.cvLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-btn secondary"
+                  onClick={handleCvClick}
+                >
                   <span className="mono">Download CV</span>
                 </a>
               )}
             </div>
+
+            {settings.cvLink && cvDownloads !== null && (
+              <p className="contact-cv-count mono">{cvDownloads} CV downloads</p>
+            )}
           </div>
-          
+
           <div className="contact-visual">
             <div className="contact-circle"></div>
             <div className="contact-circle-inner"></div>

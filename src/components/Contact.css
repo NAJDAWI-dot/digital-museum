@@ -44,6 +44,13 @@
   margin-top: 1rem;
 }
 
+.contact-cv-count {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--dust);
+  opacity: 0.7;
+}
+
 .contact-btn {
   padding: 1rem 2rem;
   border-radius: 4px;
