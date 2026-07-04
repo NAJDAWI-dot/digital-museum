@@ -1,0 +1,110 @@
+/* AnalyticsTab — reuses AdminPanel's shared form/tab classes for the shell;
+   these are the few analytics-specific pieces layered on top. */
+
+.analytics-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 220px;
+  padding: 2rem 1rem;
+}
+
+.analytics-empty-text {
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  line-height: 1.8;
+  color: var(--dust);
+  max-width: 320px;
+}
+
+.analytics-hint {
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  line-height: 1.75;
+  color: var(--dust);
+  margin-top: 0.4rem;
+}
+.analytics-hint em { color: var(--gold); font-style: normal; }
+
+.analytics-loading {
+  margin-top: 1.5rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--silver);
+}
+
+.analytics-refresh-btn {
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 2px;
+  padding: 0.35rem 0.75rem !important;
+}
+.analytics-refresh-btn:disabled { opacity: 0.5; cursor: default; }
+
+.analytics-total-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  background: rgba(201,169,110,0.05);
+  border: 1px solid rgba(201,169,110,0.15);
+  border-radius: 4px;
+  padding: 1.25rem 1.5rem;
+}
+
+.analytics-total-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--silver);
+}
+
+.analytics-total-value {
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: var(--gold);
+  line-height: 1.1;
+}
+
+.analytics-lists {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.analytics-list {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+.analytics-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.analytics-row:last-child { border-bottom: none; }
+
+.analytics-row-name {
+  font-size: 0.75rem;
+  color: var(--linen);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.analytics-row-count {
+  font-size: 0.65rem;
+  color: var(--gold-light);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .analytics-lists { grid-template-columns: 1fr; }
+}
