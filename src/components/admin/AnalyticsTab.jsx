@@ -27,7 +27,10 @@ export default function AnalyticsTab({ goatcounterSiteCode, goatcounterApiToken,
     setError('');
 
     const base = `https://${goatcounterSiteCode}.goatcounter.com/api/v0`;
-    const headers = { Authorization: `Bearer ${goatcounterApiToken}` };
+    // GoatCounter's API requires Content-Type: application/json on every request, GET
+    // included — omitting it causes the server to reject the request before it even
+    // gets to validating the token, which surfaces here as a misleading 401/403.
+    const headers = { Authorization: `Bearer ${goatcounterApiToken}`, 'Content-Type': 'application/json' };
 
     const describeFailure = (res, label) => {
       if (res.status === 401 || res.status === 403) return `${label}: invalid or expired API token.`;
