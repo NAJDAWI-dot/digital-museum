@@ -16,7 +16,7 @@ function hashString(str) {
   return (h >>> 0).toString(36);
 }
 const DEPLOY_SIG = hashString(
-  JSON.stringify({ p: INITIAL_PROJECTS, t: INITIAL_TIMELINE, s: SITE_SETTINGS })
+  JSON.stringify({ p: INITIAL_PROJECTS, t: INITIAL_TIMELINE, s: SITE_SETTINGS, te: INITIAL_TESTIMONIALS })
 );
 
 // Hydrate editor drafts saved in this browser; fall back to the deployed data.
