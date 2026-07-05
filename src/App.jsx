@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { MotionConfig } from 'framer-motion';
 import { MuseumProvider, useMuseum } from './context/MuseumContext';
 import Cursor from './components/Cursor';
@@ -11,7 +11,6 @@ import Gallery from './components/Gallery';
 import Timeline from './components/Timeline';
 import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
-import Guestbook from './components/Guestbook';
 import Footer from './components/Footer';
 import AdminPanel from './components/AdminPanel';
 import ProjectModal from './components/ProjectModal';
@@ -19,6 +18,10 @@ import MorphDivider from './components/MorphDivider';
 import LiquidTransition from './components/LiquidTransition';
 import Lenis from 'lenis';
 import './App.css';
+
+// Lazy-loaded: pulls in @supabase/supabase-js (~200kB), which every visitor would
+// otherwise pay for just to reach a below-the-fold, optional guestbook section.
+const Guestbook = lazy(() => import('./components/Guestbook'));
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -106,7 +109,9 @@ function MuseumApp() {
           <Timeline />
           <Testimonials />
           <Contact />
-          <Guestbook />
+          <Suspense fallback={null}>
+            <Guestbook />
+          </Suspense>
         </main>
         <Footer />
       </div>

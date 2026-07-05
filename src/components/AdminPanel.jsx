@@ -411,6 +411,18 @@ function SettingsForm({ settings, onSave }) {
             <input className="admin-input" value={form.goatcounterSiteCode || ''} onChange={e => set('goatcounterSiteCode', e.target.value)} placeholder="e.g. my-site" />
           </div>
         </div>
+
+        <p className="section-label" style={{ marginTop: '2rem', marginBottom: '1rem' }}>Guestbook (Supabase)</p>
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label mono">Supabase Project URL</label>
+            <input className="admin-input" value={form.supabaseUrl || ''} onChange={e => set('supabaseUrl', e.target.value)} placeholder="https://xxxx.supabase.co" />
+          </div>
+          <div className="form-group">
+            <label className="form-label mono">Supabase Anon Key</label>
+            <input className="admin-input" value={form.supabaseAnonKey || ''} onChange={e => set('supabaseAnonKey', e.target.value)} placeholder="public anon key" />
+          </div>
+        </div>
       </div>
 
       <div className="form-actions">

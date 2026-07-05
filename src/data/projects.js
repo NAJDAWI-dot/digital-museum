@@ -129,12 +129,8 @@ export const SITE_SETTINGS = {
     "updatedAt": ""
   },
   "goatcounterSiteCode": "",
-  "giscus": {
-    "repo": "NAJDAWI-dot/digital-museum",
-    "repoId": "R_kgDOTK02-Q",
-    "category": "General",
-    "categoryId": "DIC_kwDOTK02-c4DAgZs"
-  }
+  "supabaseUrl": "",
+  "supabaseAnonKey": ""
 };
 
 export const INITIAL_TIMELINE = [
