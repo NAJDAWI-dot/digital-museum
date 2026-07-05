@@ -65,9 +65,18 @@ export default function Guestbook() {
   }, [supabase, loadEntries]);
 
   const signIn = () => {
+    // Strip any existing hash/query before handing this off as the OAuth
+    // redirect target. Supabase appends its own ?code=...&state=... to
+    // whatever URL we give it; if that URL already carries a hash (this
+    // site's nav sets one via history.replaceState as visitors scroll
+    // around, e.g. #gallery), the returned code lands *inside* the hash
+    // text instead of as a real query param, so Supabase's own session
+    // exchange can never find it — sign-in silently fails and the page
+    // reloads back to signed-out, regardless of which account was used.
+    const cleanUrl = `${window.location.origin}${window.location.pathname}`;
     supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.href },
+      options: { redirectTo: cleanUrl },
     });
   };
 
