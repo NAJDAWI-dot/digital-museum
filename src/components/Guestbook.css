@@ -49,35 +49,6 @@
   margin-bottom: 2.5rem;
 }
 
-.guestbook-google-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.7rem 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
-  background: var(--linen);
-  color: #1f1f1f;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.guestbook-google-btn:hover { opacity: 0.85; }
-
-.guestbook-composer-identity {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  margin-bottom: 1rem;
-}
-
-.guestbook-signed-in-as {
-  color: var(--dust);
-  font-size: 0.7rem;
-  flex: 1;
-}
-
 .guestbook-signout {
   background: none;
   border: none;
@@ -90,14 +61,7 @@
 
 .guestbook-signout:hover { color: var(--linen); }
 
-.guestbook-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
+.guestbook-name-input,
 .guestbook-input {
   width: 100%;
   resize: vertical;
@@ -110,9 +74,36 @@
   line-height: 1.6;
 }
 
+.guestbook-name-input {
+  margin-bottom: 0.75rem;
+}
+
+.guestbook-name-input:focus,
 .guestbook-input:focus {
   outline: none;
   border-color: var(--gold-dark);
+}
+
+.guestbook-turnstile {
+  margin-top: 0.85rem;
+}
+
+.guestbook-hint {
+  margin-top: 0.6rem;
+  color: var(--dust);
+  font-size: 0.65rem;
+  letter-spacing: 0.03em;
+  opacity: 0.75;
+}
+
+.guestbook-submitted {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+  color: var(--gold);
+  font-size: 0.85rem;
+  line-height: 1.6;
 }
 
 .guestbook-submit {

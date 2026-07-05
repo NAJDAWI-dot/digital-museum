@@ -4,6 +4,7 @@ import { getSupabaseClient } from '../utils/supabaseClient';
 import './Guestbook.css';
 
 const TABLE = 'guestbook_entries';
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
 function timeAgo(iso) {
   const diffMs = Date.now() - new Date(iso).getTime();
@@ -17,24 +18,73 @@ function timeAgo(iso) {
   return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+// Renders the Cloudflare Turnstile widget into `containerRef` once the
+// challenges.cloudflare.com script has loaded, and reports the resulting
+// token back via onToken. A no-op (renders nothing, reports no token
+// requirement) when no site key is configured -- moderation is still the
+// real backstop against spam either way, this only cuts down its volume.
+function useTurnstile(containerRef, onToken) {
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY || !containerRef.current) return;
+
+    let widgetId = null;
+    let cancelled = false;
+
+    const render = () => {
+      if (cancelled || !window.turnstile || !containerRef.current) return;
+      widgetId = window.turnstile.render(containerRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: 'dark',
+        callback: (token) => onToken(token),
+        'expired-callback': () => onToken(''),
+        'error-callback': () => onToken(''),
+      });
+    };
+
+    if (window.turnstile) {
+      render();
+    } else {
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+      script.async = true;
+      script.defer = true;
+      script.onload = render;
+      document.head.appendChild(script);
+    }
+
+    return () => {
+      cancelled = true;
+      if (widgetId !== null && window.turnstile) window.turnstile.remove(widgetId);
+    };
+  }, [containerRef, onToken]);
+}
+
 export default function Guestbook() {
   const supabase = getSupabaseClient();
 
   const sectionRef = useRef(null);
   const inView = useInView(sectionRef, { once: true, margin: '-100px' });
+  const turnstileRef = useRef(null);
 
-  const [session, setSession] = useState(null);
   const [entries, setEntries] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+  const [name, setName] = useState('');
   const [message, setMessage] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState('');
-  const [loaded, setLoaded] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  useTurnstile(turnstileRef, setTurnstileToken);
 
   const loadEntries = useCallback(async () => {
     if (!supabase) return;
+    // RLS restricts anonymous reads to approved=true rows already, but the
+    // filter is kept explicit here for clarity.
     const { data, error: fetchError } = await supabase
       .from(TABLE)
       .select('*')
+      .eq('approved', true)
       .order('created_at', { ascending: false })
       .limit(50);
     if (fetchError) { setError(fetchError.message); return; }
@@ -44,61 +94,54 @@ export default function Guestbook() {
 
   useEffect(() => {
     if (!supabase) return;
-
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => setSession(newSession));
-
     loadEntries();
 
-    // Live updates: new entries from any visitor appear without a refresh.
+    // Live updates: an entry the owner approves appears here without a
+    // refresh. Filtered server-side to approved rows only, so a pending
+    // submission never briefly flashes for other visitors.
     const channel = supabase
       .channel('guestbook-entries-changes')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: TABLE }, (payload) => {
-        setEntries((prev) => [payload.new, ...prev]);
-      })
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: TABLE, filter: 'approved=eq.true' },
+        (payload) => {
+          setEntries((prev) => {
+            if (prev.some((e) => e.id === payload.new.id)) return prev;
+            return [payload.new, ...prev];
+          });
+        }
+      )
       .subscribe();
 
-    return () => {
-      sub.subscription.unsubscribe();
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, [supabase, loadEntries]);
-
-  const signIn = () => {
-    // Strip any existing hash/query before handing this off as the OAuth
-    // redirect target. Supabase appends its own ?code=...&state=... to
-    // whatever URL we give it; if that URL already carries a hash (this
-    // site's nav sets one via history.replaceState as visitors scroll
-    // around, e.g. #gallery), the returned code lands *inside* the hash
-    // text instead of as a real query param, so Supabase's own session
-    // exchange can never find it — sign-in silently fails and the page
-    // reloads back to signed-out, regardless of which account was used.
-    const cleanUrl = `${window.location.origin}${window.location.pathname}`;
-    supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: cleanUrl },
-    });
-  };
-
-  const signOut = () => supabase.auth.signOut();
 
   const post = async (e) => {
     e.preventDefault();
-    const trimmed = message.trim();
-    if (!trimmed || !session) return;
+    const trimmedName = name.trim();
+    const trimmedMessage = message.trim();
+    if (!trimmedName || !trimmedMessage) return;
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setError('Please complete the verification check.');
+      return;
+    }
 
     setPosting(true);
     setError('');
-    const user = session.user;
     const { error: insertError } = await supabase.from(TABLE).insert({
-      user_id: user.id,
-      display_name: user.user_metadata?.full_name || user.email || 'Anonymous',
-      avatar_url: user.user_metadata?.avatar_url || null,
-      message: trimmed,
+      display_name: trimmedName.slice(0, 80),
+      message: trimmedMessage,
+      // approved defaults to false at the database level; RLS also rejects
+      // any insert attempt that tries to set it true directly.
     });
     setPosting(false);
     if (insertError) { setError(insertError.message); return; }
+
+    setName('');
     setMessage('');
+    setTurnstileToken('');
+    setSubmitted(true);
+    if (window.turnstile && turnstileRef.current) window.turnstile.reset();
   };
 
   return (
@@ -128,17 +171,22 @@ export default function Guestbook() {
           ) : (
             <>
               <div className="guestbook-composer">
-                {session ? (
+                {submitted ? (
+                  <div className="guestbook-submitted mono">
+                    Thanks — your note is awaiting a quick review before it appears here.
+                    <button type="button" className="guestbook-signout" onClick={() => setSubmitted(false)}>
+                      Leave another note
+                    </button>
+                  </div>
+                ) : (
                   <form onSubmit={post}>
-                    <div className="guestbook-composer-identity">
-                      {session.user.user_metadata?.avatar_url && (
-                        <img className="guestbook-avatar" src={session.user.user_metadata.avatar_url} alt="" />
-                      )}
-                      <span className="mono guestbook-signed-in-as">
-                        Signed in as {session.user.user_metadata?.full_name || session.user.email}
-                      </span>
-                      <button type="button" className="guestbook-signout" onClick={signOut}>Sign out</button>
-                    </div>
+                    <input
+                      className="guestbook-name-input mono"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Your name"
+                      maxLength={80}
+                    />
                     <textarea
                       className="guestbook-input mono"
                       value={message}
@@ -147,31 +195,28 @@ export default function Guestbook() {
                       maxLength={500}
                       rows={3}
                     />
-                    <button type="submit" className="guestbook-submit mono" disabled={posting || !message.trim()}>
+                    {TURNSTILE_SITE_KEY && <div ref={turnstileRef} className="guestbook-turnstile" />}
+                    <button
+                      type="submit"
+                      className="guestbook-submit mono"
+                      disabled={posting || !name.trim() || !message.trim() || (Boolean(TURNSTILE_SITE_KEY) && !turnstileToken)}
+                    >
                       {posting ? 'Posting…' : 'Sign the guestbook'}
                     </button>
+                    <p className="guestbook-hint mono">
+                      New entries are reviewed before they appear publicly.
+                    </p>
                   </form>
-                ) : (
-                  <button type="button" className="guestbook-google-btn mono" onClick={signIn}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                      <path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.47c-.28 1.5-1.13 2.77-2.4 3.62v3h3.88c2.27-2.09 3.57-5.17 3.57-8.81z"/>
-                      <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.92l-3.88-3c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.27v3.1C3.25 21.3 7.31 24 12 24z"/>
-                      <path fill="#FBBC05" d="M5.27 14.27c-.24-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27v-3.1H1.27A11.96 11.96 0 000 12c0 1.94.46 3.77 1.27 5.37l4-3.1z"/>
-                      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.44-3.44C17.95 1.19 15.23 0 12 0 7.31 0 3.25 2.7 1.27 6.63l4 3.1C6.22 6.86 8.87 4.75 12 4.75z"/>
-                    </svg>
-                    Sign in with Google
-                  </button>
                 )}
                 {error && <p className="guestbook-error mono">{error}</p>}
               </div>
 
               <div className="guestbook-entries">
                 {loaded && entries.length === 0 && (
-                  <p className="guestbook-empty mono">No entries yet — be the first to sign in.</p>
+                  <p className="guestbook-empty mono">No entries yet — be the first to sign it.</p>
                 )}
                 {entries.map((entry) => (
                   <div className="guestbook-entry" key={entry.id}>
-                    {entry.avatar_url && <img className="guestbook-avatar" src={entry.avatar_url} alt="" />}
                     <div className="guestbook-entry-body">
                       <div className="guestbook-entry-meta">
                         <span className="guestbook-entry-name">{entry.display_name}</span>

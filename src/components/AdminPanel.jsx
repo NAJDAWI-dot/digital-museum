@@ -7,6 +7,7 @@ import CollaboratorsField from './admin/CollaboratorsField';
 import TestimonialsTab from './admin/TestimonialsTab';
 import NowBlockTab from './admin/NowBlockTab';
 import AnalyticsTab from './admin/AnalyticsTab';
+import GuestbookModerationTab from './admin/GuestbookModerationTab';
 import './AdminPanel.css';
 
 const EMPTY = {
@@ -521,7 +522,7 @@ export default function AdminPanel() {
   } = useMuseum();
 
   const [localEditing, setLocalEditing] = useState(null);
-  const [activeView, setActiveView] = useState('projects'); // 'projects', 'settings', 'timeline', 'testimonials', 'nowblock', 'analytics'
+  const [activeView, setActiveView] = useState('projects'); // 'projects', 'settings', 'timeline', 'testimonials', 'nowblock', 'analytics', 'guestbook'
 
   useEffect(() => { setLocalEditing(editingProject); setActiveView('projects'); }, [editingProject]);
   useEffect(() => {
@@ -579,6 +580,9 @@ export default function AdminPanel() {
                     </button>
                     <button className={`admin-reset-btn mono ${activeView === 'analytics' ? 'active' : ''}`} onClick={() => setActiveView('analytics')}>
                       📈 Analytics
+                    </button>
+                    <button className={`admin-reset-btn mono ${activeView === 'guestbook' ? 'active' : ''}`} onClick={() => setActiveView('guestbook')}>
+                      📖 Guestbook
                     </button>
                     <button className={`admin-reset-btn mono ${activeView === 'settings' ? 'active' : ''}`} onClick={() => setActiveView('settings')}>
                       ⚙ Settings
@@ -652,6 +656,8 @@ export default function AdminPanel() {
                         goatcounterApiToken={goatcounterApiToken}
                         setGoatcounterApiToken={setGoatcounterApiToken}
                       />
+                    ) : activeView === 'guestbook' ? (
+                      <GuestbookModerationTab />
                     ) : (
                       <ProjectForm
                         project={localEditing}
