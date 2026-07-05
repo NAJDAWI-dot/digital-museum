@@ -4,11 +4,13 @@ import { useMuseum } from '../context/MuseumContext';
 import ProjectCard from './ProjectCard';
 import './Gallery.css';
 
-const CATS = ['All', 'Engineering', 'Web Application', 'Website', 'Application'];
-
 export default function Gallery() {
   const { projects, isAdmin, setEditingProject, setAdminPanel } = useMuseum();
   const [filter, setFilter] = useState('All');
+
+  // Only show categories that at least one project actually has — a filter tab
+  // with a zero count is a dead end (clicking it always shows an empty grid).
+  const cats = ['All', ...new Set(projects.map(p => p.category).filter(Boolean))];
 
   const filtered = filter === 'All'
     ? projects
@@ -56,7 +58,7 @@ export default function Gallery() {
 
         {/* Filters — the gold pill morphs between the active option */}
         <div className="gallery-filters">
-          {CATS.map(cat => (
+          {cats.map(cat => (
             <button
               key={cat}
               className={`gallery-filter mono ${filter === cat ? 'active' : ''}`}

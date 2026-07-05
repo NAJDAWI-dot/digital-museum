@@ -99,6 +99,8 @@ export default function ProjectCard({ project, index, onEdit }) {
           : { background: project.color }
         }
         onClick={() => { x.set(0); y.set(0); setViewingProject(project); }}
+        role={project.coverImage ? 'img' : undefined}
+        aria-label={project.coverImage ? `Cover image for ${project.title}` : undefined}
       >
         {!project.coverImage && (
           <div className="pcard-accent-dot" style={{ background: project.accentColor }}></div>

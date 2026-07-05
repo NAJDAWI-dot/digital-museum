@@ -39,6 +39,15 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 /* Smooth scrolling is owned by Lenis; a CSS rule here would fight it on anchor jumps. */
 
+/* Keyboard-focus ring, tuned for the dark theme — the browser default is a
+   thin, low-contrast outline that's easy to lose against --ink. Only shows
+   for keyboard focus (:focus-visible), never on a mouse click. */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 body {
   font-family: var(--font-sans);
   background: var(--ink);

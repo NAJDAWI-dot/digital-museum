@@ -143,6 +143,8 @@ export default function ProjectModal() {
                   : { background: proj.color }
                 }
                 onClick={() => proj.coverImage && setLightboxIdx(-1)}
+                role={proj.coverImage ? 'img' : undefined}
+                aria-label={proj.coverImage ? `Cover image for ${proj.title}` : undefined}
               >
                 <div
                   className="modal-swatch-glow"
