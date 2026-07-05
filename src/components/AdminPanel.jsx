@@ -24,12 +24,16 @@ const TABS       = ['Info', 'Description', 'Media', 'Links & Style', 'Collaborat
 
 /* ── Login ───────────────────────────────── */
 function LoginForm({ onLogin }) {
-  const [pass, setPass]   = useState('');
-  const [error, setError] = useState(false);
+  const [pass, setPass]       = useState('');
+  const [error, setError]     = useState(false);
+  const [checking, setChecking] = useState(false);
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    if (!onLogin(pass)) {
+    setChecking(true);
+    const ok = await onLogin(pass);
+    setChecking(false);
+    if (!ok) {
       setError(true);
       setTimeout(() => setError(false), 1500);
     }
@@ -49,9 +53,12 @@ function LoginForm({ onLogin }) {
             placeholder="Password"
             className={`admin-input ${error ? 'error' : ''}`}
             autoFocus
+            disabled={checking}
           />
           {error && <p className="admin-error mono">Incorrect password</p>}
-          <button type="submit" className="admin-submit-btn mono">Unlock →</button>
+          <button type="submit" className="admin-submit-btn mono" disabled={checking}>
+            {checking ? 'Checking…' : 'Unlock →'}
+          </button>
         </form>
       </div>
     </div>
@@ -411,17 +418,12 @@ function SettingsForm({ settings, onSave }) {
           </div>
         </div>
 
-        <p className="section-label" style={{ marginTop: '2rem', marginBottom: '1rem' }}>Guestbook (Supabase)</p>
-        <div className="form-row">
-          <div className="form-group">
-            <label className="form-label mono">Supabase Project URL</label>
-            <input className="admin-input" value={form.supabaseUrl || ''} onChange={e => set('supabaseUrl', e.target.value)} placeholder="https://xxxx.supabase.co" />
-          </div>
-          <div className="form-group">
-            <label className="form-label mono">Supabase Anon Key</label>
-            <input className="admin-input" value={form.supabaseAnonKey || ''} onChange={e => set('supabaseAnonKey', e.target.value)} placeholder="public anon key" />
-          </div>
-        </div>
+        <p className="section-label" style={{ marginTop: '2rem', marginBottom: '1rem' }}>Guestbook &amp; Admin Login</p>
+        <p className="mono" style={{ fontSize: '0.7rem', color: 'var(--dust)', lineHeight: 1.6 }}>
+          Supabase URL/key are set via build-time environment variables (VITE_SUPABASE_URL,
+          VITE_SUPABASE_ANON_KEY), not here — they're credentials and shouldn't live in this
+          committed settings file. Set them in your deploy environment's secrets.
+        </p>
       </div>
 
       <div className="form-actions">

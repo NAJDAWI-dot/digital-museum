@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { useMuseum } from '../context/MuseumContext';
 import { getSupabaseClient } from '../utils/supabaseClient';
 import './Guestbook.css';
 
@@ -19,8 +18,7 @@ function timeAgo(iso) {
 }
 
 export default function Guestbook() {
-  const { settings } = useMuseum();
-  const supabase = getSupabaseClient(settings?.supabaseUrl, settings?.supabaseAnonKey);
+  const supabase = getSupabaseClient();
 
   const sectionRef = useRef(null);
   const inView = useInView(sectionRef, { once: true, margin: '-100px' });

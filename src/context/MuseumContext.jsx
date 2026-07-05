@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { INITIAL_PROJECTS, SITE_SETTINGS, INITIAL_TIMELINE, INITIAL_TESTIMONIALS } from '../data/projects';
+import { getSupabaseClient } from '../utils/supabaseClient';
 
 const MuseumContext = createContext(null);
 
 const STORAGE_KEY    = 'arch_museum_projects_v2';
-const ADMIN_KEY      = 'arch_admin_session';
-export const ADMIN_PASS = 'arch2026'; // ← change this
 
 // A cheap, stable signature of the data bundled into this build. Stored with
 // each draft so a draft can tell whether the deployed data has changed since
@@ -52,29 +51,45 @@ export function MuseumProvider({ children }) {
     social: { github: '#', linkedin: '#' }
   });
 
-  const safeGetAdmin = () => {
-    try { return localStorage.getItem(ADMIN_KEY) === 'true'; }
-    catch { return false; }
-  };
-
-  const [isAdmin,       setIsAdmin]       = useState(safeGetAdmin);
+  const [isAdmin,       setIsAdmin]       = useState(false);
   const [adminPanel,    setAdminPanel]    = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [viewingProject, setViewingProject] = useState(null);
 
-  const login = (pass) => {
-    if (pass === ADMIN_PASS) {
-      setIsAdmin(true);
-      try { localStorage.setItem(ADMIN_KEY, 'true'); } catch {}
-      return true;
-    }
-    return false;
+  // Real, server-side authentication via Supabase (replaces the old hardcoded
+  // client-side password comparison — that string lived in plain sight in this
+  // public repo's source and in every visitor's downloaded JS bundle). Only a
+  // Supabase Auth session whose email matches the site's own owner email
+  // (settings.email) is treated as admin; a matching session is the actual
+  // proof of identity, not just "someone is logged in to *a* account."
+  const supabaseAuth = getSupabaseClient();
+
+  useEffect(() => {
+    if (!supabaseAuth) { setIsAdmin(false); return; }
+    const ownerEmail = settings?.email;
+
+    const applySession = (session) => {
+      setIsAdmin(Boolean(session?.user?.email && ownerEmail && session.user.email === ownerEmail));
+    };
+
+    supabaseAuth.auth.getSession().then(({ data }) => applySession(data.session));
+    const { data: sub } = supabaseAuth.auth.onAuthStateChange((_event, session) => applySession(session));
+
+    return () => sub.subscription.unsubscribe();
+  }, [supabaseAuth, settings?.email]);
+
+  const login = async (password) => {
+    if (!supabaseAuth) return false;
+    const { data, error } = await supabaseAuth.auth.signInWithPassword({
+      email: settings?.email,
+      password,
+    });
+    return !error && data?.user?.email === settings?.email;
   };
 
   const logout = () => {
-    setIsAdmin(false);
-    try { localStorage.removeItem(ADMIN_KEY); } catch {}
     setAdminPanel(false);
+    if (supabaseAuth) supabaseAuth.auth.signOut();
   };
 
   // Editor drafts survive reloads. Non-admin visitors never write, so this

@@ -1,17 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-let cached = null;
-let cachedUrl = null;
-let cachedKey = null;
+const url = import.meta.env.VITE_SUPABASE_URL;
+const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Lazily creates (and memoizes) a Supabase client for the given project config.
-// Returns null when either value is missing, so callers can render a clean
-// "not configured yet" state instead of constructing a client with empty strings.
-export function getSupabaseClient(url, anonKey) {
-  if (!url || !anonKey) return null;
-  if (cached && cachedUrl === url && cachedKey === anonKey) return cached;
-  cached = createClient(url, anonKey);
-  cachedUrl = url;
-  cachedKey = anonKey;
-  return cached;
+// Built once from build-time env vars (see .env.example) — never from committed
+// data or admin-editable settings, since the anon key/URL pair should not live
+// in tracked source. Returns null (clean "not configured yet" state) until both
+// env vars are actually set.
+const client = url && anonKey ? createClient(url, anonKey) : null;
+
+export function getSupabaseClient() {
+  return client;
 }

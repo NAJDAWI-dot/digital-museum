@@ -128,9 +128,7 @@ export const SITE_SETTINGS = {
     "description": "",
     "updatedAt": ""
   },
-  "goatcounterSiteCode": "",
-  "supabaseUrl": "",
-  "supabaseAnonKey": ""
+  "goatcounterSiteCode": ""
 };
 
 export const INITIAL_TIMELINE = [
