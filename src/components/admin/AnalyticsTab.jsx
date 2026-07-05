@@ -123,6 +123,14 @@ export default function AnalyticsTab({ goatcounterSiteCode, goatcounterApiToken,
   }
 
   /* ── State 3: fetching / error / ready ── */
+  const changeToken = () => {
+    setStats(null);
+    setStatus('idle');
+    setError('');
+    setTokenDraft('');
+    setGoatcounterApiToken('');
+  };
+
   return (
     <div className="project-form">
       <div className="form-tabs">
@@ -135,6 +143,9 @@ export default function AnalyticsTab({ goatcounterSiteCode, goatcounterApiToken,
           style={{ marginLeft: 'auto' }}
         >
           {status === 'loading' ? 'Refreshing…' : '↻ Refresh'}
+        </button>
+        <button type="button" className="form-tab mono" onClick={changeToken}>
+          Change token
         </button>
       </div>
 
