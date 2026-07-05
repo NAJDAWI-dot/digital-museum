@@ -53,7 +53,6 @@ function LoginForm({ onLogin }) {
           {error && <p className="admin-error mono">Incorrect password</p>}
           <button type="submit" className="admin-submit-btn mono">Unlock →</button>
         </form>
-        <p className="admin-hint mono">Default: arch2026</p>
       </div>
     </div>
   );
