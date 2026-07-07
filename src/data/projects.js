@@ -81,7 +81,13 @@ export const INITIAL_PROJECTS = [
         "role": "Head Organizer",
         "url": "https://www.linkedin.com/in/own-massad-42a759345/"
       }
-    ]
+    ],
+    "instructor": {
+      "name": "Dr. Othman Smadi",
+      "title": "Supervising Professor ",
+      "organization": "HTU",
+      "url": "linkedin.com/in/othman-smadi-7a330410/?skipRedirect=true"
+    }
   },
   {
     "title": "Sumo Robot",
