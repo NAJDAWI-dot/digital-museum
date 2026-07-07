@@ -9,6 +9,7 @@ import FeaturedBanner from './components/FeaturedBanner';
 import NowBlock from './components/NowBlock';
 import Gallery from './components/Gallery';
 import Timeline from './components/Timeline';
+import Volunteering from './components/Volunteering';
 import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
@@ -107,6 +108,7 @@ function MuseumApp() {
           <Gallery />
           <MorphDivider />
           <Timeline />
+          <Volunteering />
           <Testimonials />
           <Contact />
           <Suspense fallback={null}>

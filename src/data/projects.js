@@ -289,3 +289,5 @@ export const INITIAL_TIMELINE = [
 ];
 
 export const INITIAL_TESTIMONIALS = [];
+
+export const INITIAL_VOLUNTEERING = [];
