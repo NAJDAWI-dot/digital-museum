@@ -37,7 +37,13 @@ export const INITIAL_PROJECTS = [
         "url": "https://www.linkedin.com/in/yasmina-marwan-759539226/"
       }
     ],
-    "id": "p1783455970646"
+    "id": "p1783455970646",
+    "instructor": {
+      "name": "Eng. Leen Serhan",
+      "title": "Supervising Engineer & Course Instructor",
+      "organization": "HTU",
+      "url": "https://www.linkedin.com/in/leen-serhan-meng-a30439101/"
+    }
   },
   {
     "title": "Engineering Design Expo 26 - Website",
