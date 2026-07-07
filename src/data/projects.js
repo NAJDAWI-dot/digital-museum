@@ -170,7 +170,23 @@ export const INITIAL_PROJECTS = [
       "images/p1782929034421-shot-5.jpg"
     ],
     "id": "p1782929034421",
-    "collaborators": [],
+    "collaborators": [
+      {
+        "name": "Manar Alzweri",
+        "role": "Cad Designer",
+        "url": "https://www.linkedin.com/in/manar-alzweri-53b189339/"
+      },
+      {
+        "name": "Haya Aladaileh",
+        "role": "Mechanical Assembly",
+        "url": "https://www.linkedin.com/in/haya-aladaileh-5887ba360/"
+      },
+      {
+        "name": "Sereen Odeh",
+        "role": "Circuits Expert",
+        "url": "https://www.linkedin.com/in/sereen-odeh-516884351/"
+      }
+    ],
     "instructor": {
       "name": "Eng. Ibrahim Hjeij",
       "title": "Course Instructor",
