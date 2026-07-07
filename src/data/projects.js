@@ -10,7 +10,7 @@ export const INITIAL_PROJECTS = [
     "tech": [],
     "color": "#1a1a2e",
     "accentColor": "#c9a96e",
-    "link": "#https://najdawi-dot.github.io/vaccine-delivery-box-manual/",
+    "link": "https://najdawi-dot.github.io/vaccine-delivery-box-manual/",
     "repo": "#",
     "featured": false,
     "status": "Live",
