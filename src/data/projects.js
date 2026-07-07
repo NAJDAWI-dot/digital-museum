@@ -131,7 +131,7 @@ export const INITIAL_PROJECTS = [
       },
       {
         "name": "Sereen Odeh",
-        "role": "Circuits Designer",
+        "role": "Circuits Expert",
         "url": "https://www.linkedin.com/in/sereen-odeh-516884351/"
       }
     ],
