@@ -16,12 +16,12 @@ const EMPTY = {
   description: '', longDescription: '',
   tech: [], color: '#1a1a2e', accentColor: '#c9a96e',
   link: '#', repo: '#', featured: false, status: 'Live',
-  coverImage: '', screenshots: [], collaborators: [],
+  coverImage: '', screenshots: [], collaborators: [], instructor: null,
 };
 
 const CATEGORIES = ['Engineering', 'Web Application', 'Website', 'Application'];
 const STATUSES   = ['Live', 'Beta', 'Deployed', 'Open Source', 'Archived'];
-const TABS       = ['Info', 'Description', 'Media', 'Links & Style', 'Collaborators'];
+const TABS       = ['Info', 'Description', 'Media', 'Links & Style', 'Collaborators', 'Instructor'];
 
 /* ── Login ───────────────────────────────── */
 function LoginForm({ onLogin }) {
@@ -354,6 +354,49 @@ function ProjectForm({ project, onSave, onCancel }) {
             <CollaboratorsField value={form.collaborators} onChange={v => set('collaborators', v)} />
           </motion.div>
         )}
+
+        {/* ── Tab 5: Instructor ── */}
+        {tab === 5 && (
+          <motion.div key="instructor" className="form-section" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }}>
+            {form.instructor ? (
+              <>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label mono" htmlFor="f-instr-name">Name</label>
+                    <input id="f-instr-name" className="admin-input" value={form.instructor.name || ''} onChange={e => set('instructor', { ...form.instructor, name: e.target.value })} placeholder="Dr. Jane Doe" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label mono" htmlFor="f-instr-title">Title / Role</label>
+                    <input id="f-instr-title" className="admin-input" value={form.instructor.title || ''} onChange={e => set('instructor', { ...form.instructor, title: e.target.value })} placeholder="Supervising Professor" />
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label mono" htmlFor="f-instr-org">Organization</label>
+                    <input id="f-instr-org" className="admin-input" value={form.instructor.organization || ''} onChange={e => set('instructor', { ...form.instructor, organization: e.target.value })} placeholder="HTU" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label mono" htmlFor="f-instr-url">Link <span className="form-hint">— optional</span></label>
+                    <input id="f-instr-url" className="admin-input" value={form.instructor.url || ''} onChange={e => set('instructor', { ...form.instructor, url: e.target.value })} placeholder="https://linkedin.com/in/..." />
+                  </div>
+                </div>
+                <button type="button" className="form-btn-cancel mono" style={{ alignSelf: 'flex-start' }} onClick={() => set('instructor', null)}>
+                  × Remove Instructor
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="mono" style={{ fontSize: '0.7rem', color: 'var(--dust)', lineHeight: 1.6 }}>
+                  No instructor credited on this project. Add one to show a
+                  "Instructor" section in the project detail view.
+                </p>
+                <button type="button" className="tech-add-btn mono" style={{ alignSelf: 'flex-start' }} onClick={() => set('instructor', { name: '', title: '', organization: '', url: '' })}>
+                  + Add Instructor
+                </button>
+              </>
+            )}
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <div className="form-actions">
@@ -620,12 +663,12 @@ export default function AdminPanel() {
                     </button>
                   </>
                 )}
-                <button className="admin-close-btn" onClick={handleClose} aria-label="Close">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
               </div>
+              <button className="admin-close-btn" onClick={handleClose} aria-label="Close">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
             </div>
 
             {!isAdmin ? (

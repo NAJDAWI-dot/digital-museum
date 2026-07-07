@@ -237,6 +237,32 @@ export default function ProjectModal() {
                   </div>
                 </motion.div>
 
+                {/* Instructor — only when the project credits one */}
+                {proj.instructor?.name && (
+                  <motion.div
+                    className="modal-collab-row"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.37, duration: 0.6 }}
+                  >
+                    <h3 className="modal-heading serif">Instructor</h3>
+                    <ul className="modal-collab-list">
+                      <li className="modal-collab-item">
+                        {isRealLink(proj.instructor.url) ? (
+                          <a href={proj.instructor.url} className="modal-collab-name" target="_blank" rel="noreferrer">{proj.instructor.name}</a>
+                        ) : (
+                          <span className="modal-collab-name">{proj.instructor.name}</span>
+                        )}
+                        {(proj.instructor.title || proj.instructor.organization) && (
+                          <span className="modal-collab-role mono">
+                            {[proj.instructor.title, proj.instructor.organization].filter(Boolean).join(' · ')}
+                          </span>
+                        )}
+                      </li>
+                    </ul>
+                  </motion.div>
+                )}
+
                 {/* Collaborators */}
                 {proj.collaborators && proj.collaborators.length > 0 && (
                   <motion.div

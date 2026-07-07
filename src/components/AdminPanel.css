@@ -22,7 +22,7 @@
 .admin-top-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
   padding: 1.25rem 1.75rem;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
@@ -34,9 +34,36 @@
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--gold);
+  flex-shrink: 0;
 }
 
-.admin-top-actions { display: flex; align-items: center; gap: 0.75rem; }
+/* Scrollable strip: the action buttons can outgrow the panel width,
+   so they scroll horizontally instead of clipping off the edges.
+   The close button lives OUTSIDE this strip and is always visible. */
+.admin-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 0.35rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201,169,110,0.35) transparent;
+}
+.admin-top-actions > * { flex-shrink: 0; }
+/* Right-align when there's room; unlike justify-content: flex-end this
+   keeps the start of the strip reachable once it overflows and scrolls. */
+.admin-top-actions > :first-child { margin-left: auto; }
+.admin-top-actions .admin-reset-btn,
+.admin-top-actions .admin-export-btn { white-space: nowrap; }
+.admin-top-actions::-webkit-scrollbar { height: 4px; }
+.admin-top-actions::-webkit-scrollbar-track { background: transparent; }
+.admin-top-actions::-webkit-scrollbar-thumb {
+  background: rgba(201,169,110,0.35);
+  border-radius: 4px;
+}
+.admin-top-actions::-webkit-scrollbar-thumb:hover { background: var(--gold-dark); }
 
 .admin-reset-btn {
   font-size: 0.55rem;
