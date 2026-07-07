@@ -118,7 +118,13 @@ export const INITIAL_PROJECTS = [
       "images/p1782930214093-shot-5.jpg"
     ],
     "id": "p1782930214093",
-    "collaborators": []
+    "collaborators": [],
+    "instructor": {
+      "name": "Eng. Ibrahim Hjeij",
+      "title": "Instructor",
+      "organization": "Ex: HTU",
+      "url": "https://www.linkedin.com/in/ibrahim-hjeij-9b92801b5/"
+    }
   },
   {
     "title": "STEM wall tracking robot",
