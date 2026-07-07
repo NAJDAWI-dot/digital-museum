@@ -37,6 +37,8 @@ export default function ProjectCard({ project, index, onEdit }) {
     y.set(0);
   };
 
+  const collabNames = (project.collaborators || []).map(c => c.name).filter(Boolean);
+
   // Appreciate Button Logic
   const [likes, setLikes] = useState(project.likes || 0);
   const [hasLiked, setHasLiked] = useState(() => {
@@ -143,6 +145,24 @@ export default function ProjectCard({ project, index, onEdit }) {
             <span key={i} className="pcard-tech-tag mono">{t}</span>
           ))}
         </div>
+
+        {/* Credits plaque — instructor & collaborators, only when present */}
+        {(project.instructor?.name || collabNames.length > 0) && (
+          <div className="pcard-credits">
+            {project.instructor?.name && (
+              <div className="pcard-credit">
+                <span className="pcard-credit-label mono">Instructor</span>
+                <span className="pcard-credit-names">{project.instructor.name}</span>
+              </div>
+            )}
+            {collabNames.length > 0 && (
+              <div className="pcard-credit">
+                <span className="pcard-credit-label mono">With</span>
+                <span className="pcard-credit-names">{collabNames.join(', ')}</span>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="pcard-footer">
           <button className="pcard-view-btn" onClick={() => setViewingProject(project)}>

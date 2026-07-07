@@ -196,6 +196,39 @@
 }
 .pcard:hover .pcard-tech-tag { border-color: rgba(201,169,110,0.2); }
 
+/* Credits plaque — small ruled rows, like an exhibit label */
+.pcard-credits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.pcard-credit {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.pcard-credit-label {
+  font-size: 0.52rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  flex-shrink: 0;
+  min-width: 4.2rem;
+}
+
+.pcard-credit-names {
+  font-size: 0.78rem;
+  color: var(--dust);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .pcard-footer {
   display: flex; align-items: center; gap: 0.75rem;
   padding-top: 1rem;

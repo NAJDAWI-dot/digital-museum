@@ -63,11 +63,21 @@ function Lightbox({ images, startIndex, onClose }) {
   );
 }
 
+/* Write-ups longer than this start collapsed behind a "Continue reading" toggle. */
+const WRITEUP_CLAMP_CHARS = 420;
+
 export default function ProjectModal() {
   const { viewingProject, setViewingProject } = useMuseum();
   const proj = viewingProject;
   const [lightboxIdx, setLightboxIdx] = useState(null);
+  const [writeupOpen, setWriteupOpen] = useState(false);
   const panelRef = useRef(null);
+
+  const writeup = proj?.longDescription || proj?.description || '';
+  const writeupIsLong = writeup.length > WRITEUP_CLAMP_CHARS;
+
+  // Every project opens with its write-up collapsed again.
+  useEffect(() => { setWriteupOpen(false); }, [proj?.id]);
 
   useEffect(() => {
     document.body.style.overflow = proj ? 'hidden' : '';
@@ -187,15 +197,27 @@ export default function ProjectModal() {
                   )}
                 </div>
 
-                {/* Long description */}
-                <motion.p
-                  className="modal-long-desc"
+                {/* Long description — long write-ups start clamped */}
+                <motion.div
+                  className="modal-long-desc-wrap"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25, duration: 0.6 }}
                 >
-                  {proj.longDescription || proj.description}
-                </motion.p>
+                  <p className={`modal-long-desc ${writeupIsLong && !writeupOpen ? 'clamped' : ''}`}>
+                    {writeup}
+                  </p>
+                  {writeupIsLong && (
+                    <button
+                      type="button"
+                      className="modal-readmore mono"
+                      onClick={() => setWriteupOpen(o => !o)}
+                      aria-expanded={writeupOpen}
+                    >
+                      {writeupOpen ? 'Show less ↑' : 'Continue reading ↓'}
+                    </button>
+                  )}
+                </motion.div>
 
                 {/* Screenshots gallery */}
                 {allScreenshots.length > 0 && (

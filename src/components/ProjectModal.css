@@ -94,9 +94,40 @@
 
 .modal-subtitle { color: var(--silver); font-size: 0.9rem; margin-top: 0.25rem; }
 
+.modal-long-desc-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
 .modal-long-desc {
   color: var(--dust); font-size: 0.95rem; line-height: 1.85;
 }
+
+/* Collapsed state: clamp to a few lines and fade the tail out so the
+   cut never lands mid-thought visually. */
+.modal-long-desc.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+}
+
+.modal-readmore {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--gold);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+.modal-readmore:hover { color: var(--gold-light); }
 
 /* Plaque-style sub-headings — deliberately not the mono eyebrow */
 .modal-heading {
