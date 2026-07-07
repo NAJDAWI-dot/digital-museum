@@ -213,7 +213,33 @@ export const INITIAL_PROJECTS = [
       "images/p1782928799984-shot-1.jpg"
     ],
     "id": "p1782928799984",
-    "collaborators": []
+    "collaborators": [
+      {
+        "name": "Rashed Abdullah",
+        "role": "",
+        "url": "https://www.instagram.com/rashed.abdullah.06"
+      },
+      {
+        "name": "Omar Musa",
+        "role": "",
+        "url": "https://www.linkedin.com/in/omar-musa-6b4704332/"
+      },
+      {
+        "name": "Yazan Maali",
+        "role": "",
+        "url": "https://www.linkedin.com/in/yazan-maali-a7ab4b335/"
+      },
+      {
+        "name": "Rayan Theeb",
+        "role": "",
+        "url": "https://www.linkedin.com/in/rayan-theeb-546027282/"
+      },
+      {
+        "name": "Saleh AL-Hinti",
+        "role": "",
+        "url": "https://www.linkedin.com/in/saleh-al-hinti-18b533350/"
+      }
+    ]
   }
 ];
 
