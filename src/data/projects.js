@@ -239,7 +239,13 @@ export const INITIAL_PROJECTS = [
         "role": "",
         "url": "https://www.linkedin.com/in/saleh-al-hinti-18b533350/"
       }
-    ]
+    ],
+    "instructor": {
+      "name": "Ashraf Abukhait",
+      "title": "Supervising Instructor",
+      "organization": "IEC, WadiTech Academy",
+      "url": "https://www.linkedin.com/in/ashraf-abukhait/"
+    }
   }
 ];
 
