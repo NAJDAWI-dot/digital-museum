@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
+import { startTour } from './GuidedTour';
 import './Hero.css';
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -157,6 +158,9 @@ export default function Hero({ revealed = true }) {
               <span>Enter Exhibition</span>
               <span className="hero-btn-arrow">→</span>
             </a>
+            <button type="button" className="hero-tour-link mono" onClick={startTour}>
+              Take the guided tour
+            </button>
           </motion.div>
         </div>
       </motion.div>

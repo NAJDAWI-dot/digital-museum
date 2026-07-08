@@ -6,7 +6,7 @@ on:
   workflow_dispatch:   # allow manual trigger from GitHub UI
 
 permissions:
-  contents: read
+  contents: write   # the extract-images step commits extracted files back
   pages: write
   id-token: write
 
@@ -29,6 +29,22 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # Live-editor saves embed images as base64 inside projects.js. Extract
+      # them to real files before building so the JS bundle stays small, and
+      # commit the result back ([skip ci]: this run already deploys the
+      # extracted state, no second run needed). Idempotent — a clean tree
+      # commits nothing.
+      - name: Extract embedded images
+        run: |
+          node scripts/extract-images.mjs
+          if ! git diff --quiet || [ -n "$(git status --porcelain public/images)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add src/data/projects.js public/images
+            git commit -m "chore: extract embedded images to public/images [skip ci]"
+            git push
+          fi
 
       - name: Build
         run: npm run build

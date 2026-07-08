@@ -15,6 +15,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AdminPanel from './components/AdminPanel';
 import ProjectModal from './components/ProjectModal';
+import GuidedTour from './components/GuidedTour';
 import MorphDivider from './components/MorphDivider';
 import LiquidTransition from './components/LiquidTransition';
 import Lenis from 'lenis';
@@ -119,6 +120,7 @@ function MuseumApp() {
       </div>
       <AdminPanel />
       <ProjectModal />
+      <GuidedTour />
       <LiquidTransition />
     </>
   );
