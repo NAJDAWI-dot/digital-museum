@@ -297,6 +297,15 @@
   100% { transform: scale(1); }
 }
 
+/* Touch devices: grow the small interactive targets to comfortable sizes */
+@media (pointer: coarse) {
+  .pcard-icon-link { width: 42px; height: 42px; }
+  .heart-btn { height: 42px; padding: 0 0.8rem; }
+  /* Bigger hit area without shifting the layout */
+  .pcard-view-btn { padding: 0.7rem 0; margin: -0.7rem 0; }
+  .pcard-admin-btn { width: 38px; height: 38px; }
+}
+
 /* Admin */
 .pcard-admin-btns { display: flex; gap: 0.35rem; }
 .pcard-admin-btn {

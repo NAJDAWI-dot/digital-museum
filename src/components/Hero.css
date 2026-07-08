@@ -1,6 +1,7 @@
 .hero {
   position: relative;
   min-height: 100vh;
+  min-height: 100svh; /* stable under the collapsing mobile URL bar */
   padding: calc(72px + 4rem) 0 4rem;
   display: flex;
   flex-direction: column;

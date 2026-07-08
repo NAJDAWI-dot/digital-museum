@@ -3,6 +3,8 @@
   position: fixed;
   top: 0;
   left: 0; right: 0;
+  /* Clear notches / camera cutouts on phones */
+  padding-top: env(safe-area-inset-top, 0px);
   z-index: var(--z-nav);
   transition: background 0.5s ease, border-color 0.5s ease,
               opacity 0.7s var(--ease-smooth), transform 0.9s var(--ease-smooth);
@@ -148,7 +150,15 @@
     border-bottom: 1px solid var(--ink-mid);
     padding: 1.5rem 1.2rem;
   }
-  .navbar-links.open { display: flex; }
-  .navbar-links .navbar-link { padding: 0.75rem 0; font-size: 0.85rem; }
+  .navbar-links.open {
+    display: flex;
+    box-shadow: 0 24px 40px rgba(0,0,0,0.5);
+  }
+  /* Full-width, comfortably tappable menu rows */
+  .navbar-links .navbar-link {
+    padding: 0.9rem 0;
+    font-size: 0.95rem;
+    width: 100%;
+  }
   .navbar-admin-group { flex-wrap: wrap; margin-top: 1rem; }
 }

@@ -607,7 +607,49 @@ select.admin-input option { background: #111113; }
 }
 .admin-submit-btn:hover { background: var(--gold-dark); color: var(--ink); }
 
+/* Touch devices: 16px inputs stop iOS from zooming the page on focus,
+   and the small chrome buttons grow to comfortable targets. */
+@media (pointer: coarse) {
+  .admin-input { font-size: 16px; }
+  .admin-reset-btn, .admin-export-btn { padding: 0.6rem 0.9rem; }
+  .admin-close-btn { width: 40px; height: 40px; }
+  .proj-new-btn { padding: 0.55rem 0.9rem; }
+  .tech-tag-edit button { padding: 0.25rem 0.4rem; }
+}
+
+/* Touch devices can't hover a row to reveal its delete button */
+@media (hover: none) {
+  .proj-list-delete { color: rgba(239,68,68,0.5); }
+}
+
 @media (max-width: 640px) {
-  .admin-body { grid-template-columns: 1fr; }
-  .proj-list { display: none; }
+  .admin-panel { width: 100vw; border-left: none; }
+  /* The project list becomes a horizontal film strip above the form
+     instead of disappearing — switching projects stays possible. */
+  .admin-body { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .proj-list {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .proj-list-reorder-hint { display: none; }
+  .proj-drag-handle { display: none; } /* drag-reorder is a desktop affordance */
+  .proj-list-items {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+  }
+  .proj-list-item {
+    flex: 0 0 auto;
+    width: 200px;
+    border-bottom: none;
+    border-right: 1px solid rgba(255,255,255,0.04);
+  }
+  .proj-list-item.active { border-left: none; box-shadow: inset 0 -2px 0 var(--gold-dark); }
+  .admin-top-bar { padding: 1rem 1.2rem; }
+  .admin-content { padding: 1.2rem; }
+  .admin-sync-warning { padding: 0.6rem 1.2rem; }
+  /* Side-by-side form fields are cramped at phone width */
+  .form-row, .form-row--3, .color-row-pair { grid-template-columns: 1fr; }
+  .form-preview { display: none; } /* preview steals half the phone screen */
 }

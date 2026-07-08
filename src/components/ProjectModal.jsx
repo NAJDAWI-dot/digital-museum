@@ -7,8 +7,20 @@ import './ProjectModal.css';
 export function Lightbox({ images, startIndex, onClose }) {
   const [idx, setIdx] = useState(startIndex);
   const innerRef = useRef(null);
+  const touchX = useRef(null);
   const prev = () => setIdx(i => (i - 1 + images.length) % images.length);
   const next = () => setIdx(i => (i + 1) % images.length);
+
+  // Swipe left/right navigates on touch screens (vertical scroll unaffected).
+  const onTouchStart = (e) => { touchX.current = e.touches[0].clientX; };
+  const onTouchEnd = (e) => {
+    if (touchX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchX.current;
+    touchX.current = null;
+    if (Math.abs(dx) > 48 && images.length > 1) {
+      if (dx < 0) next(); else prev();
+    }
+  };
 
   useEffect(() => {
     const onKey = (e) => {
@@ -37,6 +49,8 @@ export function Lightbox({ images, startIndex, onClose }) {
         initial={{ scale: 0.92 }} animate={{ scale: 1 }} exit={{ scale: 0.92 }}
         transition={{ duration: 0.35, ease: [0.16,1,0.3,1] }}
         onClick={e => e.stopPropagation()}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
       >
         <AnimatePresence mode="wait">
           <motion.img

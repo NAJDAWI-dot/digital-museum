@@ -37,6 +37,14 @@
 
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { -webkit-tap-highlight-color: transparent; }
+
+/* Touch feedback: taps get an immediate pressed state instead of the
+   (nonexistent) hover state — hover styles only apply where hover exists. */
+@media (pointer: coarse) {
+  a:active, button:active { opacity: 0.7; }
+}
 /* Smooth scrolling is owned by Lenis; a CSS rule here would fight it on anchor jumps. */
 
 /* Keyboard-focus ring, tuned for the dark theme — the browser default is a
