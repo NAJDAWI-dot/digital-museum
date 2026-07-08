@@ -292,6 +292,62 @@ export const INITIAL_TESTIMONIALS = [];
 
 export const INITIAL_VOLUNTEERING = [
   {
+    "id": "v1783508273301",
+    "year": "2026",
+    "title": "Head Organizer & Developer",
+    "organization": "HTU Engineering Design Expo",
+    "description": "Organized the Engineering Design Expo, including building the event's voting platform for the fan favourite prize.",
+    "photos": []
+  },
+  {
+    "id": "v1783508190928",
+    "year": "2025",
+    "title": "Organizer / Volunteer",
+    "organization": "JOYS - Irish Embassy Program",
+    "description": "Delivered support for JOYS 2026.",
+    "photos": []
+  },
+  {
+    "id": "v1783508167071",
+    "year": "2025 (July)",
+    "title": "Organizer",
+    "organization": "HTU Career Expo",
+    "description": "Assisted with Career Day event operations.",
+    "photos": []
+  },
+  {
+    "id": "v1783508097359",
+    "year": "2025 (Jan)",
+    "title": "Robotics Volunteer / Exhibit Organizer",
+    "organization": "HTU STEM Lab Course",
+    "description": "Ran the robotics-themed \"Aliens Maze Arena\" exhibit at the STEM Lab Expo with Technical Support for the contestants",
+    "photos": []
+  },
+  {
+    "id": "v1783508058456",
+    "year": "2025",
+    "title": "Media",
+    "organization": "HTU – Majlis Forum",
+    "description": "Photographing and filming in an event for the Majlis Forum.",
+    "photos": []
+  },
+  {
+    "id": "v1783507990544",
+    "year": "2025",
+    "title": "Independence Day Booth",
+    "organization": "HTU",
+    "description": "Contributed to programs for Independence Week events with Jood Al-Abbadi.",
+    "photos": []
+  },
+  {
+    "id": "v1783507915739",
+    "year": "2025",
+    "title": "Arts Club Media Volunteer",
+    "organization": "HTU",
+    "description": "Photographing and filming in an event for the arts club.",
+    "photos": []
+  },
+  {
     "id": "v1783502172891",
     "year": "2024–2025",
     "title": "Orientation Volunteer",
