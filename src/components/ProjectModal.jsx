@@ -4,7 +4,7 @@ import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset, isRealLink } from '../lib/assets';
 import './ProjectModal.css';
 
-function Lightbox({ images, startIndex, onClose }) {
+export function Lightbox({ images, startIndex, onClose }) {
   const [idx, setIdx] = useState(startIndex);
   const innerRef = useRef(null);
   const prev = () => setIdx(i => (i - 1 + images.length) % images.length);

@@ -569,7 +569,7 @@ function VolunteeringForm({ volunteering, onSave }) {
   };
 
   const addItem = () => {
-    setItems([{ id: `v${Date.now()}`, year: '', title: '', organization: '', description: '' }, ...items]);
+    setItems([{ id: `v${Date.now()}`, year: '', title: '', organization: '', description: '', photos: [] }, ...items]);
   };
 
   const removeItem = (index) => {
@@ -607,6 +607,12 @@ function VolunteeringForm({ volunteering, onSave }) {
               <label className="form-label mono">Description</label>
               <textarea className="admin-input admin-textarea" rows={2} value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} placeholder="What you did and who it helped..." />
             </div>
+            <MultiImageUploader
+              label="Photos"
+              values={item.photos || []}
+              onChange={v => updateItem(i, 'photos', v)}
+              maxImages={4}
+            />
           </div>
         ))}
         {items.length === 0 && <p className="mono" style={{ opacity: 0.5 }}>No volunteer entries yet. Click "+ Add Entry" to record one.</p>}
@@ -745,6 +751,16 @@ export default function AdminPanel() {
                 </svg>
               </button>
             </div>
+
+            {/* Without a PAT, "Saved" only means "saved in this browser" — and
+                local drafts are retired by the next deploy. Say so loudly. */}
+            {isAdmin && !githubToken && (
+              <div className="admin-sync-warning mono" role="status">
+                Not publishing: edits are saved in this browser only. Paste your
+                GitHub PAT above to push them to the live site — unpublished
+                drafts are discarded after the next deploy.
+              </div>
+            )}
 
             {!isAdmin ? (
               <div className="admin-content"><LoginForm onLogin={login} /></div>

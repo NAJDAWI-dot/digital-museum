@@ -136,7 +136,7 @@ export default function ImageUploader({ value, onChange, label = 'Image', aspect
 /**
  * MultiImageUploader — upload multiple project screenshots
  */
-export function MultiImageUploader({ values = [], onChange, maxImages = 6 }) {
+export function MultiImageUploader({ values = [], onChange, maxImages = 6, label = 'Project Screenshots' }) {
   const inputRef = useRef(null);
   const [error, setError] = useState('');
 
@@ -178,7 +178,7 @@ export function MultiImageUploader({ values = [], onChange, maxImages = 6 }) {
   return (
     <div className="multi-uploader">
       <div className="multi-uploader-label mono">
-        Project Screenshots
+        {label}
         <span className="img-uploader-hint"> — {values.length}/{maxImages}</span>
       </div>
 

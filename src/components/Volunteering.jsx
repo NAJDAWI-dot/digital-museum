@@ -1,6 +1,8 @@
-import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import React, { useRef, useState } from 'react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
+import { resolveAsset } from '../lib/assets';
+import { Lightbox } from './ProjectModal';
 import './Volunteering.css';
 
 /* Community service ledger — deliberately quieter than the career
@@ -9,6 +11,8 @@ export default function Volunteering() {
   const { volunteering } = useMuseum();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
+  // { photos: [...], idx: number } while the lightbox is open, else null
+  const [lightbox, setLightbox] = useState(null);
 
   if (!volunteering || volunteering.length === 0) return null;
 
@@ -34,11 +38,41 @@ export default function Volunteering() {
                 <h3 className="volunteering-role serif">{item.title}</h3>
                 {item.organization && <span className="volunteering-org">{item.organization}</span>}
                 {item.description && <p className="volunteering-desc">{item.description}</p>}
+                {item.photos?.length > 0 && (
+                  <div className="volunteering-photos">
+                    {item.photos.map((src, pi) => (
+                      <button
+                        key={pi}
+                        type="button"
+                        className="volunteering-photo"
+                        onClick={() => setLightbox({ photos: item.photos, idx: pi })}
+                        data-cursor
+                      >
+                        <img
+                          src={resolveAsset(src)}
+                          alt={`${item.title} — photo ${pi + 1} of ${item.photos.length}`}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.li>
           ))}
         </ul>
       </div>
+
+      <AnimatePresence>
+        {lightbox && (
+          <Lightbox
+            images={lightbox.photos}
+            startIndex={lightbox.idx}
+            onClose={() => setLightbox(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }
