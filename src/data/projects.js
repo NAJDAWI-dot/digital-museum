@@ -292,6 +292,46 @@ export const INITIAL_TESTIMONIALS = [];
 
 export const INITIAL_VOLUNTEERING = [
   {
+    "id": "v1783502172891",
+    "year": "2024–2025",
+    "title": "Orientation Volunteer",
+    "organization": "HTU",
+    "description": "Welcomed and guided new students during Orientation Day.",
+    "photos": []
+  },
+  {
+    "id": "v1783502135154",
+    "year": "2025 ",
+    "title": "Volunteer",
+    "organization": "Charity Bazaar (HTU)",
+    "description": "Assisted with charity bazaar setup and operations.",
+    "photos": []
+  },
+  {
+    "id": "v1783502080141",
+    "year": "2025 (Ramadan)",
+    "title": "Volunteer",
+    "organization": "Charity Iftar Organization (HTU)",
+    "description": "Helped organize and host a charity Iftar during Ramadan.",
+    "photos": []
+  },
+  {
+    "id": "v1783502049377",
+    "year": "2025 (Jan)",
+    "title": "Volunteer",
+    "organization": "HTU STEM Lab Expo",
+    "description": "Supported the STEM Lab Expo, engaging visitors with hands-on exhibits.",
+    "photos": []
+  },
+  {
+    "id": "v1783502024546",
+    "year": "2024–2025",
+    "title": "Volunteer",
+    "organization": "Children's Museum",
+    "description": "Facilitated activities/exhibits for visiting children.",
+    "photos": []
+  },
+  {
     "id": "v1783501984785",
     "year": "2024",
     "title": "Volunteer",
