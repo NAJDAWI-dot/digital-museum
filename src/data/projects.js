@@ -290,4 +290,13 @@ export const INITIAL_TIMELINE = [
 
 export const INITIAL_TESTIMONIALS = [];
 
-export const INITIAL_VOLUNTEERING = [];
+export const INITIAL_VOLUNTEERING = [
+  {
+    "id": "v1783501984785",
+    "year": "2024",
+    "title": "Volunteer",
+    "organization": "HTU",
+    "description": "Run for Life, Supported event logistics for the \"Run for Life\" charity run.",
+    "photos": []
+  }
+];
