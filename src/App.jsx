@@ -13,7 +13,6 @@ import Volunteering from './components/Volunteering';
 import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import AdminPanel from './components/AdminPanel';
 import ProjectModal from './components/ProjectModal';
 import GuidedTour from './components/GuidedTour';
 import MorphDivider from './components/MorphDivider';
@@ -25,11 +24,21 @@ import './App.css';
 // otherwise pay for just to reach a below-the-fold, optional guestbook section.
 const Guestbook = lazy(() => import('./components/Guestbook'));
 
+// The whole editor (forms, uploaders, moderation, analytics) is owner-only —
+// visitors shouldn't download a byte of it. Loaded on first open, then kept
+// mounted so AnimatePresence exit animations keep working.
+const AdminPanel = lazy(() => import('./components/AdminPanel'));
+
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function MuseumApp() {
-  const { settings } = useMuseum();
+  const { settings, adminPanel } = useMuseum();
+
+  // Latches true on the first editor open — from then on the panel stays
+  // mounted (hidden by its own AnimatePresence) so closing animates properly.
+  const [editorTouched, setEditorTouched] = useState(false);
+  useEffect(() => { if (adminPanel) setEditorTouched(true); }, [adminPanel]);
 
   // Read the preference once so it stays stable across renders and effect deps.
   const [reduced] = useState(prefersReducedMotion);
@@ -118,7 +127,11 @@ function MuseumApp() {
         </main>
         <Footer />
       </div>
-      <AdminPanel />
+      {editorTouched && (
+        <Suspense fallback={null}>
+          <AdminPanel />
+        </Suspense>
+      )}
       <ProjectModal />
       <GuidedTour />
       <LiquidTransition />

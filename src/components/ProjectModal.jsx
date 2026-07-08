@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset, isRealLink } from '../lib/assets';
+import ExhibitReel from './ExhibitReel';
 import './ProjectModal.css';
 
 export function Lightbox({ images, startIndex, onClose }) {
@@ -85,7 +86,11 @@ export default function ProjectModal() {
   const proj = viewingProject;
   const [lightboxIdx, setLightboxIdx] = useState(null);
   const [writeupOpen, setWriteupOpen] = useState(false);
+  const [reelOpen, setReelOpen] = useState(false);
   const panelRef = useRef(null);
+
+  // A reel needs at least two frames to be worth playing.
+  const reelFrames = proj ? [proj.coverImage, ...(proj.screenshots || [])].filter(Boolean).length : 0;
 
   const writeup = proj?.longDescription || proj?.description || '';
   const writeupIsLong = writeup.length > WRITEUP_CLAMP_CHARS;
@@ -120,11 +125,13 @@ export default function ProjectModal() {
 
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === 'Escape' && lightboxIdx === null) setViewingProject(null);
+      if (e.key !== 'Escape') return;
+      if (reelOpen) { setReelOpen(false); return; }
+      if (lightboxIdx === null) setViewingProject(null);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [setViewingProject, lightboxIdx]);
+  }, [setViewingProject, lightboxIdx, reelOpen]);
 
   const allScreenshots = proj?.screenshots || [];
 
@@ -179,6 +186,15 @@ export default function ProjectModal() {
                 <div className="modal-swatch-info">
                   <span className="mono modal-cat">{proj.category} · {proj.year}</span>
                   {proj.status && <span className="mono modal-status">{proj.status}</span>}
+                  {reelFrames >= 2 && (
+                    <button
+                      type="button"
+                      className="modal-reel-btn mono"
+                      onClick={(e) => { e.stopPropagation(); setReelOpen(true); }}
+                    >
+                      ▶ Play reel
+                    </button>
+                  )}
                 </div>
 
                 <button className="modal-close" onClick={() => setViewingProject(null)} aria-label="Close">
@@ -353,6 +369,13 @@ export default function ProjectModal() {
               </div>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Exhibit reel */}
+      <AnimatePresence>
+        {reelOpen && proj && (
+          <ExhibitReel project={proj} onClose={() => setReelOpen(false)} />
         )}
       </AnimatePresence>
 

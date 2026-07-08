@@ -4,9 +4,25 @@ import { INITIAL_PROJECTS, SITE_SETTINGS, INITIAL_TIMELINE, INITIAL_TESTIMONIALS
 // (which doesn't write INITIAL_VOLUNTEERING yet) can't break the bundle —
 // a missing named import is a build error, a missing property is just undefined.
 import * as museumData from '../data/projects';
-import { getSupabaseClient } from '../utils/supabaseClient';
 
 const INITIAL_VOLUNTEERING = museumData.INITIAL_VOLUNTEERING || [];
+
+// Supabase is only needed for owner auth (and the guestbook, which is its own
+// lazy chunk). Loading it dynamically keeps ~35KB gz of supabase-js out of the
+// bundle every ordinary visitor downloads.
+const loadAuthClient = () =>
+  import('../utils/supabaseClient').then(m => m.getSupabaseClient());
+
+// Supabase persists sessions under "sb-<ref>-auth-token" — if no such key
+// exists, this browser has never logged in and the auth client can wait
+// until the owner actually opens the login form.
+const hasStoredSession = () => {
+  try {
+    return Object.keys(localStorage).some(k => k.startsWith('sb-') && k.includes('auth-token'));
+  } catch {
+    return false;
+  }
+};
 
 const MuseumContext = createContext(null);
 
@@ -69,7 +85,13 @@ export function MuseumProvider({ children }) {
   // Supabase Auth session whose email matches the site's own owner email
   // (settings.email) is treated as admin; a matching session is the actual
   // proof of identity, not just "someone is logged in to *a* account."
-  const supabaseAuth = getSupabaseClient();
+  const [supabaseAuth, setSupabaseAuth] = useState(null);
+
+  // Returning owner: a stored session exists, so load the client and restore
+  // it. Everyone else skips the download until they attempt a login.
+  useEffect(() => {
+    if (hasStoredSession()) loadAuthClient().then(c => { if (c) setSupabaseAuth(c); });
+  }, []);
 
   useEffect(() => {
     if (!supabaseAuth) { setIsAdmin(false); return; }
@@ -86,8 +108,10 @@ export function MuseumProvider({ children }) {
   }, [supabaseAuth, settings?.email]);
 
   const login = async (password) => {
-    if (!supabaseAuth) return false;
-    const { data, error } = await supabaseAuth.auth.signInWithPassword({
+    const client = supabaseAuth || await loadAuthClient();
+    if (!client) return false;
+    if (!supabaseAuth) setSupabaseAuth(client);
+    const { data, error } = await client.auth.signInWithPassword({
       email: settings?.email,
       password,
     });
