@@ -92,25 +92,20 @@
   align-items: flex-end;
 }
 
+/* Natural-size image, centered on the black stage — never cropped,
+   never upscaled past its own resolution. */
 .reel-img {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  margin: auto;
+  width: auto;
+  height: auto;
+  max-width: min(100%, 92vw);
+  max-height: 78vh;
+  max-height: 78dvh;
+  object-fit: contain;
   user-select: none;
-}
-
-/* Ken Burns — slow settle from a slight zoom, origin varies per slide */
-.reel-kb { animation: reel-kb 5.2s ease-out forwards; }
-.reel-kb--0 { transform-origin: 25% 30%; }
-.reel-kb--1 { transform-origin: 75% 35%; }
-.reel-kb--2 { transform-origin: 30% 70%; }
-.reel-kb--3 { transform-origin: 70% 65%; }
-
-@keyframes reel-kb {
-  from { transform: scale(1.12); }
-  to   { transform: scale(1.0); }
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
 }
 
 .reel-scrim {
@@ -230,7 +225,3 @@
 }
 .reel-zone--prev { left: 0; width: 33%; }
 .reel-zone--next { right: 0; width: 67%; }
-
-@media (prefers-reduced-motion: reduce) {
-  .reel-kb { animation: none; }
-}

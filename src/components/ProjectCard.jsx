@@ -134,7 +134,15 @@ export default function ProjectCard({ project, index, onEdit }) {
         </div>
 
         <div className="pcard-title-wrap">
-          <h3 className="pcard-title serif">{project.title}</h3>
+          <h3 className="pcard-title serif">
+            <button
+              type="button"
+              className="pcard-title-btn"
+              onClick={() => { x.set(0); y.set(0); setViewingProject(project); }}
+            >
+              {project.title}
+            </button>
+          </h3>
           {project.subtitle && <p className="pcard-subtitle">{project.subtitle}</p>}
         </div>
 

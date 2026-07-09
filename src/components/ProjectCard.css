@@ -182,6 +182,21 @@
 }
 .pcard:hover .pcard-title { color: var(--gold-light); }
 
+/* The title is a real button so keyboard users can open the exhibit too —
+   styled to be invisible as a control, it inherits the h3's type entirely. */
+.pcard-title-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  text-align: left;
+  transition: color 0.4s ease;
+}
+.pcard-title-btn:hover { color: var(--gold); }
+
 .pcard-subtitle { font-size: 0.78rem; color: var(--silver); }
 
 .pcard-desc { font-size: 0.88rem; color: var(--dust); line-height: 1.75; flex: 1; }

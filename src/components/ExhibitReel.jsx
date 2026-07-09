@@ -117,7 +117,7 @@ export default function ExhibitReel({ project, onClose }) {
           >
             {slide.img && (
               <img
-                className={`reel-img ${reduced ? '' : `reel-kb reel-kb--${idx % 4}`}`}
+                className="reel-img"
                 src={resolveAsset(slide.img)}
                 alt=""
                 draggable="false"
