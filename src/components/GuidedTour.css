@@ -1,11 +1,14 @@
 /* Curator's caption card — fixed to the bottom, above content, below modals */
 .tour-card {
   position: fixed;
-  left: 50%;
+  /* Centered via auto margins, NOT translateX — framer-motion's y animation
+     owns the transform and would silently drop a CSS translate. */
+  left: 1rem;
+  right: 1rem;
+  margin-inline: auto;
   bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
-  transform: translateX(-50%);
   z-index: var(--z-admin);
-  width: min(420px, calc(100vw - 2rem));
+  width: min(420px, 100%);
   background: rgba(17, 17, 19, 0.96);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(201, 169, 110, 0.3);
