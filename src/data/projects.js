@@ -288,15 +288,7 @@ export const INITIAL_TIMELINE = [
   }
 ];
 
-export const INITIAL_TESTIMONIALS = [
-  {
-    "id": "ts1783629898187",
-    "name": "Test",
-    "role": "Test",
-    "quote": "Test",
-    "avatarUrl": ""
-  }
-];
+export const INITIAL_TESTIMONIALS = [];
 
 export const INITIAL_VOLUNTEERING = [
   {
