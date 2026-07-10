@@ -79,6 +79,14 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -m "chore: regenerate highlights reel"
+            # The earlier "Extract embedded images" step intentionally
+            # leaves its output uncommitted (deploy.yml owns that commit) —
+            # but git pull --rebase refuses to run with ANY unstaged
+            # changes in the tree, not just in the file being committed
+            # here. Discard those local-only, already-served-their-purpose
+            # changes before rebasing.
+            git checkout -- src/data/projects.js
+            git clean -fd public/images
             git pull --rebase origin main
             git push
           fi
