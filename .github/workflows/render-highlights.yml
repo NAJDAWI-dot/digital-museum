@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  actions: write   # needed to dispatch deploy.yml explicitly — see below
 
 jobs:
   render:
@@ -91,4 +92,15 @@ jobs:
             git pull --rebase origin main
             git push
             git stash drop || true
+
+            # GitHub Actions does not trigger other workflows from a push
+            # made with the default GITHUB_TOKEN (an anti-loop safeguard) —
+            # deploy.yml's own push trigger would silently never fire for
+            # this commit. The site's own deploy.yml sidesteps this by
+            # doing its bot-commit and the actual build/deploy in the SAME
+            # run; dispatching deploy.yml explicitly here is the equivalent
+            # fix for a commit made from a separate workflow.
+            gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref main
           fi
+        env:
+          GH_TOKEN: ${{ github.token }}
