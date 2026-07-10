@@ -11,6 +11,16 @@ node_modules
 dist
 dist-ssr
 *.local
+supabase/.temp
+
+# Unused royalty-free tracks not wired into the highlights reel (only
+# remotion/music/cinematic/ is used) — kept on disk for later, not shipped.
+freeroyalty/
+
+# Generated per-render by remotion/scripts/select-score.mjs — a randomly
+# selected/trimmed clip used only while rendering, not a committed site
+# asset. The actual output that ships is public/highlights.mp4.
+public/audio/
 
 # Environment variables / secrets — never commit real values.
 .env

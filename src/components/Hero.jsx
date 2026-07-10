@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import { startTour } from './GuidedTour';
+import HighlightsReelModal from './HighlightsReelModal';
 import './Hero.css';
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -32,6 +33,7 @@ const lineRise = {
 export default function Hero({ revealed = true }) {
   const { projects } = useMuseum();
   const particlesRef = useRef(null);
+  const [reelOpen, setReelOpen] = useState(false);
 
   const exhibitCount = String(projects.length).padStart(2, '0');
   const disciplineCount = new Set(projects.map(p => p.category)).size;
@@ -161,9 +163,14 @@ export default function Hero({ revealed = true }) {
             <button type="button" className="hero-tour-link mono" onClick={startTour}>
               Take the guided tour
             </button>
+            <button type="button" className="hero-tour-link mono" onClick={() => setReelOpen(true)}>
+              Watch the highlights
+            </button>
           </motion.div>
         </div>
       </motion.div>
+
+      <HighlightsReelModal open={reelOpen} onClose={() => setReelOpen(false)} />
 
       {/* Catalogue line — real counts, placard voice */}
       <motion.div

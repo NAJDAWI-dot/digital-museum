@@ -1,0 +1,78 @@
+name: Render Highlights Reel
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/data/projects.js']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Remotion's headless Chromium needs these system libraries on a
+      # bare Ubuntu runner — not required when using Remotion's official
+      # Docker/Lambda images, but this workflow runs on the plain
+      # ubuntu-latest runner.
+      - name: Install Chromium dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnss3 libdbus-1-3 libatk1.0-0 libgbm1 libasound2t64 \
+            libxrandr2 libxkbcommon0 libxfixes3 libxcomposite1 libxdamage1 \
+            libatk-bridge2.0-0 libcups2 libxss1 libgtk-3-0
+
+      # The live editor stores fresh screenshots as base64 inside
+      # projects.js — materialize them to real files here (not committed;
+      # deploy.yml owns that commit) so the reel always has real image
+      # paths to render, regardless of whether deploy.yml has run yet.
+      - name: Install site dependencies
+        run: npm ci
+
+      - name: Extract embedded images (local only, not committed)
+        run: node scripts/extract-images.mjs
+
+      - name: Install Remotion dependencies
+        working-directory: remotion
+        run: npm ci
+
+      - name: Fetch live stats (guestbook + appreciations)
+        working-directory: remotion
+        run: npm run fetch-stats
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      # Picks a random track (and a random ~100s window within it) from
+      # music/cinematic/ on every run, so the reel gets a different piece
+      # of music each time it regenerates — see scripts/select-score.mjs.
+      - name: Select score
+        working-directory: remotion
+        run: npm run select-score
+
+      - name: Render
+        working-directory: remotion
+        run: npm run render
+
+      - name: Publish rendered video
+        run: |
+          cp remotion/out/highlights.mp4 public/highlights.mp4
+          if ! git diff --quiet public/highlights.mp4; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add public/highlights.mp4
+            git commit -m "chore: regenerate highlights reel"
+            git pull --rebase origin main
+            git push
+          fi
