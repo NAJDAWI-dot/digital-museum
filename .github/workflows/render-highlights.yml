@@ -67,11 +67,17 @@ jobs:
 
       - name: Publish rendered video
         run: |
+          set -eo pipefail
           cp remotion/out/highlights.mp4 public/highlights.mp4
-          if ! git diff --quiet public/highlights.mp4; then
+          git add public/highlights.mp4
+          # `git diff --quiet` only compares tracked files against the
+          # working tree — it silently reports "no difference" for a
+          # brand-new untracked file, which is exactly what
+          # public/highlights.mp4 is on the very first run. Diffing the
+          # staged version against HEAD (--cached) catches new files too.
+          if ! git diff --cached --quiet public/highlights.mp4; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add public/highlights.mp4
             git commit -m "chore: regenerate highlights reel"
             git pull --rebase origin main
             git push
