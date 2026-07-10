@@ -76,12 +76,13 @@ jobs:
       # PATH that turned out to be C:\Windows\System32\bash.exe, the WSL
       # shim, not Git Bash. WSL has no distro installed here, so it failed
       # immediately. Pointing at Git Bash's real path sidesteps PATH
-      # ordering entirely. The executable path itself must be double-quoted
-      # inside the shell string — the runner splits this field on
-      # whitespace to find the command, and "Program Files" has a space in
-      # it, which broke the first attempt at this fix.
+      # ordering entirely. The runner's custom-shell field parser doesn't
+      # respect quoting around the executable path (tried that — it left
+      # the literal quote in place and broke PATH resolution), so the
+      # 8.3 short path is used instead to dodge the space in
+      # "Program Files" without needing to quote anything.
       - name: Publish rendered video
-        shell: '"C:\Program Files\Git\usr\bin\bash.exe" -e -o pipefail {0}'
+        shell: 'C:\PROGRA~1\Git\usr\bin\bash.exe -e -o pipefail {0}'
         run: |
           set -eo pipefail
           git config user.name "github-actions[bot]"
