@@ -71,8 +71,14 @@ jobs:
         working-directory: remotion
         run: npm run render
 
+      # `shell: bash` alone resolves to whatever "bash" the runner's PATH
+      # finds first — under the runner service's own (non-interactive)
+      # PATH that turned out to be C:\Windows\System32\bash.exe, the WSL
+      # shim, not Git Bash. WSL has no distro installed here, so it failed
+      # immediately. Pointing at Git Bash's real path sidesteps PATH
+      # ordering entirely.
       - name: Publish rendered video
-        shell: bash
+        shell: "C:\\Program Files\\Git\\usr\\bin\\bash.exe -e -o pipefail {0}"
         run: |
           set -eo pipefail
           git config user.name "github-actions[bot]"
