@@ -26,11 +26,13 @@ export default function AnalyticsTab({ goatcounterSiteCode, goatcounterApiToken,
     setStatus('loading');
     setError('');
 
-    const base = `https://${goatcounterSiteCode}.goatcounter.com/api/v0`;
-    // GoatCounter's API requires Content-Type: application/json on every request, GET
-    // included — omitting it causes the server to reject the request before it even
-    // gets to validating the token, which surfaces here as a misleading 401/403.
-    const headers = { Authorization: `Bearer ${goatcounterApiToken}`, 'Content-Type': 'application/json' };
+    // GoatCounter's stats API sends no Access-Control-Allow-Origin header at
+    // all, so it can never be called directly from browser JS on any origin
+    // — confirmed by testing it directly, not assumed. A Supabase Edge
+    // Function relays the request and attaches CORS headers; it forwards
+    // this Authorization header straight through without storing it.
+    const base = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/goatcounter-proxy`;
+    const headers = { Authorization: `Bearer ${goatcounterApiToken}` };
 
     const describeFailure = (res, label) => {
       if (res.status === 401 || res.status === 403) return `${label}: invalid or expired API token.`;
@@ -40,9 +42,9 @@ export default function AnalyticsTab({ goatcounterSiteCode, goatcounterApiToken,
 
     try {
       const [totalRes, hitsRes, refsRes] = await Promise.all([
-        fetch(`${base}/stats/total`, { headers }),
-        fetch(`${base}/stats/hits?limit=10`, { headers }),
-        fetch(`${base}/stats/toprefs?limit=10`, { headers }),
+        fetch(`${base}?path=stats/total`, { headers }),
+        fetch(`${base}?path=stats/hits&query=${encodeURIComponent('limit=10')}`, { headers }),
+        fetch(`${base}?path=stats/toprefs&query=${encodeURIComponent('limit=10')}`, { headers }),
       ]);
 
       if (!totalRes.ok) throw new Error(describeFailure(totalRes, 'Total stats'));
