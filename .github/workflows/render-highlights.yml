@@ -104,6 +104,7 @@ jobs:
           if ! git diff --cached --quiet public/highlights.mp4; then
             git commit -m "chore: regenerate highlights reel"
             git push origin HEAD:main
+            NEW_SHA=$(git rev-parse HEAD)
 
             # GitHub Actions does not trigger other workflows from a push
             # made with the default GITHUB_TOKEN (an anti-loop safeguard) —
@@ -112,6 +113,18 @@ jobs:
             # doing its bot-commit and the actual build/deploy in the SAME
             # run; dispatching deploy.yml explicitly here is the equivalent
             # fix for a commit made from a separate workflow.
+            #
+            # Dispatching immediately after push is itself racy: observed
+            # directly, a deploy fired right after this exact push built
+            # the *previous* commit — GitHub's own ref-tracking for "main"
+            # hadn't caught up yet even though the push had already
+            # succeeded from git's point of view. Poll until the API
+            # agrees the ref has moved before dispatching.
+            for i in $(seq 1 15); do
+              REMOTE_SHA=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)
+              if [ "$REMOTE_SHA" = "$NEW_SHA" ]; then break; fi
+              sleep 2
+            done
             gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref main
           fi
         env:
