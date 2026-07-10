@@ -10,6 +10,16 @@ permissions:
   contents: write
   actions: write   # needed to dispatch deploy.yml explicitly — see below
 
+# Two overlapping runs (e.g. a manual trigger landing while a live-editor
+# push also triggered one) each produce a commit that fully replaces
+# public/highlights.mp4 — git can't 3-way-merge conflicting binary blobs,
+# so a second run rebasing its own video commit onto a base that already
+# has a *different* video from the first run fails outright. Only one
+# render at a time; later triggers wait rather than run concurrently.
+concurrency:
+  group: render-highlights
+  cancel-in-progress: false
+
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -69,6 +79,21 @@ jobs:
       - name: Publish rendered video
         run: |
           set -eo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Sync to the absolute latest main and discard everything local
+          # (extract-images' and fetch-stats' uncommitted side effects,
+          # which have already served their purpose) BEFORE copying in the
+          # new video, rather than committing first and rebasing after.
+          # public/highlights.mp4 is always a full replacement, never a
+          # real merge — reset-then-commit makes that atomic and avoids
+          # the binary-merge-conflict class of failure entirely, on top of
+          # the concurrency group above removing the race that triggered
+          # it here.
+          git fetch origin main
+          git reset --hard origin/main
+
           cp remotion/out/highlights.mp4 public/highlights.mp4
           git add public/highlights.mp4
           # `git diff --quiet` only compares tracked files against the
@@ -77,21 +102,8 @@ jobs:
           # public/highlights.mp4 is on the very first run. Diffing the
           # staged version against HEAD (--cached) catches new files too.
           if ! git diff --cached --quiet public/highlights.mp4; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -m "chore: regenerate highlights reel"
-            # Earlier steps (extract-images, fetch-stats) leave their own
-            # local-only side effects uncommitted by design — but
-            # git pull --rebase refuses to run with ANY unstaged changes
-            # anywhere in the tree, not just in the file just committed.
-            # Enumerating each offending path one at a time proved fragile
-            # (missed remotion/src/live-stats.json on the previous attempt);
-            # stash-and-drop everything else instead, since all of it has
-            # already served its purpose by the time we get here.
-            git stash push -u -m "discard render-prep side effects"
-            git pull --rebase origin main
-            git push
-            git stash drop || true
+            git push origin HEAD:main
 
             # GitHub Actions does not trigger other workflows from a push
             # made with the default GITHUB_TOKEN (an anti-loop safeguard) —
