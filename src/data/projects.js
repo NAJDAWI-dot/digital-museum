@@ -277,9 +277,9 @@ export const SITE_SETTINGS = {
     "linkedin": "https://linkedin.com/in/hashemnajdawi"
   },
   "nowBuilding": {
-    "title": "",
-    "description": "",
-    "updatedAt": ""
+    "title": "Test",
+    "description": "Test",
+    "updatedAt": "2026-07-11T13:20:27.431Z"
   },
   "goatcounterSiteCode": "najdawi"
 };
