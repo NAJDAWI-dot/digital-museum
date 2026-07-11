@@ -319,6 +319,14 @@ export const INITIAL_TESTIMONIALS = [];
 
 export const INITIAL_VOLUNTEERING = [
   {
+    "id": "v1783775999161",
+    "year": "0000",
+    "title": "TEST",
+    "organization": "Test",
+    "description": "Test",
+    "photos": []
+  },
+  {
     "id": "v1783508273301",
     "year": "2026",
     "title": "Head Organizer & Developer",
