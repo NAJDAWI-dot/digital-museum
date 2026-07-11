@@ -1,9 +1,11 @@
 name: Render Highlights Reel
 
+# Triggered on demand only — either from the "Regenerate Highlights Reel"
+# button in the site's admin Settings tab (which calls the workflow_dispatch
+# API with the admin's PAT) or manually via `gh workflow run`. Deliberately
+# NOT triggered by content pushes: rendering on every live-editor edit was
+# retired in favor of explicit owner control.
 on:
-  push:
-    branches: [main]
-    paths: ['src/data/projects.js']
   workflow_dispatch:
 
 permissions:

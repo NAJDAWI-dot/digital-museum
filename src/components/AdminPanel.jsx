@@ -410,15 +410,41 @@ function ProjectForm({ project, onSave, onCancel }) {
 }
 
 /* ── Settings Form ────────────────────────── */
-function SettingsForm({ settings, onSave }) {
+function SettingsForm({ settings, onSave, githubToken }) {
   const [form, setForm] = useState(settings);
   const [saved, setSaved] = useState(false);
+  // idle | dispatching | started | error
+  const [renderState, setRenderState] = useState('idle');
 
   const handleSave = (e) => {
     e.preventDefault();
     onSave(form);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  // Kicks off the render-highlights workflow on GitHub. The render runs on
+  // the self-hosted runner, then commits the new video and dispatches the
+  // site deploy itself — so one click here is the whole pipeline. Uses the
+  // same PAT the live editor already holds for content commits.
+  const regenerateReel = async () => {
+    if (!githubToken || renderState === 'dispatching') return;
+    setRenderState('dispatching');
+    try {
+      const res = await fetch(
+        'https://api.github.com/repos/NAJDAWI-dot/digital-museum/actions/workflows/render-highlights.yml/dispatches',
+        {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${githubToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ref: 'main' }),
+        }
+      );
+      // A successful dispatch returns 204 with no body.
+      setRenderState(res.status === 204 ? 'started' : 'error');
+    } catch {
+      setRenderState('error');
+    }
+    setTimeout(() => setRenderState('idle'), 8000);
   };
 
   const set = (k, v) => setForm({ ...form, [k]: v });
@@ -461,6 +487,27 @@ function SettingsForm({ settings, onSave }) {
             <input className="admin-input" value={form.goatcounterSiteCode || ''} onChange={e => set('goatcounterSiteCode', e.target.value)} placeholder="e.g. my-site" />
           </div>
         </div>
+
+        <p className="section-label" style={{ marginTop: '2rem', marginBottom: '1rem' }}>Highlights Reel</p>
+        <p className="mono" style={{ fontSize: '0.7rem', color: 'var(--dust)', lineHeight: 1.6, marginBottom: '0.9rem' }}>
+          Re-renders the hero's highlights video from the latest site content (projects,
+          timeline, volunteering, guestbook), then commits it and redeploys the site —
+          all automatic after this one click. Takes ~10 minutes; the render machine must
+          be online. Requires the GitHub PAT (top bar) to be set.
+        </p>
+        <button
+          type="button"
+          className="form-btn-save mono"
+          disabled={!githubToken || renderState === 'dispatching'}
+          onClick={regenerateReel}
+          style={{ opacity: !githubToken ? 0.45 : 1 }}
+          title={!githubToken ? 'Paste your GitHub PAT in the top bar first' : 'Start a fresh render of the highlights reel'}
+        >
+          {renderState === 'dispatching' && 'Starting render…'}
+          {renderState === 'started' && '✓ Render started — video will be live in ~10 min'}
+          {renderState === 'error' && '✗ Could not start — check the PAT and try again'}
+          {renderState === 'idle' && '🎬 Regenerate Highlights Reel'}
+        </button>
 
         <p className="section-label" style={{ marginTop: '2rem', marginBottom: '1rem' }}>Guestbook &amp; Admin Login</p>
         <p className="mono" style={{ fontSize: '0.7rem', color: 'var(--dust)', lineHeight: 1.6 }}>
@@ -777,7 +824,7 @@ export default function AdminPanel() {
                 <div className="admin-form-area">
                   <div className="admin-content">
                     {activeView === 'settings' ? (
-                      <SettingsForm settings={settings} onSave={updateSettings} />
+                      <SettingsForm settings={settings} onSave={updateSettings} githubToken={githubToken} />
                     ) : activeView === 'timeline' ? (
                       <TimelineForm timeline={timeline} onSave={updateTimeline} />
                     ) : activeView === 'volunteering' ? (
