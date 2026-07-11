@@ -286,6 +286,13 @@ export const SITE_SETTINGS = {
 
 export const INITIAL_TIMELINE = [
   {
+    "id": "t1783775981057",
+    "year": "0000",
+    "title": "TEST",
+    "organization": "Test",
+    "description": "Test"
+  },
+  {
     "id": "t1",
     "year": "2024 - Present",
     "title": "Electrical Engineering Student",
