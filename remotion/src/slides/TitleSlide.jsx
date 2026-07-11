@@ -1,66 +1,76 @@
 import React from 'react';
-import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion';
 import { COLORS } from '../theme.js';
 import { FONT_SERIF, FONT_SANS } from '../fonts.js';
 import RevealText from '../components/RevealText.jsx';
+import TrackingIn from '../components/TrackingIn.jsx';
 import GoldRule from '../components/GoldRule.jsx';
 import AtmosphereParticles from '../components/AtmosphereParticles.jsx';
+import SlideDrift from '../components/SlideDrift.jsx';
+import useAudioPulse from '../hooks/useAudioPulse.js';
+import { TITLE_FRAMES } from '../durations.js';
 
+/** Opening choreography, beat by beat:
+ * 0–15   room lights up (radial gradient blooms from black)
+ * 4–     kicker tracks in from spread-wide letters
+ * 12–    headline tips in word by word
+ * 34–    gold rule inks itself outward with a flash
+ * 45–    exhibit count settles in
+ * throughout: slow push-in on the whole frame, motes breathing with the score */
 export default function TitleSlide({ siteName, projectCount }) {
   const frame = useCurrentFrame();
-  const ruleWidth = interpolate(frame, [10, 40], [0, 64], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-  const kickerOpacity = interpolate(frame, [0, 15], [0, 1], { extrapolateRight: 'clamp' });
+  const { fps } = useVideoConfig();
+  const pulse = useAudioPulse();
+
+  const roomLight = interpolate(frame, [0, 18], [0, 1], { extrapolateRight: 'clamp' });
+  const countProgress = spring({ frame: frame - 45, fps, config: { damping: 200, stiffness: 90 } });
 
   return (
-    <AbsoluteFill
-      style={{
-        background: `radial-gradient(1400px 900px at 50% 40%, ${COLORS.inkLight}, ${COLORS.ink})`,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-      }}
-    >
-      <AtmosphereParticles opacity={0.4} />
-      <span
-        style={{
-          fontFamily: FONT_SANS,
-          fontSize: 22,
-          letterSpacing: 6,
-          textTransform: 'uppercase',
-          color: COLORS.gold,
-          opacity: kickerOpacity,
-          marginBottom: 28,
-        }}
-      >
-        The Archives Present
-      </span>
-      <h1
-        style={{
-          fontFamily: FONT_SERIF,
-          fontStyle: 'italic',
-          fontWeight: 400,
-          fontSize: 108,
-          color: COLORS.linen,
-          margin: 0,
-          lineHeight: 1.05,
-        }}
-      >
-        <RevealText text={siteName} startFrame={12} stagger={4} />
-      </h1>
-      <GoldRule width={ruleWidth} style={{ margin: '34px 0' }} />
-      <span
-        style={{
-          fontFamily: FONT_SANS,
-          fontSize: 20,
-          letterSpacing: 2,
-          color: COLORS.dust,
-          opacity: interpolate(frame, [45, 65], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
-        }}
-      >
-        {projectCount} exhibits, and counting
-      </span>
+    <AbsoluteFill style={{ background: COLORS.ink }}>
+      <SlideDrift durationInFrames={TITLE_FRAMES} direction="in">
+        <AbsoluteFill
+          style={{
+            background: `radial-gradient(1400px 900px at 50% 40%, ${COLORS.inkLight}, ${COLORS.ink})`,
+            opacity: roomLight,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+          }}
+        >
+          <AtmosphereParticles opacity={0.4} />
+          <span style={{ fontFamily: FONT_SANS, fontSize: 22, textTransform: 'uppercase', color: COLORS.gold, marginBottom: 28 }}>
+            <TrackingIn text="The Archives Present" startFrame={4} letterSpacing={6} />
+          </span>
+          <h1
+            style={{
+              fontFamily: FONT_SERIF,
+              fontStyle: 'italic',
+              fontWeight: 400,
+              fontSize: 108,
+              color: COLORS.linen,
+              margin: 0,
+              lineHeight: 1.05,
+            }}
+          >
+            <RevealText text={siteName} startFrame={12} stagger={4} />
+          </h1>
+          <GoldRule width={64} startFrame={34} glow={pulse} style={{ margin: '34px 0' }} />
+          <span
+            style={{
+              fontFamily: FONT_SANS,
+              fontSize: 20,
+              letterSpacing: 2,
+              color: COLORS.dust,
+              opacity: countProgress,
+              transform: `translateY(${(1 - countProgress) * 12}px)`,
+            }}
+          >
+            {projectCount} exhibits, and counting
+          </span>
+        </AbsoluteFill>
+      </SlideDrift>
     </AbsoluteFill>
   );
 }

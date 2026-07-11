@@ -1,12 +1,13 @@
 import React from 'react';
 import { AbsoluteFill, Audio, staticFile, interpolate } from 'remotion';
-import { TransitionSeries, linearTiming } from '@remotion/transitions';
+import { TransitionSeries, linearTiming, springTiming } from '@remotion/transitions';
 import { fade } from '@remotion/transitions/fade';
 import { slide } from '@remotion/transitions/slide';
 import { wipe } from '@remotion/transitions/wipe';
 import { crossZoom } from '@remotion/transitions';
 import { COLORS } from './theme.js';
 import Letterbox from './components/Letterbox.jsx';
+import FilmGrain from './components/FilmGrain.jsx';
 import TitleSlide from './slides/TitleSlide.jsx';
 import ProjectsMontage, { PROJECTS_MONTAGE_FRAMES_PER_ITEM } from './slides/ProjectsMontage.jsx';
 import StatsSlide from './slides/StatsSlide.jsx';
@@ -16,37 +17,50 @@ import TestimonialSlide from './slides/TestimonialSlide.jsx';
 import GuestbookSlide from './slides/GuestbookSlide.jsx';
 import EndCard from './slides/EndCard.jsx';
 
-const TRANSITION_FRAMES = 20;
-
-export const TITLE_FRAMES = 90;
-export const STATS_FRAMES = 120;
-export const TIMELINE_FRAMES = 120;
-export const VOLUNTEERING_FRAMES = 105;
-export const TESTIMONIAL_FRAMES = 120;
-export const GUESTBOOK_FRAMES = 150;
-export const END_CARD_FRAMES = 120;
+import {
+  FADE_FRAMES,
+  SLIDE_FRAMES,
+  WIPE_FRAMES,
+  CROSSZOOM_FRAMES,
+  TITLE_FRAMES,
+  STATS_FRAMES,
+  TIMELINE_FRAMES,
+  VOLUNTEERING_FRAMES,
+  TESTIMONIAL_FRAMES,
+  GUESTBOOK_FRAMES,
+  END_CARD_FRAMES,
+} from './durations.js';
 
 /** Total duration for a given dataset — used by Root.jsx to size the
  * Composition before render, since frame count depends on how much content
  * actually exists (a fresh collection with no volunteering entries yet
- * shouldn't pad out an empty slide). */
+ * shouldn't pad out an empty slide). Each section lists the duration of the
+ * transition that plays right *before* it, mirroring the JSX below exactly
+ * — Guestbook and EndCard always use the same transition regardless of
+ * which optional sections precede them, so those two stay fixed even as
+ * sections are added/removed above them. */
 export function calculateTotalFrames(data) {
-  const sections = [TITLE_FRAMES, data.showcaseProjects.length * PROJECTS_MONTAGE_FRAMES_PER_ITEM, STATS_FRAMES];
-  if (data.timelineCount > 0) sections.push(TIMELINE_FRAMES);
-  if (data.volunteeringCount > 0) sections.push(VOLUNTEERING_FRAMES);
-  if (data.featuredTestimonial) sections.push(TESTIMONIAL_FRAMES);
-  sections.push(GUESTBOOK_FRAMES, END_CARD_FRAMES);
-  const contentFrames = sections.reduce((a, b) => a + b, 0);
-  return contentFrames - (sections.length - 1) * TRANSITION_FRAMES;
+  const sections = [{ frames: TITLE_FRAMES }];
+  sections.push({ frames: data.showcaseProjects.length * PROJECTS_MONTAGE_FRAMES_PER_ITEM, transitionIn: FADE_FRAMES });
+  sections.push({ frames: STATS_FRAMES, transitionIn: CROSSZOOM_FRAMES });
+  if (data.timelineCount > 0) sections.push({ frames: TIMELINE_FRAMES, transitionIn: FADE_FRAMES });
+  if (data.volunteeringCount > 0) sections.push({ frames: VOLUNTEERING_FRAMES, transitionIn: SLIDE_FRAMES });
+  if (data.featuredTestimonial) sections.push({ frames: TESTIMONIAL_FRAMES, transitionIn: FADE_FRAMES });
+  sections.push({ frames: GUESTBOOK_FRAMES, transitionIn: WIPE_FRAMES });
+  sections.push({ frames: END_CARD_FRAMES, transitionIn: FADE_FRAMES });
+
+  return sections.reduce((total, s) => total + s.frames - (s.transitionIn ?? 0), 0);
 }
 
-// A soft, non-repeating tone as fewer than 4 hard cuts. Reserving the
-// dramatic wipe for the transition into the closing stretch (guestbook)
-// makes it read as a deliberate accent, not noise.
-const T_FADE = <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })} />;
-const T_SLIDE_UP = <TransitionSeries.Transition presentation={slide({ direction: 'from-bottom' })} timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })} />;
-const T_WIPE = <TransitionSeries.Transition presentation={wipe({ direction: 'from-right' })} timing={linearTiming({ durationInFrames: 24 })} />;
-const T_CROSSZOOM = <TransitionSeries.Transition presentation={crossZoom({ strength: 0.45 })} timing={linearTiming({ durationInFrames: 26 })} />;
+// Spring-based timing (rather than linear) so every cut eases in/out like a
+// real edit instead of holding constant velocity for its whole duration —
+// the single most noticeable "default template" tell in the previous cut.
+// crossZoom is left on linearTiming since its own strength curve already
+// reads as an eased transition on its own.
+const T_FADE = <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200, stiffness: 90 }, durationInFrames: FADE_FRAMES })} />;
+const T_SLIDE_UP = <TransitionSeries.Transition presentation={slide({ direction: 'from-bottom' })} timing={springTiming({ config: { damping: 26, mass: 0.6 }, durationInFrames: SLIDE_FRAMES })} />;
+const T_WIPE = <TransitionSeries.Transition presentation={wipe({ direction: 'from-right' })} timing={springTiming({ config: { damping: 22, mass: 0.7 }, durationInFrames: WIPE_FRAMES })} />;
+const T_CROSSZOOM = <TransitionSeries.Transition presentation={crossZoom({ strength: 0.45 })} timing={linearTiming({ durationInFrames: CROSSZOOM_FRAMES })} />;
 
 /** Fades the score in/out against the ACTUAL video length (which varies
  * with content), with a slow breathing tremolo throughout — done here
@@ -127,6 +141,7 @@ export default function HighlightsReel({ data }) {
         </TransitionSeries.Sequence>
       </TransitionSeries>
 
+      <FilmGrain />
       <Letterbox />
     </AbsoluteFill>
   );

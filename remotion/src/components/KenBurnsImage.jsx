@@ -1,5 +1,5 @@
 import React from 'react';
-import { Img, useCurrentFrame, useVideoConfig, interpolate } from 'remotion';
+import { Img, useCurrentFrame, useVideoConfig, interpolate, Easing } from 'remotion';
 import { CameraMotionBlur } from '@remotion/motion-blur';
 import { resolveAsset } from '../assets.js';
 
@@ -9,6 +9,14 @@ const ORIGINS = [
   { scaleFrom: 1.08, scaleTo: 1.0, x: [-2, 3], y: [2, -2] },
   { scaleFrom: 1.0, scaleTo: 1.1, x: [3, -3], y: [-2, 1] },
 ];
+
+// A real dolly/pan decelerates into and out of its move rather than holding
+// constant velocity for the whole shot — the background (cover-fill) layer
+// uses this ease. The foreground (the real, uncropped photo) eases on a
+// distinct curve so the two layers drift at visibly different rates —
+// that mismatch, not just the blur, is what reads as parallax depth.
+const BG_EASE = Easing.inOut(Easing.cubic);
+const FG_EASE = Easing.out(Easing.quad);
 
 /** Shows the whole image, uncropped — a blurred, slowly panning cover-fill
  * duplicate fills the frame behind it (so there's never dead letterbox
@@ -28,10 +36,16 @@ export default function KenBurnsImage({ src, durationInFrames, variant = 0, styl
   const { scaleFrom, scaleTo, x, y } = ORIGINS[variant % ORIGINS.length];
 
   const t = frame / total;
-  const bgScale = interpolate(t, [0, 1], [scaleFrom * 1.15, scaleTo * 1.15], { extrapolateRight: 'clamp' });
-  const bgX = interpolate(t, [0, 1], x, { extrapolateRight: 'clamp' });
-  const bgY = interpolate(t, [0, 1], y, { extrapolateRight: 'clamp' });
-  const fgScale = interpolate(t, [0, 1], [1.0, 1.045], { extrapolateRight: 'clamp' });
+  const bgT = BG_EASE(Math.min(1, Math.max(0, t)));
+  const fgT = FG_EASE(Math.min(1, Math.max(0, t)));
+
+  const bgScale = interpolate(bgT, [0, 1], [scaleFrom * 1.15, scaleTo * 1.15], { extrapolateRight: 'clamp' });
+  const bgX = interpolate(bgT, [0, 1], x, { extrapolateRight: 'clamp' });
+  const bgY = interpolate(bgT, [0, 1], y, { extrapolateRight: 'clamp' });
+  // Foreground stays scale-only, never panned — it's shown with
+  // objectFit:contain specifically so the whole photo is always visible
+  // uncropped, and any translate here would push part of it out of frame.
+  const fgScale = interpolate(fgT, [0, 1], [1.0, 1.045], { extrapolateRight: 'clamp' });
 
   const resolved = resolveAsset(src);
 

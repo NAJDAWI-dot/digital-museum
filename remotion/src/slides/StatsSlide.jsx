@@ -1,20 +1,44 @@
 import React from 'react';
-import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, spring, interpolate } from 'remotion';
 import { COLORS } from '../theme.js';
 import { FONT_SERIF, FONT_SANS } from '../fonts.js';
 import CountUp from '../components/CountUp.jsx';
 import GoldRule from '../components/GoldRule.jsx';
+import TrackingIn from '../components/TrackingIn.jsx';
+import SlideDrift from '../components/SlideDrift.jsx';
+import { STATS_FRAMES } from '../durations.js';
 
 function StatBlock({ value, label, delay }) {
   const frame = useCurrentFrame();
-  const opacity = interpolate(frame, [delay, delay + 18], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-  const y = interpolate(frame, [delay, delay + 18], [16, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const { fps } = useVideoConfig();
+  // Slight overshoot (damping 16) so each number lands with a pop — these
+  // are the reel's proudest figures, they should arrive with confidence.
+  const progress = spring({ frame: frame - delay, fps, config: { damping: 16, stiffness: 130, mass: 0.8 } });
+  const settled = spring({ frame: frame - delay, fps, config: { damping: 200, stiffness: 110 } });
+
   return (
-    <div style={{ opacity, transform: `translateY(${y}px)`, textAlign: 'center', padding: '0 56px' }}>
-      <div style={{ fontFamily: FONT_SERIF, fontWeight: 300, fontSize: 108, color: COLORS.gold, lineHeight: 1 }}>
+    <div
+      style={{
+        opacity: settled,
+        transform: `translateY(${(1 - settled) * 24}px) scale(${0.85 + progress * 0.15})`,
+        textAlign: 'center',
+        padding: '0 56px',
+      }}
+    >
+      <div
+        style={{
+          fontFamily: FONT_SERIF,
+          fontWeight: 300,
+          fontSize: 108,
+          color: COLORS.gold,
+          lineHeight: 1,
+          textShadow: `0 0 ${interpolate(settled, [0, 1], [30, 0])}px ${COLORS.gold}88`,
+        }}
+      >
         <CountUp to={value} startFrame={delay} />
       </div>
-      <div style={{ fontFamily: FONT_SANS, fontSize: 18, letterSpacing: 3, textTransform: 'uppercase', color: COLORS.dust, marginTop: 18 }}>
+      <GoldRule width={44} startFrame={delay + 14} style={{ margin: '20px auto 0' }} />
+      <div style={{ fontFamily: FONT_SANS, fontSize: 18, letterSpacing: 3, textTransform: 'uppercase', color: COLORS.dust, marginTop: 16 }}>
         {label}
       </div>
     </div>
@@ -23,37 +47,41 @@ function StatBlock({ value, label, delay }) {
 
 export default function StatsSlide({ projectCount, categoryCount, timelineCount }) {
   const frame = useCurrentFrame();
-  const headingOpacity = interpolate(frame, [0, 15], [0, 1], { extrapolateRight: 'clamp' });
+  const { fps } = useVideoConfig();
+  const headingProgress = spring({ frame, fps, config: { damping: 200, stiffness: 80 } });
 
   return (
-    <AbsoluteFill
-      style={{
-        background: `radial-gradient(1200px 800px at 50% 30%, ${COLORS.inkLight}, ${COLORS.ink})`,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <GoldRule width={64} style={{ marginBottom: 28, opacity: headingOpacity }} />
-      <span
-        style={{
-          fontFamily: FONT_SANS,
-          fontSize: 18,
-          letterSpacing: 4,
-          textTransform: 'uppercase',
-          color: COLORS.gold,
-          opacity: headingOpacity,
-          marginBottom: 56,
-        }}
-      >
-        The Collection, In Numbers
-      </span>
-      <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-        <StatBlock value={projectCount} label="Exhibits" delay={10} />
-        <StatBlock value={categoryCount} label="Disciplines" delay={20} />
-        <StatBlock value={timelineCount} label="Milestones" delay={30} />
-      </div>
+    <AbsoluteFill style={{ background: COLORS.ink }}>
+      <SlideDrift durationInFrames={STATS_FRAMES} direction="out">
+        <AbsoluteFill
+          style={{
+            background: `radial-gradient(1200px 800px at 50% 30%, ${COLORS.inkLight}, ${COLORS.ink})`,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <GoldRule width={64} startFrame={2} style={{ marginBottom: 28 }} />
+          <span
+            style={{
+              fontFamily: FONT_SANS,
+              fontSize: 18,
+              textTransform: 'uppercase',
+              color: COLORS.gold,
+              marginBottom: 56,
+              opacity: headingProgress,
+            }}
+          >
+            <TrackingIn text="The Collection, In Numbers" startFrame={4} letterSpacing={4} />
+          </span>
+          <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+            <StatBlock value={projectCount} label="Exhibits" delay={14} />
+            <StatBlock value={categoryCount} label="Disciplines" delay={24} />
+            <StatBlock value={timelineCount} label="Milestones" delay={34} />
+          </div>
+        </AbsoluteFill>
+      </SlideDrift>
     </AbsoluteFill>
   );
 }
