@@ -7,6 +7,7 @@ import TrackingIn from '../components/TrackingIn.jsx';
 import RevealText from '../components/RevealText.jsx';
 import SlideDrift from '../components/SlideDrift.jsx';
 import { TIMELINE_FRAMES } from '../durations.js';
+import { useFormat, fmt } from '../format.jsx';
 
 const ROW_HEIGHT = 92; // milestone row + margin, for sizing the drawn spine
 
@@ -57,6 +58,7 @@ function Milestone({ entry, index }) {
 export default function TimelineMontage({ timeline }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const format = useFormat();
   const headingProgress = spring({ frame, fps, config: { damping: 200, stiffness: 80 } });
   const entries = timeline.slice(0, 4);
   // The spine inks downward just ahead of the milestones appearing along it.
@@ -65,8 +67,16 @@ export default function TimelineMontage({ timeline }) {
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
       <SlideDrift durationInFrames={TIMELINE_FRAMES} direction="in" amount={0.025}>
-        <AbsoluteFill style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', padding: '0 140px' }}>
-          <div style={{ flex: '0 0 auto', marginRight: 130, opacity: headingProgress }}>
+        <AbsoluteFill
+          style={{
+            display: 'flex',
+            flexDirection: fmt(format, 'row', 'column'),
+            alignItems: fmt(format, 'center', 'flex-start'),
+            justifyContent: fmt(format, 'flex-start', 'center'),
+            padding: fmt(format, '0 140px', '0 90px'),
+          }}
+        >
+          <div style={{ flex: '0 0 auto', marginRight: fmt(format, 130, 0), marginBottom: fmt(format, 0, 60), opacity: headingProgress }}>
             <GoldRule width={48} startFrame={2} style={{ marginBottom: 22 }} />
             <span style={{ fontFamily: FONT_SANS, fontSize: 18, textTransform: 'uppercase', color: COLORS.gold, display: 'block' }}>
               <TrackingIn text="Career" startFrame={4} letterSpacing={4} />

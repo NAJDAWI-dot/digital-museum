@@ -20,6 +20,31 @@
   background: var(--ink);
 }
 
+/* In-place 16:9 ↔ 9:16 toggle — a button, never a link: navigating away
+   would reload the SPA and replay the entrance preloader. */
+.reel-modal-vertical {
+  display: inline-block;
+  margin-top: 0.9rem;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--dust);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.reel-modal-vertical:hover { color: var(--gold); }
+
+/* Vertical cut: height-bound instead of width-bound so 9:16 fits on screen. */
+.reel-modal-inner.vertical {
+  max-width: min(46vh, 92vw);
+}
+.reel-modal-video.vertical {
+  aspect-ratio: 9/16;
+  max-height: 82vh;
+}
+
 .reel-modal-close {
   position: absolute; top: -3rem; right: -0.5rem;
   background: none; border: none; color: rgba(255,255,255,0.6);

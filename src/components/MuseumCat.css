@@ -1,0 +1,60 @@
+.museum-cat {
+  position: fixed;
+  bottom: 6px;
+  left: 0;
+  z-index: 14;
+  color: rgba(201, 169, 110, 0.4);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color 0.4s var(--ease-smooth);
+}
+
+.museum-cat:hover { color: rgba(201, 169, 110, 0.75); }
+
+.museum-cat.ltr { animation: cat-walk-ltr linear forwards; }
+.museum-cat.rtl { animation: cat-walk-rtl linear forwards; }
+
+/* Three transform layers that must not fight: the root walks (translateX),
+   .cat-flip mirrors for right-to-left crossings (scaleX), the svg bobs
+   (translateY). Keeping each on its own element lets all three animate. */
+.cat-flip { display: inline-block; }
+.museum-cat.rtl .cat-flip { transform: scaleX(-1); }
+
+.museum-cat svg {
+  display: block;
+  animation: cat-bob 0.55s ease-in-out infinite alternate;
+}
+
+.museum-cat.twitch .cat-ear {
+  animation: cat-ear-twitch 0.35s ease-in-out 2;
+  transform-origin: bottom center;
+  transform-box: fill-box;
+}
+
+@keyframes cat-walk-ltr {
+  0%   { transform: translateX(-70px); }
+  42%  { transform: translateX(44vw); }
+  58%  { transform: translateX(44vw); } /* sits for a moment */
+  100% { transform: translateX(calc(100vw + 70px)); }
+}
+
+@keyframes cat-walk-rtl {
+  0%   { transform: translateX(calc(100vw + 70px)); }
+  42%  { transform: translateX(52vw); }
+  58%  { transform: translateX(52vw); }
+  100% { transform: translateX(-70px); }
+}
+
+@keyframes cat-bob {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-1.5px); }
+}
+
+@keyframes cat-ear-twitch {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-14deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .museum-cat { display: none; }
+}

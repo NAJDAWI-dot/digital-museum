@@ -141,6 +141,8 @@ export default function Guestbook() {
     setMessage('');
     setTurnstileToken('');
     setSubmitted(true);
+    // Visitor-delight achievement (lazy import — this chunk shouldn't pull it eagerly)
+    import('../lib/achievements').then(m => m.award('signed')).catch(() => {});
     if (window.turnstile && turnstileRef.current) window.turnstile.reset();
   };
 

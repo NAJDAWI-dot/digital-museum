@@ -8,6 +8,7 @@ import GoldRule from '../components/GoldRule.jsx';
 import TrackingIn from '../components/TrackingIn.jsx';
 import SlideDrift from '../components/SlideDrift.jsx';
 import { VOLUNTEERING_FRAMES } from '../durations.js';
+import { useFormat, fmt } from '../format.jsx';
 
 const MAX_PHOTOS = 9;
 // Mirrors the site's own tilted mat-framed print motif (Volunteering.css) —
@@ -17,6 +18,8 @@ const TILTS = [-4, 3, -2.5, 5, -3.5, 2, -5, 3.5, -2];
 function Print({ photo, index, delay }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const format = useFormat();
+  const size = fmt(format, 260, 218);
   // Two springs: a settled one for opacity/fall, and a bouncier one that
   // lets each print over-rotate past its resting tilt and swing back — the
   // way a real photo tossed onto a board settles.
@@ -28,8 +31,8 @@ function Print({ photo, index, delay }) {
   return (
     <div
       style={{
-        width: 260,
-        height: 260,
+        width: size,
+        height: size,
         background: COLORS.paper,
         padding: 14,
         borderRadius: 2,
@@ -46,8 +49,10 @@ function Print({ photo, index, delay }) {
 export default function VolunteeringSlide({ photos, count, orgCount }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const format = useFormat();
   const headingProgress = spring({ frame, fps, config: { damping: 200, stiffness: 80 } });
-  const shown = photos.slice(0, MAX_PHOTOS);
+  // 9:16 fits 2 columns of prints comfortably; 6 keeps the collage airy.
+  const shown = photos.slice(0, fmt(format, MAX_PHOTOS, 6));
 
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
@@ -77,7 +82,7 @@ export default function VolunteeringSlide({ photos, count, orgCount }) {
           </div>
 
           {shown.length > 0 ? (
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 22, maxWidth: 1500 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 22, maxWidth: fmt(format, 1500, 560) }}>
               {shown.map((photo, i) => (
                 <Print key={photo.src + i} photo={photo} index={i} delay={16 + i * 4} />
               ))}

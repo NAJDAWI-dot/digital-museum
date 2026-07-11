@@ -12,13 +12,14 @@
 //
 // Usage: node scripts/select-score.mjs
 import { execFileSync } from 'node:child_process';
-import { readdirSync, mkdirSync } from 'node:fs';
+import { readdirSync, mkdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import ffmpegPath from 'ffmpeg-static';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const MUSIC_DIR = join(__dirname, '..', 'music', 'cinematic');
+const CONFIG_PATH = join(__dirname, '..', 'reel-config.json');
 const OUT_DIR = join(__dirname, '..', '..', 'public', 'audio');
 const OUT_PATH = join(OUT_DIR, 'theme.mp3');
 
@@ -46,7 +47,18 @@ if (tracks.length === 0) {
   throw new Error(`No .mp3 files found in ${MUSIC_DIR}`);
 }
 
-const chosen = tracks[Math.floor(Math.random() * tracks.length)];
+// The reel director (admin app) can pin a specific track via
+// reel-config.json; "random" (or a missing/renamed file) keeps the
+// pick-a-different-track-each-render behavior.
+let pinnedTrack = null;
+try {
+  const config = JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
+  if (config.track && config.track !== 'random' && tracks.includes(config.track)) {
+    pinnedTrack = config.track;
+  }
+} catch { /* no config — random */ }
+
+const chosen = pinnedTrack || tracks[Math.floor(Math.random() * tracks.length)];
 const chosenPath = join(MUSIC_DIR, chosen);
 const duration = probeDuration(chosenPath);
 if (!duration) {

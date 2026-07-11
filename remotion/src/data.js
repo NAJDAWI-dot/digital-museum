@@ -6,19 +6,30 @@ import {
   INITIAL_VOLUNTEERING,
 } from '../../src/data/projects.js';
 import liveStats from './live-stats.json';
+import reelConfig from '../reel-config.json';
 
 const projects = INITIAL_PROJECTS || [];
 const timeline = INITIAL_TIMELINE || [];
 const testimonials = INITIAL_TESTIMONIALS || [];
 const volunteering = INITIAL_VOLUNTEERING || [];
 
-// Newest first, by year then by array position (the collection is already
-// authored newest-first, same order the site's gallery renders).
+// The reel director (admin app, via reel-config.json) can pick which
+// projects star in the montage and in what order; otherwise featured-first,
+// newest-first (the collection is already authored newest-first, same order
+// the site's gallery renders).
+const starIds = Array.isArray(reelConfig.starProjects) && reelConfig.starProjects.length > 0
+  ? reelConfig.starProjects
+  : null;
 const featured = projects.find(p => p.featured) || projects[0] || null;
-const showcaseProjects = [
-  featured,
-  ...projects.filter(p => p !== featured),
-].filter(Boolean).slice(0, 5);
+const showcaseProjects = (starIds
+  ? starIds.map(id => projects.find(p => p.id === id)).filter(Boolean)
+  : [featured, ...projects.filter(p => p !== featured)].filter(Boolean)
+).slice(0, 5);
+
+// Section toggles — a director switching a section off must not distort the
+// stats slide's real numbers, so these are separate show* flags rather than
+// zeroed counts.
+const sections = reelConfig.sections || {};
 
 const categories = [...new Set(projects.map(p => p.category).filter(Boolean))];
 
@@ -52,6 +63,9 @@ export const reelData = {
   volunteeringOrgCount: volunteeringOrgs.length,
   testimonials,
   featuredTestimonial,
+  showTimeline: sections.timeline !== false && timeline.length > 0,
+  showVolunteering: sections.volunteering !== false && volunteering.length > 0,
+  showTestimonial: sections.testimonial !== false && Boolean(featuredTestimonial),
   guestbookCount: liveStats.guestbookCount || 0,
   guestbookNames: liveStats.guestbookNames || [],
   guestbookQuotes: liveStats.guestbookQuotes || [],

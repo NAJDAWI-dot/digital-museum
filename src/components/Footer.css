@@ -53,6 +53,20 @@
 }
 .footer-links-col a:hover { color: var(--linen); }
 
+/* "Your ticket" — a button that dresses like the surrounding links. */
+.footer-ticket-link {
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--silver);
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.footer-ticket-link:hover { color: var(--gold); }
+
 .footer-share {
   display: flex;
   flex-direction: column;

@@ -15,6 +15,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ProjectModal from './components/ProjectModal';
 import GuidedTour from './components/GuidedTour';
+import VisitorDelight from './components/VisitorDelight';
 import MorphDivider from './components/MorphDivider';
 import LiquidTransition from './components/LiquidTransition';
 import Lenis from 'lenis';
@@ -134,6 +135,7 @@ function MuseumApp() {
       )}
       <ProjectModal />
       <GuidedTour />
+      <VisitorDelight />
       <LiquidTransition />
     </>
   );

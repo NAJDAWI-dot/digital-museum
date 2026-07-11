@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import ProjectCard from './ProjectCard';
+import BrassPlaque from './BrassPlaque';
 import './Gallery.css';
 
 export default function Gallery() {
@@ -30,7 +31,7 @@ export default function Gallery() {
           <div className="gallery-header-left">
             <h2 className="gallery-title serif">
               The Complete<br />
-              <em>Collection</em>
+              <em>Collection</em> <BrassPlaque id={2} />
             </h2>
           </div>
           <div className="gallery-header-right">

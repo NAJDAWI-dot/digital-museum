@@ -6,6 +6,7 @@ import { slide } from '@remotion/transitions/slide';
 import { wipe } from '@remotion/transitions/wipe';
 import { crossZoom } from '@remotion/transitions';
 import { COLORS } from './theme.js';
+import { useFormat } from './format.jsx';
 import Letterbox from './components/Letterbox.jsx';
 import FilmGrain from './components/FilmGrain.jsx';
 import TitleSlide from './slides/TitleSlide.jsx';
@@ -43,9 +44,9 @@ export function calculateTotalFrames(data) {
   const sections = [{ frames: TITLE_FRAMES }];
   sections.push({ frames: data.showcaseProjects.length * PROJECTS_MONTAGE_FRAMES_PER_ITEM, transitionIn: FADE_FRAMES });
   sections.push({ frames: STATS_FRAMES, transitionIn: CROSSZOOM_FRAMES });
-  if (data.timelineCount > 0) sections.push({ frames: TIMELINE_FRAMES, transitionIn: FADE_FRAMES });
-  if (data.volunteeringCount > 0) sections.push({ frames: VOLUNTEERING_FRAMES, transitionIn: SLIDE_FRAMES });
-  if (data.featuredTestimonial) sections.push({ frames: TESTIMONIAL_FRAMES, transitionIn: FADE_FRAMES });
+  if (data.showTimeline) sections.push({ frames: TIMELINE_FRAMES, transitionIn: FADE_FRAMES });
+  if (data.showVolunteering) sections.push({ frames: VOLUNTEERING_FRAMES, transitionIn: SLIDE_FRAMES });
+  if (data.showTestimonial) sections.push({ frames: TESTIMONIAL_FRAMES, transitionIn: FADE_FRAMES });
   sections.push({ frames: GUESTBOOK_FRAMES, transitionIn: WIPE_FRAMES });
   sections.push({ frames: END_CARD_FRAMES, transitionIn: FADE_FRAMES });
 
@@ -75,6 +76,7 @@ function scoreVolume(frame, totalFrames) {
 
 export default function HighlightsReel({ data }) {
   const totalFrames = calculateTotalFrames(data);
+  const format = useFormat();
 
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
@@ -97,7 +99,7 @@ export default function HighlightsReel({ data }) {
           <StatsSlide projectCount={data.projectCount} categoryCount={data.categoryCount} timelineCount={data.timelineCount} />
         </TransitionSeries.Sequence>
 
-        {data.timelineCount > 0 && (
+        {data.showTimeline && (
           <>
             {T_FADE}
             <TransitionSeries.Sequence durationInFrames={TIMELINE_FRAMES}>
@@ -106,7 +108,7 @@ export default function HighlightsReel({ data }) {
           </>
         )}
 
-        {data.volunteeringCount > 0 && (
+        {data.showVolunteering && (
           <>
             {T_SLIDE_UP}
             <TransitionSeries.Sequence durationInFrames={VOLUNTEERING_FRAMES}>
@@ -119,7 +121,7 @@ export default function HighlightsReel({ data }) {
           </>
         )}
 
-        {data.featuredTestimonial && (
+        {data.showTestimonial && (
           <>
             {T_FADE}
             <TransitionSeries.Sequence durationInFrames={TESTIMONIAL_FRAMES}>
@@ -142,7 +144,9 @@ export default function HighlightsReel({ data }) {
       </TransitionSeries>
 
       <FilmGrain />
-      <Letterbox />
+      {/* Cinema bars read as intentional on 16:9; on a 9:16 phone-first cut
+          they just eat vertical space, so the vertical format skips them. */}
+      {format !== 'vertical' && <Letterbox />}
     </AbsoluteFill>
   );
 }

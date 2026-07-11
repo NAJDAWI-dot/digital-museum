@@ -1,0 +1,66 @@
+.delight-toasts {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.delight-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: rgba(13, 13, 13, 0.94);
+  border: 1px solid rgba(201, 169, 110, 0.4);
+  border-radius: 4px;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  max-width: 320px;
+}
+
+.delight-toast-icon { font-size: 1.3rem; }
+
+.delight-toast strong {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.delight-toast em {
+  display: block;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--linen);
+  margin-top: 2px;
+}
+
+.archives-key {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 15;
+  padding: 8px 16px;
+  background: rgba(13, 13, 13, 0.92);
+  border: 1px solid rgba(201, 169, 110, 0.45);
+  border-radius: 999px;
+  color: var(--gold);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.3s var(--ease-smooth), color 0.3s var(--ease-smooth);
+}
+
+.archives-key:hover { border-color: var(--gold); color: var(--gold-light); }
+
+@media (max-width: 640px) {
+  .delight-toasts { right: 12px; left: 12px; bottom: 16px; }
+  .delight-toast { max-width: none; }
+}

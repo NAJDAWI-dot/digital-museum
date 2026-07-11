@@ -69,9 +69,38 @@ jobs:
         working-directory: remotion
         run: npm run select-score
 
-      - name: Render
+      - name: Render (16:9 master)
         working-directory: remotion
         run: npm run render
+
+      - name: Render (9:16 vertical master)
+        working-directory: remotion
+        run: npx remotion render src/index.jsx HighlightsReelVertical out/highlights-vertical.mp4
+
+      # A settled frame from the title slide — the site modal's poster, so
+      # the (preload=none) player shows the reel's cover instead of black.
+      - name: Render poster frame
+        working-directory: remotion
+        run: npx remotion still src/index.jsx HighlightsReel out/highlights-poster.jpg --frame=80
+
+      # Visitors get the web encode (CRF 22 + faststart, a fraction of the
+      # size); the CRF-14 masters go to workflow artifacts instead of
+      # bloating the repo and every visitor's connection.
+      - name: Web-encode for delivery
+        working-directory: remotion
+        shell: 'C:\PROGRA~1\Git\usr\bin\bash.exe -e -o pipefail {0}'
+        run: |
+          node scripts/web-encode.mjs out/highlights.mp4 out/highlights-web.mp4
+          node scripts/web-encode.mjs out/highlights-vertical.mp4 out/highlights-vertical-web.mp4
+
+      - name: Archive full-quality masters
+        uses: actions/upload-artifact@v4
+        with:
+          name: highlights-masters
+          path: |
+            remotion/out/highlights.mp4
+            remotion/out/highlights-vertical.mp4
+          retention-days: 90
 
       # `shell: bash` alone resolves to whatever "bash" the runner's PATH
       # finds first — under the runner service's own (non-interactive)
@@ -102,14 +131,15 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-          cp remotion/out/highlights.mp4 public/highlights.mp4
-          git add public/highlights.mp4
+          cp remotion/out/highlights-web.mp4 public/highlights.mp4
+          cp remotion/out/highlights-vertical-web.mp4 public/highlights-vertical.mp4
+          cp remotion/out/highlights-poster.jpg public/highlights-poster.jpg
+          git add public/highlights.mp4 public/highlights-vertical.mp4 public/highlights-poster.jpg
           # `git diff --quiet` only compares tracked files against the
           # working tree — it silently reports "no difference" for a
-          # brand-new untracked file, which is exactly what
-          # public/highlights.mp4 is on the very first run. Diffing the
-          # staged version against HEAD (--cached) catches new files too.
-          if ! git diff --cached --quiet public/highlights.mp4; then
+          # brand-new untracked file. Diffing the staged version against
+          # HEAD (--cached) catches new files too.
+          if ! git diff --cached --quiet; then
             git commit -m "chore: regenerate highlights reel"
             git push origin HEAD:main
             NEW_SHA=$(git rev-parse HEAD)

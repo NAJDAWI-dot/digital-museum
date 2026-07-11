@@ -1,0 +1,89 @@
+name: Render Project Trailer
+
+# Renders a 15-second single-exhibit teaser (remotion/src/ProjectTrailer.jsx)
+# for the project id passed at dispatch — triggered from the admin app's
+# "Render trailer" button. Output is web-encoded and committed to
+# public/trailers/<id>.mp4.
+on:
+  workflow_dispatch:
+    inputs:
+      project_id:
+        description: 'Project id (from src/data/projects.js) to render a trailer for'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+# Shares the render-highlights group: every workflow that commits binaries
+# to main must be serialized against the others, or two runs race to push
+# conflicting binary blobs (the exact failure the reel pipeline hit before
+# adopting this group).
+concurrency:
+  group: render-highlights
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: [self-hosted, windows, museum-render]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install site dependencies
+        run: npm ci
+
+      - name: Extract embedded images (local only, not committed)
+        run: node scripts/extract-images.mjs
+
+      - name: Install Remotion dependencies
+        working-directory: remotion
+        run: npm ci
+
+      - name: Select score
+        working-directory: remotion
+        run: npm run select-score
+
+      - name: Render trailer
+        working-directory: remotion
+        shell: 'C:\PROGRA~1\Git\usr\bin\bash.exe -e -o pipefail {0}'
+        run: |
+          npx remotion render src/index.jsx ProjectTrailer out/trailer.mp4 \
+            --props="{\"projectId\":\"${{ inputs.project_id }}\"}"
+          node scripts/web-encode.mjs out/trailer.mp4 out/trailer-web.mp4
+
+      - name: Publish trailer
+        shell: 'C:\PROGRA~1\Git\usr\bin\bash.exe -e -o pipefail {0}'
+        run: |
+          set -eo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin main
+          git reset --hard origin/main
+
+          mkdir -p public/trailers
+          cp remotion/out/trailer-web.mp4 "public/trailers/${{ inputs.project_id }}.mp4"
+          git add "public/trailers/${{ inputs.project_id }}.mp4"
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: render trailer for ${{ inputs.project_id }}"
+            git push origin HEAD:main
+            NEW_SHA=$(git rev-parse HEAD)
+
+            # Same GITHUB_TOKEN/anti-loop + ref-propagation dance as
+            # render-highlights.yml — see the comments there.
+            for i in $(seq 1 15); do
+              REMOTE_SHA=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)
+              if [ "$REMOTE_SHA" = "$NEW_SHA" ]; then break; fi
+              sleep 2
+            done
+            gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref main
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,115 @@
+.ticket-chip {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  padding: 10px 22px;
+  background: rgba(13, 13, 13, 0.92);
+  border: 1px solid rgba(201, 169, 110, 0.45);
+  border-radius: 999px;
+  color: var(--gold);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.3s var(--ease-smooth), color 0.3s var(--ease-smooth);
+}
+
+.ticket-chip:hover {
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+
+.ticket-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(8, 8, 8, 0.82);
+  backdrop-filter: blur(10px);
+}
+
+.ticket-modal {
+  width: min(720px, 100%);
+  background: var(--ink-light);
+  border: 1px solid rgba(201, 169, 110, 0.25);
+  border-radius: 6px;
+  padding: 20px;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
+}
+
+.ticket-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+}
+
+.ticket-medals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 2px 4px;
+}
+
+.ticket-medal {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border: 1px solid rgba(201, 169, 110, 0.16);
+  border-radius: 999px;
+  opacity: 0.38;
+  filter: grayscale(0.9);
+  transition: opacity 0.3s var(--ease-smooth);
+}
+
+.ticket-medal.earned {
+  opacity: 1;
+  filter: none;
+  border-color: rgba(201, 169, 110, 0.5);
+  background: rgba(201, 169, 110, 0.07);
+}
+
+.ticket-medal-icon { font-size: 0.95rem; }
+
+.ticket-medal-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--mist);
+  text-transform: uppercase;
+}
+
+.ticket-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.ticket-btn {
+  padding: 9px 20px;
+  background: var(--gold);
+  color: var(--ink);
+  border: 1px solid var(--gold);
+  border-radius: 3px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.3s var(--ease-smooth), color 0.3s var(--ease-smooth);
+}
+
+.ticket-btn:hover { background: var(--gold-light); border-color: var(--gold-light); }
+
+.ticket-btn.ghost {
+  background: transparent;
+  color: var(--dust);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.ticket-btn.ghost:hover { color: var(--linen); background: transparent; }

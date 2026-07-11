@@ -1,0 +1,38 @@
+/* Hidden scavenger-hunt plaques — quiet by default, warm on hover. */
+.brass-plaque {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--gold-dark);
+  opacity: 0.22;
+  cursor: pointer;
+  transition: opacity 0.4s var(--ease-smooth), transform 0.4s var(--ease-smooth);
+}
+
+.brass-plaque:hover,
+.brass-plaque:focus-visible {
+  opacity: 0.85;
+  transform: scale(1.15);
+  outline: none;
+}
+
+.brass-plaque.found {
+  color: var(--gold);
+  opacity: 0.5;
+  cursor: default;
+}
+
+.brass-plaque.pop {
+  animation: plaque-pop 0.9s var(--ease-smooth);
+}
+
+@keyframes plaque-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.7) rotate(-6deg); filter: drop-shadow(0 0 10px var(--gold)); }
+  100% { transform: scale(1); }
+}

@@ -6,10 +6,12 @@ import GoldRule from '../components/GoldRule.jsx';
 import RevealText from '../components/RevealText.jsx';
 import SlideDrift from '../components/SlideDrift.jsx';
 import { TESTIMONIAL_FRAMES } from '../durations.js';
+import { useFormat, fmt } from '../format.jsx';
 
 export default function TestimonialSlide({ testimonial }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const format = useFormat();
   // The big quote mark blooms in first — oversized, blurred, scaling down
   // into place — then the words of the quote follow one by one, so the
   // slide reads as someone *speaking*, not a paragraph appearing.
@@ -27,7 +29,7 @@ export default function TestimonialSlide({ testimonial }) {
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
-            padding: '0 260px',
+            padding: fmt(format, '0 260px', '0 80px'),
           }}
         >
           <span
@@ -50,7 +52,7 @@ export default function TestimonialSlide({ testimonial }) {
               fontFamily: FONT_SERIF,
               fontStyle: 'italic',
               fontWeight: 400,
-              fontSize: 48,
+              fontSize: fmt(format, 48, 40),
               color: COLORS.linen,
               lineHeight: 1.4,
               margin: '20px 0 0',

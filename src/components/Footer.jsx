@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useMuseum } from '../context/MuseumContext';
 import { buildShareLink } from '../utils/shareLinks';
+import BrassPlaque from './BrassPlaque';
 import './Footer.css';
 
 // "GitHub" was dropped as a share target: there's no such thing as sharing
@@ -75,6 +76,13 @@ export default function Footer() {
             <a href="#hero">Home</a>
             <a href="#featured">Featured</a>
             <a href="#gallery">Gallery</a>
+            <button
+              type="button"
+              className="footer-ticket-link"
+              onClick={() => window.dispatchEvent(new CustomEvent('museum:open-ticket'))}
+            >
+              Your ticket
+            </button>
           </div>
 
           <div className="footer-links-col">
@@ -108,7 +116,9 @@ export default function Footer() {
 
         <div className="footer-bottom">
           <span className="mono footer-copy">© {year} Hashem Najdawi Museum</span>
-          <span className="mono footer-copy">Crafted with precision</span>
+          <span className="mono footer-copy">
+            Crafted with precision <BrassPlaque id={5} />
+          </span>
         </div>
       </div>
     </footer>

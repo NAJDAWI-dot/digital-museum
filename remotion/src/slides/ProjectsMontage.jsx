@@ -6,6 +6,7 @@ import KenBurnsImage from '../components/KenBurnsImage.jsx';
 import Scrim from '../components/Scrim.jsx';
 import RevealText from '../components/RevealText.jsx';
 import TrackingIn from '../components/TrackingIn.jsx';
+import { useFormat, fmt } from '../format.jsx';
 
 const PER_PROJECT_FRAMES = 105; // 3.5s @ 30fps
 const CROSSFADE_FRAMES = 18;
@@ -21,6 +22,7 @@ const EASE_CROSS = Easing.inOut(Easing.cubic);
 export default function ProjectsMontage({ projects }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const format = useFormat();
   const index = Math.min(projects.length - 1, Math.floor(frame / PER_PROJECT_FRAMES));
   const project = projects[index];
   const localFrame = frame - index * PER_PROJECT_FRAMES;
@@ -63,8 +65,8 @@ export default function ProjectsMontage({ projects }) {
       <div
         style={{
           position: 'absolute',
-          top: 84,
-          right: 120,
+          top: fmt(format, 84, 64),
+          right: fmt(format, 120, 48),
           fontFamily: FONT_SANS,
           fontSize: 19,
           letterSpacing: 3,
@@ -78,7 +80,7 @@ export default function ProjectsMontage({ projects }) {
         {String(projects.length).padStart(2, '0')}
       </div>
 
-      <AbsoluteFill style={{ justifyContent: 'flex-end', padding: '0 120px 100px' }}>
+      <AbsoluteFill style={{ justifyContent: 'flex-end', padding: fmt(format, '0 120px 100px', '0 56px 130px') }}>
         <span
           style={{
             fontFamily: FONT_SANS,
@@ -90,7 +92,7 @@ export default function ProjectsMontage({ projects }) {
         >
           <TrackingIn text={`${project.category} · ${project.year}`} startFrame={index * PER_PROJECT_FRAMES + 6} letterSpacing={4} />
         </span>
-        <h2 style={{ fontFamily: FONT_SERIF, fontStyle: 'italic', fontWeight: 400, fontSize: 72, color: COLORS.linen, margin: 0, maxWidth: 1200 }}>
+        <h2 style={{ fontFamily: FONT_SERIF, fontStyle: 'italic', fontWeight: 400, fontSize: fmt(format, 72, 56), color: COLORS.linen, margin: 0, maxWidth: 1200 }}>
           <RevealText text={project.title} startFrame={index * PER_PROJECT_FRAMES + 10} stagger={2} />
         </h2>
         {project.subtitle && (

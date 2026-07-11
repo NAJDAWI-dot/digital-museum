@@ -7,6 +7,7 @@ import GoldRule from '../components/GoldRule.jsx';
 import TrackingIn from '../components/TrackingIn.jsx';
 import SlideDrift from '../components/SlideDrift.jsx';
 import { GUESTBOOK_FRAMES } from '../durations.js';
+import { useFormat, fmt } from '../format.jsx';
 
 const MAX_NAMES_SHOWN = 48;
 
@@ -42,11 +43,12 @@ function NameTag({ name, index }) {
 export default function GuestbookSlide({ count, names, quote }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const format = useFormat();
   const headingProgress = spring({ frame, fps, config: { damping: 200, stiffness: 80 } });
   const countPop = spring({ frame: frame - 6, fps, config: { damping: 16, stiffness: 120, mass: 0.8 } });
   const quoteProgress = spring({ frame: frame - 72, fps, config: { damping: 200, stiffness: 90 } });
 
-  const shown = names.slice(0, MAX_NAMES_SHOWN);
+  const shown = names.slice(0, fmt(format, MAX_NAMES_SHOWN, 24));
   const overflow = names.length - shown.length;
 
   return (
@@ -60,7 +62,7 @@ export default function GuestbookSlide({ count, names, quote }) {
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
-            padding: '0 140px',
+            padding: fmt(format, '0 140px', '0 60px'),
           }}
         >
           <span style={{ fontFamily: FONT_SANS, fontSize: 18, textTransform: 'uppercase', color: COLORS.gold, opacity: headingProgress, marginBottom: 14 }}>

@@ -7,10 +7,12 @@ import GoldRule from '../components/GoldRule.jsx';
 import TrackingIn from '../components/TrackingIn.jsx';
 import SlideDrift from '../components/SlideDrift.jsx';
 import { STATS_FRAMES } from '../durations.js';
+import { useFormat, fmt } from '../format.jsx';
 
 function StatBlock({ value, label, delay }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const format = useFormat();
   // Slight overshoot (damping 16) so each number lands with a pop — these
   // are the reel's proudest figures, they should arrive with confidence.
   const progress = spring({ frame: frame - delay, fps, config: { damping: 16, stiffness: 130, mass: 0.8 } });
@@ -22,14 +24,14 @@ function StatBlock({ value, label, delay }) {
         opacity: settled,
         transform: `translateY(${(1 - settled) * 24}px) scale(${0.85 + progress * 0.15})`,
         textAlign: 'center',
-        padding: '0 56px',
+        padding: fmt(format, '0 56px', '18px 0'),
       }}
     >
       <div
         style={{
           fontFamily: FONT_SERIF,
           fontWeight: 300,
-          fontSize: 108,
+          fontSize: fmt(format, 108, 92),
           color: COLORS.gold,
           lineHeight: 1,
           textShadow: `0 0 ${interpolate(settled, [0, 1], [30, 0])}px ${COLORS.gold}88`,
@@ -48,6 +50,7 @@ function StatBlock({ value, label, delay }) {
 export default function StatsSlide({ projectCount, categoryCount, timelineCount }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const format = useFormat();
   const headingProgress = spring({ frame, fps, config: { damping: 200, stiffness: 80 } });
 
   return (
@@ -75,7 +78,7 @@ export default function StatsSlide({ projectCount, categoryCount, timelineCount 
           >
             <TrackingIn text="The Collection, In Numbers" startFrame={4} letterSpacing={4} />
           </span>
-          <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', flexDirection: fmt(format, 'row', 'column'), alignItems: fmt(format, 'flex-start', 'center') }}>
             <StatBlock value={projectCount} label="Exhibits" delay={14} />
             <StatBlock value={categoryCount} label="Disciplines" delay={24} />
             <StatBlock value={timelineCount} label="Milestones" delay={34} />

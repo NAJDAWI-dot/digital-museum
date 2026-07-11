@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import { startTour } from './GuidedTour';
 import HighlightsReelModal from './HighlightsReelModal';
+import BrassPlaque from './BrassPlaque';
 import './Hero.css';
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -182,6 +183,7 @@ export default function Hero({ revealed = true }) {
         <span className="mono hero-catalogue">
           Catalogue&nbsp;—&nbsp;{exhibitCount} exhibits&nbsp;·&nbsp;{disciplineCount} disciplines&nbsp;·&nbsp;est. 2023
         </span>
+        <BrassPlaque id={1} />
       </motion.div>
 
       {/* Scroll indicator */}

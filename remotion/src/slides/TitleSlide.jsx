@@ -9,6 +9,7 @@ import AtmosphereParticles from '../components/AtmosphereParticles.jsx';
 import SlideDrift from '../components/SlideDrift.jsx';
 import useAudioPulse from '../hooks/useAudioPulse.js';
 import { TITLE_FRAMES } from '../durations.js';
+import { useFormat, fmt } from '../format.jsx';
 
 /** Opening choreography, beat by beat:
  * 0–15   room lights up (radial gradient blooms from black)
@@ -21,6 +22,7 @@ export default function TitleSlide({ siteName, projectCount }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const pulse = useAudioPulse();
+  const format = useFormat();
 
   const roomLight = interpolate(frame, [0, 18], [0, 1], { extrapolateRight: 'clamp' });
   const countProgress = spring({ frame: frame - 45, fps, config: { damping: 200, stiffness: 90 } });
@@ -40,18 +42,19 @@ export default function TitleSlide({ siteName, projectCount }) {
           }}
         >
           <AtmosphereParticles opacity={0.4} />
-          <span style={{ fontFamily: FONT_SANS, fontSize: 22, textTransform: 'uppercase', color: COLORS.gold, marginBottom: 28 }}>
-            <TrackingIn text="The Archives Present" startFrame={4} letterSpacing={6} />
+          <span style={{ fontFamily: FONT_SANS, fontSize: fmt(format, 22, 19), textTransform: 'uppercase', color: COLORS.gold, marginBottom: 28 }}>
+            <TrackingIn text="The Archives Present" startFrame={4} letterSpacing={fmt(format, 6, 4)} />
           </span>
           <h1
             style={{
               fontFamily: FONT_SERIF,
               fontStyle: 'italic',
               fontWeight: 400,
-              fontSize: 108,
+              fontSize: fmt(format, 108, 74),
               color: COLORS.linen,
               margin: 0,
               lineHeight: 1.05,
+              padding: fmt(format, 0, '0 40px'),
             }}
           >
             <RevealText text={siteName} startFrame={12} stagger={4} />

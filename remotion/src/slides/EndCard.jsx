@@ -8,10 +8,12 @@ import TrackingIn from '../components/TrackingIn.jsx';
 import AtmosphereParticles from '../components/AtmosphereParticles.jsx';
 import useAudioPulse from '../hooks/useAudioPulse.js';
 import { END_CARD_FRAMES } from '../durations.js';
+import { useFormat, fmt } from '../format.jsx';
 
 export default function EndCard({ ownerName, totalLikes }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const format = useFormat();
   const pulse = useAudioPulse();
   const glowProgress = spring({ frame, fps, config: { damping: 200, stiffness: 40 }, durationInFrames: 90 });
   const glowScale = 0.85 + glowProgress * 0.25 + pulse * 0.08;
@@ -41,7 +43,7 @@ export default function EndCard({ ownerName, totalLikes }) {
           <span style={{ fontFamily: FONT_SANS, fontSize: 18, textTransform: 'uppercase', color: COLORS.gold }}>
             <TrackingIn text="Fin" startFrame={2} letterSpacing={6} />
           </span>
-          <h1 style={{ fontFamily: FONT_SERIF, fontStyle: 'italic', fontWeight: 300, fontSize: 96, color: COLORS.linen, margin: '20px 0 0' }}>
+          <h1 style={{ fontFamily: FONT_SERIF, fontStyle: 'italic', fontWeight: 300, fontSize: fmt(format, 96, 66), color: COLORS.linen, margin: '20px 0 0', padding: fmt(format, 0, '0 40px') }}>
             <RevealText text="Until the Next Exhibit" startFrame={10} stagger={3} />
           </h1>
           <GoldRule width={64} startFrame={42} style={{ margin: '36px auto' }} glow={pulse} />
