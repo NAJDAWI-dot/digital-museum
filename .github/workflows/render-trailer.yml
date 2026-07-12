@@ -54,6 +54,13 @@ jobs:
         working-directory: remotion
         shell: 'C:\PROGRA~1\Git\usr\bin\bash.exe -e -o pipefail {0}'
         run: |
+          # npx (unlike node/git/gh, which are .exe) is a shell script whose
+          # `#!/usr/bin/env bash` shebang resolves through PATH. The runner
+          # starts this bash non-login, so PATH is the service PATH where
+          # C:\Windows\System32 (the WSL bash stub) precedes Git's bin — env
+          # finds WSL bash and dies with "no installed distributions". Put
+          # Git's own /usr/bin first so the shebang lands on Git bash.
+          export PATH="/usr/bin:$PATH"
           npx remotion render src/index.jsx ProjectTrailer out/trailer.mp4 \
             --props="{\"projectId\":\"${{ inputs.project_id }}\"}"
           node scripts/web-encode.mjs out/trailer.mp4 out/trailer-web.mp4
