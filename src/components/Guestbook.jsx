@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { getSupabaseClient } from '../utils/supabaseClient';
+import ShimmeringText from './anim/ShimmeringText';
 import './Guestbook.css';
 
 const TABLE = 'guestbook_entries';
@@ -155,7 +156,7 @@ export default function Guestbook() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="section-label">Sign the Register</div>
+          <div className="section-label"><ShimmeringText text="Sign the Register" /></div>
           <h2 className="guestbook-title serif">Visitor's Log</h2>
           <p className="guestbook-subtitle mono">Leave a note for the next visitor</p>
         </motion.div>

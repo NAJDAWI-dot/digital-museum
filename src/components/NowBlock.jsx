@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
+import TypingText from './anim/TypingText';
 import './NowBlock.css';
 
 /** Formats an ISO date string as a short relative label ("today", "3d ago", "Jan 4"). */
@@ -48,7 +49,7 @@ export default function NowBlock() {
           <span className="now-block-divider" aria-hidden="true" />
 
           <div className="now-block-text">
-            <span className="now-block-title">{nowBuilding.title}</span>
+            <span className="now-block-title"><TypingText text={nowBuilding.title} /></span>
             {nowBuilding.description && (
               <span className="now-block-desc">{nowBuilding.description}</span>
             )}

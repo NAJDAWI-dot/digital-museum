@@ -4,6 +4,9 @@ import { useMuseum } from '../context/MuseumContext';
 import { startTour } from './GuidedTour';
 import HighlightsReelModal from './HighlightsReelModal';
 import BrassPlaque from './BrassPlaque';
+import SplittingText from './anim/SplittingText';
+import Magnetic from './anim/Magnetic';
+import ShimmeringText from './anim/ShimmeringText';
 import './Hero.css';
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -23,12 +26,6 @@ const rise = {
 const slideIn = {
   hidden: { opacity: 0, x: -20 },
   show: { opacity: 1, x: 0, transition: { duration: 0.8, ease: EASE } },
-};
-// Masked line reveal: the .hero-headline clips overflow, the line slides up from
-// below it, with a brief blur settle for a cinematic focus-pull.
-const lineRise = {
-  hidden: { y: '110%', filter: 'blur(6px)' },
-  show: { y: 0, filter: 'blur(0px)', transition: { duration: 1.1, ease: EASE } },
 };
 
 export default function Hero({ revealed = true }) {
@@ -132,20 +129,22 @@ export default function Hero({ revealed = true }) {
         animate={anim}
       >
         <motion.div className="hero-eyebrow section-label" variants={slideIn}>
-          Digital Museum &nbsp;·&nbsp; Est. 2023
+          <ShimmeringText text={'Digital Museum  ·  Est. 2023'} />
         </motion.div>
 
+        {/* Headline: per-character rise + focus-pull (SplittingText), gated
+            on the curtain reveal rather than viewport visibility — the same
+            blur language the old lineRise had, at letter grain. */}
         <h1 className="hero-headline-wrap">
           <span className="hero-headline serif">
-            <motion.span className="hero-line" variants={lineRise}>
-              A museum
-            </motion.span>
+            <SplittingText text="A museum" active={revealed} delay={0.25} stagger={0.035} />
           </span>
           <span className="hero-headline serif hero-headline--italic">
-            <motion.span className="hero-line" variants={lineRise}>
-              of infinite&nbsp;
-              <span className="hero-gold-outline">creations</span>
-            </motion.span>
+            <SplittingText text="of infinite" active={revealed} delay={0.55} stagger={0.035} />
+            {' '}
+            <span className="hero-gold-outline">
+              <SplittingText text="creations" active={revealed} delay={0.95} stagger={0.045} />
+            </span>
           </span>
         </h1>
 
@@ -157,16 +156,22 @@ export default function Hero({ revealed = true }) {
           </motion.p>
 
           <motion.div className="hero-cta" variants={rise}>
-            <a href="#gallery" className="hero-btn">
-              <span>Enter Exhibition</span>
-              <span className="hero-btn-arrow">→</span>
-            </a>
-            <button type="button" className="hero-tour-link mono" onClick={startTour}>
-              Take the guided tour
-            </button>
-            <button type="button" className="hero-tour-link mono" onClick={() => setReelOpen(true)}>
-              Watch the highlights
-            </button>
+            <Magnetic>
+              <a href="#gallery" className="hero-btn">
+                <span>Enter Exhibition</span>
+                <span className="hero-btn-arrow">→</span>
+              </a>
+            </Magnetic>
+            <Magnetic strength={0.18}>
+              <button type="button" className="hero-tour-link mono" onClick={startTour}>
+                Take the guided tour
+              </button>
+            </Magnetic>
+            <Magnetic strength={0.18}>
+              <button type="button" className="hero-tour-link mono" onClick={() => setReelOpen(true)}>
+                Watch the highlights
+              </button>
+            </Magnetic>
           </motion.div>
         </div>
       </motion.div>

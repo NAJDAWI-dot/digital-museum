@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset, isRealLink } from '../lib/assets';
 import ExhibitReel from './ExhibitReel';
+import ImageZoom from './anim/ImageZoom';
 import './ProjectModal.css';
 
 export function Lightbox({ images, startIndex, onClose }) {
@@ -54,16 +55,21 @@ export function Lightbox({ images, startIndex, onClose }) {
         onTouchEnd={onTouchEnd}
       >
         <AnimatePresence mode="wait">
-          <motion.img
+          {/* Slide transition on the wrapper; ImageZoom inside adds the
+              conservation-desk magnify (click to zoom, move to pan). */}
+          <motion.div
             key={idx}
-            src={resolveAsset(images[idx])}
-            alt={`Screenshot ${idx + 1} of ${images.length}`}
             className="lightbox-img"
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -24 }}
             transition={{ duration: 0.3 }}
-          />
+          >
+            <ImageZoom
+              src={resolveAsset(images[idx])}
+              alt={`Screenshot ${idx + 1} of ${images.length}`}
+            />
+          </motion.div>
         </AnimatePresence>
         {images.length > 1 && (
           <>

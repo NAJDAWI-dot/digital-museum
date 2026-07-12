@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMuseum } from '../context/MuseumContext';
 import { buildShareLink } from '../utils/shareLinks';
 import BrassPlaque from './BrassPlaque';
+import Magnetic from './anim/Magnetic';
 import './Footer.css';
 
 // "GitHub" was dropped as a share target: there's no such thing as sharing
@@ -97,17 +98,18 @@ export default function Footer() {
           <p className="footer-col-title mono">Share this page</p>
           <div className="footer-share-btns">
             {SHARE_SOURCES.map(({ source, label, action, icon }) => (
-              <button
-                key={source}
-                type="button"
-                className="footer-share-btn"
-                onClick={() => handleShare(source, action)}
-                aria-label={label}
-                title={label}
-              >
-                {icon}
-                <span className="mono">{copiedSource === source ? 'Copied!' : label}</span>
-              </button>
+              <Magnetic key={source} strength={0.2}>
+                <button
+                  type="button"
+                  className="footer-share-btn"
+                  onClick={() => handleShare(source, action)}
+                  aria-label={label}
+                  title={label}
+                >
+                  {icon}
+                  <span className="mono">{copiedSource === source ? 'Copied!' : label}</span>
+                </button>
+              </Magnetic>
             ))}
           </div>
         </div>

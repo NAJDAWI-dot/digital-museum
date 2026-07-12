@@ -15,6 +15,11 @@
   top: 140px;
 }
 
+/* Shine wrapper mirrors the card's radius so the sheen clips correctly. */
+.featured-shine {
+  border-radius: 6px;
+}
+
 .featured-card {
   position: relative;
   border-radius: 6px;

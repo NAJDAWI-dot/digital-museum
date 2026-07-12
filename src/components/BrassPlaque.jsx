@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { collectPlaque, getPlaques } from '../lib/achievements';
+import { collectPlaque, getPlaques, TOTAL_PLAQUES } from '../lib/achievements';
 import './BrassPlaque.css';
 
-/** One of five tiny brass plaques hidden around the museum — the scavenger
- * hunt. Deliberately subtle (small, low opacity) but honest: it brightens
- * on hover and is keyboard-focusable, so it's discoverable rather than
- * invisible. Once collected it stays dimly lit as a souvenir. */
+/** One of five brass plaques hidden around the museum — the scavenger
+ * hunt. Subtle but honest: it brightens on hover, is keyboard-focusable,
+ * and stays visible enough to spot on phones (where there is no hover to
+ * reveal it). A plaque never plays dead: tapping one you already collected
+ * re-announces your hunt progress instead of silently ignoring you. */
 export default function BrassPlaque({ id, style }) {
   const [found, setFound] = useState(() => Boolean(getPlaques()[id]));
   const [pop, setPop] = useState(false);
@@ -16,6 +17,12 @@ export default function BrassPlaque({ id, style }) {
       setFound(true);
       setPop(true);
       setTimeout(() => setPop(false), 900);
+    } else {
+      // Already collected — re-toast progress so the tap always answers.
+      const count = Object.keys(getPlaques()).length;
+      window.dispatchEvent(new CustomEvent('museum:plaque-status', {
+        detail: { count, total: TOTAL_PLAQUES },
+      }));
     }
   };
 

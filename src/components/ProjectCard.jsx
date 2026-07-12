@@ -3,6 +3,7 @@ import { motion, useInView, useMotionValue, useSpring, useTransform } from 'fram
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset, isRealLink } from '../lib/assets';
 import { getCount, incrementCount } from '../utils/counterApi';
+import SlidingNumber from './anim/SlidingNumber';
 import './ProjectCard.css';
 
 export default function ProjectCard({ project, index, onEdit }) {
@@ -190,7 +191,7 @@ export default function ProjectCard({ project, index, onEdit }) {
               <svg width="15" height="15" viewBox="0 0 24 24" fill={hasLiked ? "var(--gold)" : "none"} stroke={hasLiked ? "var(--gold)" : "currentColor"} strokeWidth="1.5">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
-              <span className="likes-count mono">{likes}</span>
+              <span className="likes-count mono"><SlidingNumber value={likes} /></span>
             </button>
             
             {isRealLink(project.repo) && (

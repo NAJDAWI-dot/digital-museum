@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import SlidingNumber from './anim/SlidingNumber';
 import './Preloader.css';
 
 const NAME    = "Hashem Najdawi";
@@ -10,7 +11,7 @@ const LIFT_MS = 1000;
 export default function Preloader({ onReveal, onDone }) {
   const wrapRef    = useRef(null);
   const lineRef    = useRef(null);
-  const counterRef = useRef(null);
+  const [count, setCount] = useState(0);
   const [phase, setPhase] = useState('entering'); // entering → counting → exiting
 
   useEffect(() => {
@@ -22,16 +23,17 @@ export default function Preloader({ onReveal, onDone }) {
     }, 100));
 
     /* ── Phase 2: count up ── */
-    let count  = 0;
-    let raf;
+    // Stepped at ~90ms (not per-frame) so the odometer digits get room to
+    // roll between values instead of blurring through them.
+    let current = 0;
+    let interval;
     timers.push(setTimeout(() => {
       setPhase('counting');
-      const tick = () => {
-        count += Math.ceil(Math.random() * 8 + 3); // Faster count
-        if (count >= 100) count = 100;
-        if (counterRef.current) counterRef.current.textContent = String(count).padStart(3, '0');
-        if (count < 100) raf = requestAnimationFrame(tick);
-        else {
+      interval = setInterval(() => {
+        current = Math.min(100, current + Math.ceil(Math.random() * 14 + 6));
+        setCount(current);
+        if (current >= 100) {
+          clearInterval(interval);
           /* ── Phase 3: curtain lift ── */
           timers.push(setTimeout(() => {
             setPhase('exiting');
@@ -40,15 +42,14 @@ export default function Preloader({ onReveal, onDone }) {
             onReveal?.();
             // Unmount only once the lift has fully cleared the viewport.
             timers.push(setTimeout(() => onDone?.(), LIFT_MS));
-          }, 150));
+          }, 320));
         }
-      };
-      raf = requestAnimationFrame(tick);
+      }, 90);
     }, 400));
 
     return () => {
       timers.forEach(clearTimeout);
-      cancelAnimationFrame(raf);
+      clearInterval(interval);
     };
   }, [onReveal, onDone]);
 
@@ -92,9 +93,11 @@ export default function Preloader({ onReveal, onDone }) {
         <div className="pl-sub mono">Digital Museum</div>
       </div>
 
-      {/* Counter */}
+      {/* Counter — odometer digits roll to each new value */}
       <div className="pl-bottom">
-        <span className="pl-counter mono" ref={counterRef}>000</span>
+        <span className="pl-counter mono">
+          <SlidingNumber value={count} pad={3} />
+        </span>
         <span className="pl-loading mono">Loading</span>
       </div>
     </div>

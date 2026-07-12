@@ -1,0 +1,38 @@
+.shine-wrap {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.shine-streak {
+  position: absolute;
+  top: -20%;
+  left: -75%;
+  width: 55%;
+  height: 140%;
+  background: linear-gradient(
+    105deg,
+    transparent,
+    rgba(223, 194, 143, 0.13) 45%,
+    rgba(248, 246, 242, 0.2) 50%,
+    rgba(223, 194, 143, 0.13) 55%,
+    transparent
+  );
+  transform: skewX(-18deg);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.shine-wrap:hover .shine-streak {
+  animation: shine-sweep 0.95s var(--ease-precise);
+}
+
+@keyframes shine-sweep {
+  0% { left: -75%; opacity: 1; }
+  100% { left: 130%; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  .shine-streak { display: none; }
+}

@@ -11,16 +11,31 @@ import './HighlightsReelModal.css';
  * navigation, which would reload the SPA and replay the entrance splash. */
 export default function HighlightsReelModal({ open, onClose }) {
   const [variant, setVariant] = useState('wide'); // 'wide' | 'vertical'
+  const videoRef = React.useRef(null);
+
+  // Reset to the cinematic cut ONLY when the modal opens. This must not
+  // depend on onClose: callers pass an inline arrow, so any parent
+  // re-render (context updates, likes ticking) would re-run an effect
+  // keyed on it and silently kick a vertical viewer back to 16:9.
+  useEffect(() => {
+    if (open) setVariant('wide');
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
-    setVariant('wide'); // every opening starts with the cinematic cut
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
   const isVertical = variant === 'vertical';
+
+  // iOS blocks autoPlay-with-sound on the remounted element even after a
+  // tap — retry via the API (allowed inside the gesture's grace window);
+  // if it still refuses, the visible controls make one tap enough.
+  useEffect(() => {
+    if (open) videoRef.current?.play().catch(() => {});
+  }, [open, variant]);
 
   return (
     <AnimatePresence>
@@ -43,6 +58,7 @@ export default function HighlightsReelModal({ open, onClose }) {
           >
             <video
               key={variant}
+              ref={videoRef}
               className={`reel-modal-video ${isVertical ? 'vertical' : ''}`}
               src={`${import.meta.env.BASE_URL}${isVertical ? 'highlights-vertical.mp4' : 'highlights.mp4'}`}
               poster={isVertical ? undefined : `${import.meta.env.BASE_URL}highlights-poster.jpg`}

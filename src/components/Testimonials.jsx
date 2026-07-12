@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
+import ShimmeringText from './anim/ShimmeringText';
+import MotionCarousel from './anim/MotionCarousel';
 import './Testimonials.css';
 
 export default function Testimonials() {
@@ -19,15 +21,27 @@ export default function Testimonials() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="section-label">Endorsements</div>
+          <div className="section-label"><ShimmeringText text="Endorsements" /></div>
           <h2 className="testimonials-title serif">What people say</h2>
         </motion.div>
 
-        <div className="testimonials-grid">
-          {testimonials.map((t, i) => (
-            <TestimonialCard key={t.id} item={t} index={i} inView={inView} />
-          ))}
-        </div>
+        {/* ≤3 voices sit side by side like wall plaques; more than that
+            rotates as a carousel so no endorsement is buried below the fold. */}
+        {testimonials.length > 3 ? (
+          <MotionCarousel className="testimonials-carousel">
+            {testimonials.map((t) => (
+              <div key={t.id} className="testimonials-carousel-slide">
+                <TestimonialCard item={t} index={0} inView={inView} />
+              </div>
+            ))}
+          </MotionCarousel>
+        ) : (
+          <div className="testimonials-grid">
+            {testimonials.map((t, i) => (
+              <TestimonialCard key={t.id} item={t} index={i} inView={inView} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

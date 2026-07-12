@@ -3,6 +3,8 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useMuseum } from '../context/MuseumContext';
 import { getCount, incrementCount } from '../utils/counterApi';
+import Magnetic from './anim/Magnetic';
+import SlidingNumber from './anim/SlidingNumber';
 import './Contact.css';
 
 const CV_COUNTER_KEY = 'cv-downloads';
@@ -42,24 +44,30 @@ export default function Contact() {
             </p>
             
             <div className="contact-actions">
-              <a href={`mailto:${settings.email}`} className="contact-btn primary">
-                <span className="mono">Get in touch</span>
-              </a>
-              {settings.cvLink && (
-                <a
-                  href={settings.cvLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="contact-btn secondary"
-                  onClick={handleCvClick}
-                >
-                  <span className="mono">Download CV</span>
+              <Magnetic>
+                <a href={`mailto:${settings.email}`} className="contact-btn primary">
+                  <span className="mono">Get in touch</span>
                 </a>
+              </Magnetic>
+              {settings.cvLink && (
+                <Magnetic>
+                  <a
+                    href={settings.cvLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="contact-btn secondary"
+                    onClick={handleCvClick}
+                  >
+                    <span className="mono">Download CV</span>
+                  </a>
+                </Magnetic>
               )}
             </div>
 
             {settings.cvLink && cvDownloads !== null && (
-              <p className="contact-cv-count mono">{cvDownloads} CV downloads</p>
+              <p className="contact-cv-count mono">
+                <SlidingNumber value={cvDownloads} /> CV downloads
+              </p>
             )}
           </div>
 

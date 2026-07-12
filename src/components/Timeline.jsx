@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import BrassPlaque from './BrassPlaque';
+import ShimmeringText from './anim/ShimmeringText';
 import './Timeline.css';
 
 export default function Timeline() {
@@ -22,7 +23,7 @@ export default function Timeline() {
       <div className="container">
         <div className="timeline-header">
           <h2 className="timeline-title serif">Career Journey</h2>
-          <p className="timeline-subtitle mono">The path so far <BrassPlaque id={3} /></p>
+          <p className="timeline-subtitle mono"><ShimmeringText text="The path so far" /> <BrassPlaque id={3} /></p>
         </div>
 
         <div className="timeline-container">

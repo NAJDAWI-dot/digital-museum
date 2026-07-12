@@ -247,11 +247,22 @@ a.modal-collab-name:hover { color: var(--gold); }
   touch-action: pan-y;
 }
 
+/* Now a wrapper div (ImageZoom lives inside) — the img sizes itself and
+   the wrapper shrink-wraps it, so the zoomed overflow clips at the frame. */
 .lightbox-img {
-  max-width: 100%; max-height: 85vh; max-height: 85dvh;
-  object-fit: contain;
+  max-width: 100%;
   border-radius: 3px;
   box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+}
+
+.lightbox-img .image-zoom {
+  border-radius: 3px;
+}
+
+.lightbox-img .image-zoom img {
+  width: auto;
+  max-width: 100%;
+  max-height: 85vh; max-height: 85dvh;
 }
 
 .lightbox-arrow {
@@ -304,5 +315,5 @@ a.modal-collab-name:hover { color: var(--gold); }
   .lightbox-arrow--next { right: 0.5rem; }
   .lightbox-close { top: -3rem; right: 1rem; }
   .lightbox-inner { padding: 0 1rem; max-height: 80vh; max-height: 80dvh; }
-  .lightbox-img { max-height: 80vh; max-height: 80dvh; }
+  .lightbox-img .image-zoom img { max-height: 80vh; max-height: 80dvh; }
 }

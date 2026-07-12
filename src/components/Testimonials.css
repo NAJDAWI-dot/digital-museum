@@ -25,6 +25,15 @@
   gap: 2rem;
 }
 
+/* Carousel mode (>3 voices): one centered card at a time. */
+.testimonials-carousel {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.testimonials-carousel-slide {
+  padding: 0 4px; /* room for the card's border/shadow inside the clipped stage */
+}
+
 .testimonial-card {
   position: relative;
   padding: 2.5rem;

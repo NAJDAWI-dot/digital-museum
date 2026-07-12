@@ -3,15 +3,22 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  padding: 0;
+  width: 34px;
+  height: 34px;
+  padding: 8px;
+  margin: -8px; /* bigger hit target without shifting surrounding layout */
   background: none;
   border: none;
   color: var(--gold-dark);
-  opacity: 0.22;
+  opacity: 0.3;
   cursor: pointer;
   transition: opacity 0.4s var(--ease-smooth), transform 0.4s var(--ease-smooth);
+}
+
+/* Phones have no hover to reveal a 22%-opacity glyph — the hunt has to be
+   spottable by eye there, so plaques sit brighter on coarse pointers. */
+@media (pointer: coarse) {
+  .brass-plaque { opacity: 0.55; }
 }
 
 .brass-plaque:hover,

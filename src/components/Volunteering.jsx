@@ -4,6 +4,7 @@ import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset } from '../lib/assets';
 import { Lightbox } from './ProjectModal';
 import BrassPlaque from './BrassPlaque';
+import ShimmeringText from './anim/ShimmeringText';
 import './Volunteering.css';
 
 /* Static tilts for the print stack — indexed, not random, so SSR/replay stay stable. */
@@ -38,7 +39,7 @@ export default function Volunteering() {
         <header className="vol-header">
           <div>
             <h2 className="vol-title serif">Volunteering</h2>
-            <p className="vol-subtitle mono">Service beyond the exhibits <BrassPlaque id={4} /></p>
+            <p className="vol-subtitle mono"><ShimmeringText text="Service beyond the exhibits" /> <BrassPlaque id={4} /></p>
           </div>
           <span className="vol-count mono">
             {String(volunteering.length).padStart(2, '0')} {volunteering.length === 1 ? 'entry' : 'entries'}

@@ -37,11 +37,21 @@ export default function VisitorDelight() {
           : { icon: '🜲', title: `Brass plaque ${count} of ${total}`, body: 'Keep looking — the museum hides its history.' }
       );
     };
+    const onPlaqueStatus = (e) => {
+      const { count, total } = e.detail;
+      pushToast(
+        count >= total
+          ? { icon: '🗝️', title: 'Hunt complete', body: 'The Restricted Archives key is in the footer.' }
+          : { icon: '🜲', title: `${count} of ${total} plaques collected`, body: 'This one is already in your satchel.' }
+      );
+    };
     window.addEventListener('museum:achievement', onAchievement);
     window.addEventListener('museum:plaque', onPlaque);
+    window.addEventListener('museum:plaque-status', onPlaqueStatus);
     return () => {
       window.removeEventListener('museum:achievement', onAchievement);
       window.removeEventListener('museum:plaque', onPlaque);
+      window.removeEventListener('museum:plaque-status', onPlaqueStatus);
     };
   }, [pushToast]);
 
@@ -52,7 +62,9 @@ export default function VisitorDelight() {
     return () => window.removeEventListener('museum:open-archives', onOpen);
   }, []);
 
-  // Full tour: every wing seen at least once.
+  // Full tour: every wing seen at least once. Threshold must stay near
+  // zero: sections like the gallery and timeline are several viewports
+  // tall, so "25% visible at once" can be geometrically impossible.
   useEffect(() => {
     if (hasAchievement('full-tour')) return;
     const seen = new Set();
@@ -64,7 +76,7 @@ export default function VisitorDelight() {
         award('full-tour');
         observer.disconnect();
       }
-    }, { threshold: 0.25 });
+    }, { threshold: 0.05 });
     // Guestbook is lazy-loaded — retry attachment briefly until its section exists.
     let attempts = 0;
     const attach = () => {
@@ -78,7 +90,10 @@ export default function VisitorDelight() {
     return () => observer.disconnect();
   }, []);
 
-  // Historian: a real dwell in the career wing (12s while it's on screen).
+  // Historian: a real dwell in the career wing — 8s while any part of it
+  // is on screen. The old version demanded 35% of the section visible at
+  // once, which a multi-viewport-tall timeline can never satisfy, so the
+  // medal was unearnable.
   useEffect(() => {
     if (hasAchievement('historian')) return;
     const el = document.getElementById('career');
@@ -86,11 +101,12 @@ export default function VisitorDelight() {
     let timer = null;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        timer = setTimeout(() => { award('historian'); observer.disconnect(); }, 12_000);
+        if (!timer) timer = setTimeout(() => { award('historian'); observer.disconnect(); }, 8_000);
       } else {
         clearTimeout(timer);
+        timer = null;
       }
-    }, { threshold: 0.35 });
+    }, { threshold: 0.05 });
     observer.observe(el);
     return () => { clearTimeout(timer); observer.disconnect(); };
   }, []);

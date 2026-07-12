@@ -3,6 +3,9 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset } from '../lib/assets';
+import ShimmeringText from './anim/ShimmeringText';
+import Shine from './anim/Shine';
+import HighlightText from './anim/HighlightText';
 import './FeaturedBanner.css';
 
 export default function FeaturedBanner() {
@@ -23,9 +26,10 @@ export default function FeaturedBanner() {
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="featured-label-col">
-            <div className="section-label">Editor's Pick</div>
+            <div className="section-label"><ShimmeringText text="Editor's Pick" /></div>
           </div>
 
+          <Shine className="featured-shine">
           <div
             className="featured-card"
             style={{ background: featured.color }}
@@ -46,7 +50,7 @@ export default function FeaturedBanner() {
 
                 <div className="featured-text">
                   <h2 className="featured-title serif">{featured.title}</h2>
-                  <p className="featured-subtitle">{featured.subtitle}</p>
+                  <p className="featured-subtitle"><HighlightText delay={0.4}>{featured.subtitle}</HighlightText></p>
                   <p className="featured-desc">{featured.description}</p>
                 </div>
 
@@ -78,6 +82,7 @@ export default function FeaturedBanner() {
               )}
             </div>
           </div>
+          </Shine>
         </motion.div>
       </div>
     </section>

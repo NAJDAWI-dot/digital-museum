@@ -1,0 +1,19 @@
+.highlight-text {
+  display: inline;
+  background-image: linear-gradient(0deg, rgba(201, 169, 110, 0.22), rgba(201, 169, 110, 0.22));
+  background-repeat: no-repeat;
+  background-position: 0 62%;
+  background-size: 0% 0.5em;
+  border-radius: 2px;
+  transition: background-size 0.9s var(--ease-smooth);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.highlight-text.in {
+  background-size: 100% 0.5em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .highlight-text { transition: none; background-size: 100% 0.5em; }
+}

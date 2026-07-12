@@ -16,6 +16,7 @@ import Footer from './components/Footer';
 import ProjectModal from './components/ProjectModal';
 import GuidedTour from './components/GuidedTour';
 import VisitorDelight from './components/VisitorDelight';
+import ScrollProgress from './components/anim/ScrollProgress';
 import MorphDivider from './components/MorphDivider';
 import LiquidTransition from './components/LiquidTransition';
 import Lenis from 'lenis';
@@ -110,6 +111,7 @@ function MuseumApp() {
         <Preloader onReveal={handleReveal} onDone={handleDone} />
       )}
       <div className="site-wrapper grain-overlay">
+        <ScrollProgress />
         <Navbar revealed={revealed} />
         <main>
           <Hero revealed={revealed} />
