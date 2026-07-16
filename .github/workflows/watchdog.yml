@@ -1,0 +1,114 @@
+name: Watchdog
+
+# Hourly synthetic checks from GitHub-hosted infrastructure (checking the
+# site from the same PC that hosts it proves nothing): site reachability +
+# TTFB, Supabase REST, CounterAPI, and self-hosted runner liveness (age of
+# the last successful Runner Heartbeat run). Results land as status.json +
+# history.jsonl on the `status` branch — the admin app polls status.json to
+# raise alerts, and the site's Status room draws history.jsonl.
+on:
+  schedule:
+    - cron: '37 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+# Everything that writes the status branch shares this group so pushes
+# never race.
+concurrency:
+  group: status-branch
+  cancel-in-progress: false
+
+env:
+  SITE_URL: https://najdawi-dot.github.io/digital-museum/
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout status branch
+        run: |
+          git clone --depth 1 --branch status "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" status-branch 2>/dev/null || {
+            mkdir status-branch
+            cd status-branch
+            git init -b status
+            git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          }
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Run checks
+        id: checks
+        run: |
+          NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          # Site: status code + time to first byte, homepage and one asset.
+          SITE_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$SITE_URL" || echo 000)
+          SITE_TTFB=$(curl -s -o /dev/null -w '%{time_starttransfer}' --max-time 15 "$SITE_URL" || echo 0)
+          SITE=$([ "$SITE_CODE" = 200 ] && echo ok || echo down)
+
+          # Supabase REST (anon key, harmless select).
+          DB=unknown
+          if [ -n "$SUPA_URL" ] && [ -n "$SUPA_ANON" ]; then
+            DB_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 \
+              -H "apikey: $SUPA_ANON" -H "Authorization: Bearer $SUPA_ANON" \
+              "$SUPA_URL/rest/v1/guestbook_entries?select=id&limit=1" || echo 000)
+            DB=$([ "$DB_CODE" = 200 ] && echo ok || echo down)
+          fi
+
+          # CounterAPI (likes / tickets / CV counters live there).
+          COUNTER_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 \
+            "https://api.counterapi.dev/v1/najdawi-museum/museum-visitors/" || echo 000)
+          # 400 "record not found" still proves the service is up.
+          case "$COUNTER_CODE" in 200|400) COUNTERS=ok ;; *) COUNTERS=down ;; esac
+
+          # Self-hosted runner: last successful heartbeat must be recent.
+          # Threshold 2.5h tolerates one missed beat (e.g. a long render
+          # occupying the runner's single slot).
+          RUNNER=unknown
+          LAST_BEAT=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/runner-heartbeat.yml/runs?status=success&per_page=1" \
+            --jq '.workflow_runs[0].updated_at // empty' || true)
+          if [ -n "$LAST_BEAT" ]; then
+            AGE=$(( $(date -u +%s) - $(date -u -d "$LAST_BEAT" +%s) ))
+            RUNNER=$([ "$AGE" -lt 9000 ] && echo ok || echo down)
+          fi
+
+          cd status-branch
+          # Merge one-off flags other workflows contribute (links, vr,
+          # backup) so status.json stays the single document the app polls.
+          LINKS=$(jq -r '.links // "unknown"' status.json 2>/dev/null || echo unknown)
+          VR=$(jq -r '.vr // "unknown"' status.json 2>/dev/null || echo unknown)
+          BACKUP_AT=$(jq -r '.backupAt // ""' status.json 2>/dev/null || echo "")
+
+          jq -n \
+            --arg checkedAt "$NOW" --arg site "$SITE" --arg db "$DB" \
+            --arg counters "$COUNTERS" --arg runner "$RUNNER" \
+            --arg ttfb "$SITE_TTFB" --arg links "$LINKS" --arg vr "$VR" \
+            --arg backupAt "$BACKUP_AT" \
+            '{checkedAt: $checkedAt, site: $site, db: $db, counters: $counters,
+              runner: $runner, siteTtfb: ($ttfb | tonumber),
+              links: $links, vr: $vr, backupAt: $backupAt}' > status.json
+
+          jq -nc \
+            --arg ts "$NOW" --arg site "$SITE" --arg db "$DB" \
+            --arg counters "$COUNTERS" --arg runner "$RUNNER" --arg ttfb "$SITE_TTFB" \
+            '{ts: $ts, site: $site, db: $db, counters: $counters,
+              runner: $runner, ttfb: ($ttfb | tonumber)}' >> history.jsonl
+          tail -n 1000 history.jsonl > history.tmp && mv history.tmp history.jsonl
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUPA_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPA_ANON: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Push status
+        run: |
+          cd status-branch
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add status.json history.jsonl
+          if ! git diff --cached --quiet; then
+            git commit -m "watchdog: $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push origin status
+          fi

@@ -84,6 +84,13 @@ export default function Footer() {
             >
               Your ticket
             </button>
+            <button
+              type="button"
+              className="footer-ticket-link"
+              onClick={() => window.dispatchEvent(new CustomEvent('museum:open-status'))}
+            >
+              Status
+            </button>
           </div>
 
           <div className="footer-links-col">

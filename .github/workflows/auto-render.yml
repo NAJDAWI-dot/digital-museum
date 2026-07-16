@@ -1,0 +1,47 @@
+name: Auto Render Check
+
+# Weekly "is the reel stale?" check: if content (src/data or images)
+# changed since the last committed highlights video, dispatch a render.
+# The render itself still runs on the self-hosted runner via
+# render-highlights.yml — this job is only the decision, so it stays on
+# hosted infra and works even when the render PC is asleep (the dispatch
+# queues until the runner returns).
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  decide:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compare content age vs video age
+        run: |
+          LAST_RENDER=$(gh api "repos/${GITHUB_REPOSITORY}/commits?path=public/highlights.mp4&per_page=1" \
+            --jq '.[0].commit.committer.date // empty')
+          if [ -z "$LAST_RENDER" ]; then
+            echo "No rendered video committed yet — rendering."
+            gh workflow run render-highlights.yml --repo "$GITHUB_REPOSITORY" --ref main
+            exit 0
+          fi
+          echo "Last render: $LAST_RENDER"
+
+          CHANGED=0
+          for P in src/data public/images; do
+            N=$(gh api "repos/${GITHUB_REPOSITORY}/commits?path=$P&since=$LAST_RENDER&per_page=10" --jq 'length')
+            echo "$P: $N commit(s) since last render"
+            CHANGED=$((CHANGED + N))
+          done
+
+          if [ "$CHANGED" -gt 0 ]; then
+            echo "Content moved on — dispatching a fresh render."
+            gh workflow run render-highlights.yml --repo "$GITHUB_REPOSITORY" --ref main
+          else
+            echo "Reel is current — nothing to do."
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

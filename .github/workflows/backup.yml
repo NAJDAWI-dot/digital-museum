@@ -1,0 +1,76 @@
+name: Nightly Backup
+
+# Exports the Supabase guestbook (including unapproved entries, which anon
+# RLS hides) to the private NAJDAWI-dot/museum-backups repo. Requires two
+# secrets the owner creates by hand — this workflow only skips politely
+# until they exist:
+#   SUPABASE_SERVICE_ROLE — service-role key (Supabase dashboard → API)
+#   BACKUP_TOKEN          — fine-grained PAT with Contents R/W on the
+#                           private museum-backups repo
+on:
+  schedule:
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: status-branch
+  cancel-in-progress: false
+
+env:
+  BACKUP_REPO: NAJDAWI-dot/museum-backups
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Export and commit
+        run: |
+          if [ -z "$SERVICE_KEY" ] || [ -z "$BACKUP_TOKEN" ] || [ -z "$SUPA_URL" ]; then
+            echo "Backup not configured (needs SUPABASE_SERVICE_ROLE + BACKUP_TOKEN secrets and the $BACKUP_REPO repo) — skipping."
+            exit 0
+          fi
+
+          curl -sf --max-time 30 \
+            -H "apikey: $SERVICE_KEY" -H "Authorization: Bearer $SERVICE_KEY" \
+            "$SUPA_URL/rest/v1/guestbook_entries?select=*&order=created_at.asc" \
+            > guestbook_entries.json
+          COUNT=$(jq 'length' guestbook_entries.json)
+          echo "Exported $COUNT guestbook entries."
+
+          git clone --depth 1 "https://x-access-token:${BACKUP_TOKEN}@github.com/${BACKUP_REPO}.git" backups
+          mkdir -p backups/supabase
+          jq . guestbook_entries.json > backups/supabase/guestbook_entries.json
+          cd backups
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add supabase
+          if ! git diff --cached --quiet; then
+            git commit -m "backup: $(date -u +%Y-%m-%d) ($COUNT entries)"
+            git push
+            echo "Backup pushed."
+          else
+            echo "No changes since last backup."
+          fi
+        env:
+          SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+          BACKUP_TOKEN: ${{ secrets.BACKUP_TOKEN }}
+          SUPA_URL: ${{ secrets.VITE_SUPABASE_URL }}
+
+      - name: Record freshness on status branch
+        run: |
+          # Stamp backupAt only when a backup actually ran to completion.
+          if [ -z "${{ secrets.SUPABASE_SERVICE_ROLE }}" ] || [ -z "${{ secrets.BACKUP_TOKEN }}" ]; then
+            exit 0
+          fi
+          git clone --depth 1 --branch status "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" status-branch || exit 0
+          cd status-branch
+          jq --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '.backupAt = $at' status.json > s.tmp && mv s.tmp status.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add status.json
+          git diff --cached --quiet || { git commit -m "backup: freshness stamp"; git push origin status; }
+        env:
+          GH_TOKEN: ${{ github.token }}

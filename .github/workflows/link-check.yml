@@ -1,0 +1,66 @@
+name: Link Check
+
+# Weekly crawl of the live site for dead links. The result is a flag in
+# status.json (plus links.json with the broken URLs) on the status branch —
+# the admin app alerts on it; the workflow itself never "fails" because
+# a red X on a cron job that nobody watches is not an alert channel.
+on:
+  schedule:
+    - cron: '11 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: status-branch
+  cancel-in-progress: false
+
+env:
+  SITE_URL: https://najdawi-dot.github.io/digital-museum/
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Crawl
+        run: |
+          # LinkedIn (and some socials) 403/999 any bot — skip, they are
+          # noise, not signal.
+          npx --yes linkinator "$SITE_URL" --recurse --timeout 20000 \
+            --skip "linkedin.com" --skip "mailto:" \
+            --format json > crawl.json || true
+          jq '[.links[] | select(.state == "BROKEN") | {url, status, parent}]' crawl.json > broken.json
+          BROKEN=$(jq 'length' broken.json)
+          TOTAL=$(jq '.links | length' crawl.json)
+          echo "Checked $TOTAL links, $BROKEN broken."
+          jq -n --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --argjson broken "$(cat broken.json)" --argjson total "$TOTAL" \
+            '{checkedAt: $at, total: $total, broken: $broken}' > links.json
+
+      - name: Publish result to status branch
+        run: |
+          git clone --depth 1 --branch status "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" status-branch 2>/dev/null || {
+            mkdir status-branch && cd status-branch
+            git init -b status
+            git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+            cd ..
+          }
+          cp links.json status-branch/links.json
+          cd status-branch
+          BROKEN=$(jq '.broken | length' links.json)
+          if [ -f status.json ]; then
+            jq --arg links "$([ "$BROKEN" -eq 0 ] && echo ok || echo broken)" \
+              '.links = $links' status.json > s.tmp && mv s.tmp status.json
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add links.json status.json 2>/dev/null || git add links.json
+          git diff --cached --quiet || { git commit -m "link-check: $BROKEN broken"; git push origin status; }
+        env:
+          GH_TOKEN: ${{ github.token }}

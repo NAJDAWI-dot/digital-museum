@@ -1,0 +1,25 @@
+name: Runner Heartbeat
+
+# Trivial job that only proves the self-hosted render runner is alive.
+# watchdog.yml (GitHub-hosted) measures the age of the last successful run
+# of THIS workflow — the GITHUB_TOKEN can't list self-hosted runners
+# directly (that needs the `administration` permission, which workflow
+# tokens can never hold), so liveness is inferred from completed work.
+on:
+  schedule:
+    - cron: '7 * * * *'
+  workflow_dispatch:
+
+# If the runner is offline, scheduled runs queue up; when it returns we
+# only care about the newest proof-of-life, not a backlog replay.
+concurrency:
+  group: runner-heartbeat
+  cancel-in-progress: true
+
+jobs:
+  beat:
+    runs-on: [self-hosted, windows, museum-render]
+    timeout-minutes: 5
+    steps:
+      - name: Alive
+        run: echo "runner alive at $(Get-Date -Format o)"

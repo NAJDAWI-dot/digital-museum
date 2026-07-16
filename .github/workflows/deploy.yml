@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:   # allow manual trigger from GitHub UI
+    inputs:
+      sha:
+        description: 'Commit SHA to deploy (rollback) — empty deploys latest main'
+        required: false
+        type: string
 
 permissions:
   contents: write   # the extract-images step commits extracted files back
@@ -20,6 +25,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Rollback support: the admin app dispatches with a pinned sha to
+          # redeploy a previous good build. Empty = normal deploy of main.
+          ref: ${{ inputs.sha || github.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -38,6 +47,12 @@ jobs:
       - name: Extract embedded images
         run: |
           node scripts/extract-images.mjs
+          # On a rollback (pinned sha) HEAD is detached — build the extracted
+          # state but don't try to push history from the past.
+          if [ -n "${{ inputs.sha }}" ]; then
+            echo "Rollback deploy of ${{ inputs.sha }} — skipping commit-back."
+            exit 0
+          fi
           if ! git diff --quiet || [ -n "$(git status --porcelain public/images)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

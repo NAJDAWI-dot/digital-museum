@@ -1,0 +1,178 @@
+.status-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(8, 8, 8, 0.82);
+  backdrop-filter: blur(10px);
+}
+
+.status-room {
+  width: min(640px, 100%);
+  max-height: min(86vh, 720px);
+  overflow-y: auto;
+  background: var(--ink-light);
+  border: 1px solid rgba(201, 169, 110, 0.25);
+  border-radius: 6px;
+  padding: 32px 32px 24px;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
+}
+
+.status-kicker {
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.status-title {
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--linen);
+  margin-bottom: 22px;
+}
+
+.status-empty {
+  color: var(--dust);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin: 12px 0 24px;
+}
+
+.status-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 0 0 22px;
+  padding: 0;
+}
+
+@media (max-width: 560px) {
+  .status-grid { grid-template-columns: 1fr; }
+}
+
+.status-cell {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'lamp label'
+    'lamp state'
+    'lamp hint';
+  column-gap: 12px;
+  row-gap: 2px;
+  align-items: start;
+  padding: 12px 14px;
+  border: 1px solid rgba(201, 169, 110, 0.16);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.status-lamp {
+  grid-area: lamp;
+  width: 9px;
+  height: 9px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: var(--dust);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.04);
+}
+
+.status-cell.is-ok .status-lamp {
+  background: #7fae7a;
+  box-shadow: 0 0 8px rgba(127, 174, 122, 0.55);
+}
+
+.status-cell.is-down .status-lamp,
+.status-cell.is-broken .status-lamp {
+  background: #c26d5a;
+  box-shadow: 0 0 8px rgba(194, 109, 90, 0.55);
+}
+
+.status-cell.is-drift .status-lamp {
+  background: var(--gold);
+  box-shadow: 0 0 8px rgba(201, 169, 110, 0.55);
+}
+
+.status-cell-label {
+  grid-area: label;
+  color: var(--linen);
+  font-size: 0.86rem;
+}
+
+.status-cell-state {
+  grid-area: state;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dust);
+}
+
+.status-cell.is-ok .status-cell-state { color: #7fae7a; }
+.status-cell.is-down .status-cell-state,
+.status-cell.is-broken .status-cell-state { color: #c26d5a; }
+.status-cell.is-drift .status-cell-state { color: var(--gold); }
+
+.status-cell-hint {
+  grid-area: hint;
+  font-size: 0.7rem;
+  color: var(--mist);
+}
+
+.status-meta {
+  border-top: 1px solid rgba(201, 169, 110, 0.14);
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.status-meta-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mist);
+  margin-bottom: 6px;
+}
+
+.status-spark {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  height: 48px;
+  color: var(--gold);
+  opacity: 0.85;
+}
+
+.status-meta-figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--dust);
+}
+
+.status-close {
+  display: block;
+  margin: 22px 0 0 auto;
+  padding: 9px 20px;
+  background: transparent;
+  color: var(--dust);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 3px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: color 0.3s var(--ease-smooth), border-color 0.3s var(--ease-smooth);
+}
+
+.status-close:hover {
+  color: var(--linen);
+  border-color: rgba(255, 255, 255, 0.3);
+}

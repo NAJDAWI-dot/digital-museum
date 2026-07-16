@@ -16,6 +16,7 @@ import Footer from './components/Footer';
 import ProjectModal from './components/ProjectModal';
 import GuidedTour from './components/GuidedTour';
 import VisitorDelight from './components/VisitorDelight';
+import StatusRoom from './components/StatusRoom';
 import ScrollProgress from './components/anim/ScrollProgress';
 import MorphDivider from './components/MorphDivider';
 import LiquidTransition from './components/LiquidTransition';
@@ -138,6 +139,7 @@ function MuseumApp() {
       <ProjectModal />
       <GuidedTour />
       <VisitorDelight />
+      <StatusRoom />
       <LiquidTransition />
     </>
   );

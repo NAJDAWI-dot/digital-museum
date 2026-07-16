@@ -1,0 +1,111 @@
+name: Visual Regression
+
+# After every deploy, screenshot the live site and diff it against the
+# committed baseline (tests/vr/baseline.png). Content edits legitimately
+# change the page — drift is a signal to look, not a failure — so the
+# result is a flag on the status branch (the admin app alerts on it) plus
+# a diff artifact to eyeball. Accept the new look by dispatching with
+# update_baseline=true.
+on:
+  workflow_run:
+    workflows: ['Deploy to GitHub Pages']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      update_baseline:
+        description: 'Capture the current live site as the new baseline'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: status-branch
+  cancel-in-progress: false
+
+jobs:
+  vr:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install capture deps
+        run: |
+          npm install --no-save playwright pixelmatch pngjs
+          npx playwright install --with-deps chromium
+
+      - name: Wait for Pages CDN
+        if: github.event_name == 'workflow_run'
+        run: sleep 90
+
+      - name: Capture live site
+        run: node scripts/vr-capture.mjs shoot current.png
+
+      - name: Update baseline
+        if: inputs.update_baseline == true
+        run: |
+          mkdir -p tests/vr
+          cp current.png tests/vr/baseline.png
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/vr/baseline.png
+          git diff --cached --quiet || { git commit -m "chore: update visual-regression baseline [skip ci]"; git push; }
+
+      - name: Compare against baseline
+        if: inputs.update_baseline != true
+        id: cmp
+        run: |
+          if [ ! -f tests/vr/baseline.png ]; then
+            echo "No baseline yet — seeding one from this capture."
+            mkdir -p tests/vr
+            cp current.png tests/vr/baseline.png
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add tests/vr/baseline.png
+            git commit -m "chore: seed visual-regression baseline [skip ci]"
+            git push
+            echo "result=ok" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          OUT=$(node scripts/vr-capture.mjs compare tests/vr/baseline.png current.png diff.png || true)
+          echo "$OUT"
+          RATIO=$(echo "$OUT" | grep -oP 'diff=\K[0-9.]+' || echo 1)
+          # 1.5% of pixels — below that is font rendering noise, above it
+          # somebody changed the museum.
+          if awk "BEGIN {exit !($RATIO > 0.015)}"; then
+            echo "result=drift" >> "$GITHUB_OUTPUT"
+          else
+            echo "result=ok" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload diff artifact
+        if: steps.cmp.outputs.result == 'drift'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vr-diff
+          path: |
+            current.png
+            diff.png
+          retention-days: 30
+
+      - name: Publish result to status branch
+        if: inputs.update_baseline != true && steps.cmp.outputs.result != ''
+        run: |
+          git clone --depth 1 --branch status "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" status-branch || exit 0
+          cd status-branch
+          jq --arg vr "${{ steps.cmp.outputs.result }}" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '.vr = $vr | .vrCheckedAt = $at' status.json > s.tmp && mv s.tmp status.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add status.json
+          git diff --cached --quiet || { git commit -m "vr: ${{ steps.cmp.outputs.result }}"; git push origin status; }
+        env:
+          GH_TOKEN: ${{ github.token }}
