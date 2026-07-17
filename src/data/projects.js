@@ -295,7 +295,7 @@ export const INITIAL_VOLUNTEERING = [
     "id": "v1783508273301",
     "year": "2026",
     "title": "Head Organizer & Developer",
-    "organization": "HTU Engineering Design Expo",
+    "organization": "HTU",
     "description": "Organized the Engineering Design Expo, including building the event's voting platform for the fan favourite prize.",
     "photos": [
       "images/x-e1c17d0bb0c3.jpg",
@@ -323,7 +323,7 @@ export const INITIAL_VOLUNTEERING = [
     "id": "v1783508167071",
     "year": "2025 (July)",
     "title": "Organizer",
-    "organization": "HTU Career Expo",
+    "organization": "HTU",
     "description": "Assisted with Career Day event operations.",
     "photos": [],
     "eventTitle": "Career Expo"
@@ -332,20 +332,20 @@ export const INITIAL_VOLUNTEERING = [
     "id": "v1783508097359",
     "year": "2026 & 2025",
     "title": "Robotics Volunteer / Exhibit Organizer",
-    "organization": "HTU STEM Lab Course",
+    "organization": "HTU",
     "description": "Ran the robotics-themed \"Aliens Maze Arena\" exhibit at the STEM Lab Expo with Technical Support for the contestants",
     "photos": [
       "images/x-ee778142f0ab.jpg",
       "images/x-21de57298458.jpg",
       "images/x-4c7230ab2f45.jpg"
     ],
-    "eventTitle": "Aliens Maze Arena Exhibit"
+    "eventTitle": "STEM Lab Expo"
   },
   {
     "id": "v1783508058456",
     "year": "2025",
     "title": "Media",
-    "organization": "HTU – Majlis Forum",
+    "organization": "HTU",
     "description": "Photographing and filming in an event for the Majlis Forum.",
     "photos": [
       "images/x-972ddc8f14f4.jpg",
@@ -389,7 +389,7 @@ export const INITIAL_VOLUNTEERING = [
     "id": "v1783502135154",
     "year": "2025 ",
     "title": "Volunteer",
-    "organization": "Charity Bazaar (HTU)",
+    "organization": "HTU",
     "description": "Assisted with charity bazaar setup and operations.",
     "photos": [],
     "eventTitle": "Charity Bazaar"
@@ -398,7 +398,7 @@ export const INITIAL_VOLUNTEERING = [
     "id": "v1783502080141",
     "year": "2025 (Ramadan)",
     "title": "Volunteer",
-    "organization": "Charity Iftar Organization (HTU)",
+    "organization": "HTU",
     "description": "Helped organize and host a charity Iftar during Ramadan.",
     "photos": [
       "images/x-20a036ba55d6.jpg",
@@ -411,7 +411,7 @@ export const INITIAL_VOLUNTEERING = [
     "id": "v1783502049377",
     "year": "2025 (Jan)",
     "title": "Volunteer",
-    "organization": "HTU STEM Lab Expo",
+    "organization": "HTU",
     "description": "Supported the STEM Lab Expo, engaging visitors with hands-on exhibits.",
     "photos": [],
     "eventTitle": "STEM Lab Expo"
