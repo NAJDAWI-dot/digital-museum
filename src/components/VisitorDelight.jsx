@@ -4,6 +4,8 @@ import SouvenirTicket from './SouvenirTicket';
 import MuseumCat from './MuseumCat';
 import ArchivesRoom from './ArchivesRoom';
 import { award, hasAchievement, huntComplete, TOTAL_PLAQUES } from '../lib/achievements';
+import LottieBadge from './anim/LottieBadge';
+import goldSeal from '../assets/lottie/gold-seal.json';
 import './VisitorDelight.css';
 
 const TOUR_SECTIONS = ['hero', 'featured', 'gallery', 'career', 'volunteering', 'testimonials', 'contact', 'guestbook'];
@@ -26,7 +28,8 @@ export default function VisitorDelight() {
   // Achievement + plaque events → toasts.
   useEffect(() => {
     const onAchievement = (e) => {
-      pushToast({ icon: e.detail.icon || '🏅', title: 'Achievement earned', body: e.detail.title });
+      // seal: true renders the animated gold-seal Lottie instead of an emoji.
+      pushToast({ seal: true, title: 'Achievement earned', body: e.detail.title });
     };
     const onPlaque = (e) => {
       const { count, total } = e.detail;
@@ -139,7 +142,11 @@ export default function VisitorDelight() {
               exit={{ opacity: 0, y: -10, scale: 0.96 }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             >
-              <span className="delight-toast-icon">{t.icon}</span>
+              {t.seal ? (
+                <LottieBadge animationData={goldSeal} size={34} className="delight-toast-icon" />
+              ) : (
+                <span className="delight-toast-icon">{t.icon}</span>
+              )}
               <span>
                 <strong className="mono">{t.title}</strong>
                 <em className="serif">{t.body}</em>

@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { getSupabaseClient } from '../utils/supabaseClient';
 import ShimmeringText from './anim/ShimmeringText';
+import LottieBadge from './anim/LottieBadge';
+import goldSeal from '../assets/lottie/gold-seal.json';
 import './Guestbook.css';
 
 const TABLE = 'guestbook_entries';
@@ -176,6 +178,7 @@ export default function Guestbook() {
               <div className="guestbook-composer">
                 {submitted ? (
                   <div className="guestbook-submitted mono">
+                    <LottieBadge animationData={goldSeal} size={48} label="Note received" />
                     Thanks — your note is awaiting a quick review before it appears here.
                     <button type="button" className="guestbook-signout" onClick={() => setSubmitted(false)}>
                       Leave another note
