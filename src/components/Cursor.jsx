@@ -19,7 +19,7 @@ export default function Cursor() {
       mx = e.clientX;
       my = e.clientY;
       if (dotRef.current) {
-        dotRef.current.style.transform = `translate(${mx}px, ${my}px)`;
+        dotRef.current.style.translate = `${mx}px ${my}px`;
       }
     };
 
@@ -29,7 +29,7 @@ export default function Cursor() {
       rx = lerp(rx, mx, 0.08);
       ry = lerp(ry, my, 0.08);
       if (ringRef.current) {
-        ringRef.current.style.transform = `translate(${rx}px, ${ry}px)`;
+        ringRef.current.style.translate = `${rx}px ${ry}px`;
       }
       raf = requestAnimationFrame(tick);
     };

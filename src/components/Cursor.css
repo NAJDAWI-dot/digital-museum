@@ -1,13 +1,15 @@
-/* Grow on hover via the standalone `scale` property: it composites like
-   transform (no layout/paint) and doesn't fight the inline translate()
-   Cursor.jsx writes every frame. */
+/* Position and growth live on separate standalone properties: Cursor.jsx
+   writes `translate` every frame, hover animates `scale`. They compose
+   translate-then-scale, so growth stays centered on the pointer. (Putting
+   the position in `transform` instead would be multiplied by `scale` —
+   the cursor would fly off on hover.) */
 .cursor-dot,
 .cursor-ring {
   position: fixed;
   top: 0; left: 0;
   pointer-events: none;
   z-index: var(--z-cursor);
-  will-change: transform, scale;
+  will-change: translate, scale;
 }
 
 .cursor-dot {
