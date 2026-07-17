@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './StatusRoom.css';
 
@@ -57,6 +57,7 @@ export default function StatusRoom() {
   const [status, setStatus] = useState(null);
   const [history, setHistory] = useState([]);
   const [failed, setFailed] = useState(false);
+  const roomRef = useRef(null);
 
   useEffect(() => {
     const onOpen = () => setOpen(true);
@@ -87,12 +88,33 @@ export default function StatusRoom() {
     return () => { cancelled = true; };
   }, [open, status]);
 
+  // Same dialog manners as ProjectModal: Escape closes, body scroll locks,
+  // focus moves into the room and returns to the opener afterwards.
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    const opener = document.activeElement;
+    roomRef.current?.focus();
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+      if (opener instanceof HTMLElement) opener.focus();
+    };
   }, [open]);
+
+  const trapFocus = (e) => {
+    if (e.key !== 'Tab' || !roomRef.current) return;
+    const focusables = roomRef.current.querySelectorAll(
+      'a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
 
   const ttfbSeries = useMemo(
     () => history.map(e => Number(e.ttfb)).filter(v => Number.isFinite(v) && v > 0),
@@ -119,6 +141,9 @@ export default function StatusRoom() {
             role="dialog"
             aria-modal="true"
             aria-label="Museum status room"
+            ref={roomRef}
+            tabIndex={-1}
+            onKeyDown={trapFocus}
             initial={{ opacity: 0, y: 24, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.98 }}

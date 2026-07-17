@@ -1,7 +1,7 @@
 .status-overlay {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: var(--z-modal);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,4 +175,9 @@
 .status-close:hover {
   color: var(--linen);
   border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Touch devices: the close button reaches a 44px tap target. */
+@media (pointer: coarse) {
+  .status-close { padding: 13px 24px; min-height: 44px; }
 }
