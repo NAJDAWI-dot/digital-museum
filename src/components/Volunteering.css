@@ -154,6 +154,18 @@
   letter-spacing: -0.01em;
 }
 
+/* Role byline under the opportunity headline — engraved-caption register,
+   gold so the visitor's eye catches "what Hashem did" second, after the
+   event itself. */
+.vol-roleline {
+  display: block;
+  margin-top: 0.55rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
 .vol-org {
   display: block;
   margin-top: 0.45rem;
@@ -161,6 +173,8 @@
   color: var(--dust);
   letter-spacing: 0.04em;
 }
+
+.vol-roleline + .vol-org { margin-top: 0.3rem; }
 
 .vol-desc {
   margin-top: 1rem;

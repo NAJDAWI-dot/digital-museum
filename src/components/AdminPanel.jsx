@@ -617,7 +617,7 @@ function VolunteeringForm({ volunteering, onSave }) {
   };
 
   const addItem = () => {
-    setItems([{ id: `v${Date.now()}`, year: '', title: '', organization: '', description: '', photos: [] }, ...items]);
+    setItems([{ id: `v${Date.now()}`, year: '', eventTitle: '', title: '', organization: '', description: '', photos: [] }, ...items]);
   };
 
   const removeItem = (index) => {
@@ -641,11 +641,15 @@ function VolunteeringForm({ volunteering, onSave }) {
                 <input className="admin-input" value={item.year} onChange={e => updateItem(i, 'year', e.target.value)} placeholder="2026" />
               </div>
               <div className="form-group">
-                <label className="form-label mono">Role</label>
-                <input className="admin-input" value={item.title} onChange={e => updateItem(i, 'title', e.target.value)} placeholder="STEM Workshop Mentor" />
+                <label className="form-label mono">Opportunity <span className="form-hint">— shown as the headline</span></label>
+                <input className="admin-input" value={item.eventTitle || ''} onChange={e => updateItem(i, 'eventTitle', e.target.value)} placeholder="Engineering Design Expo" />
               </div>
             </div>
             <div className="form-row">
+              <div className="form-group">
+                <label className="form-label mono">Role</label>
+                <input className="admin-input" value={item.title} onChange={e => updateItem(i, 'title', e.target.value)} placeholder="STEM Workshop Mentor" />
+              </div>
               <div className="form-group">
                 <label className="form-label mono">Organization</label>
                 <input className="admin-input" value={item.organization} onChange={e => updateItem(i, 'organization', e.target.value)} placeholder="HTU HackerSpace" />

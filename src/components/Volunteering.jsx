@@ -61,13 +61,22 @@ export default function Volunteering() {
               <div className="vol-plaque-inner">
                 <div className="vol-text">
                   <span className="vol-year mono">{item.year}</span>
-                  <h3 className="vol-role serif">{item.title}</h3>
-                  {item.organization && <span className="vol-org">{item.organization}</span>}
+                  {/* The opportunity name headlines the plaque; the role becomes
+                      its byline. Entries without one keep the old role-as-headline
+                      layout, and duplicate lines (title === eventTitle, or org
+                      restating the event) collapse away. */}
+                  <h3 className="vol-role serif">{item.eventTitle || item.title}</h3>
+                  {item.eventTitle && item.eventTitle !== item.title && (
+                    <span className="vol-roleline mono">{item.title}</span>
+                  )}
+                  {item.organization && item.organization !== item.eventTitle && (
+                    <span className="vol-org">{item.organization}</span>
+                  )}
                   {item.description && <p className="vol-desc">{item.description}</p>}
                 </div>
 
                 {item.photos?.length > 0 && (
-                  <div className="vol-prints" role="group" aria-label={`Photos from ${item.title}`}>
+                  <div className="vol-prints" role="group" aria-label={`Photos from ${item.eventTitle || item.title}`}>
                     {item.photos.map((src, pi) => (
                       <button
                         key={pi}
@@ -79,7 +88,7 @@ export default function Volunteering() {
                       >
                         <img
                           src={resolveAsset(src)}
-                          alt={`${item.title} — photo ${pi + 1} of ${item.photos.length}`}
+                          alt={`${item.eventTitle || item.title} — photo ${pi + 1} of ${item.photos.length}`}
                           loading="lazy"
                           decoding="async"
                         />

@@ -302,7 +302,8 @@ export const INITIAL_VOLUNTEERING = [
       "images/x-1dbd910dd856.jpg",
       "images/x-4b0ca7bf4189.jpg",
       "images/x-d7abaa0376e6.jpg"
-    ]
+    ],
+    "eventTitle": "Engineering Design Expo"
   },
   {
     "id": "v1783508190928",
@@ -315,7 +316,8 @@ export const INITIAL_VOLUNTEERING = [
       "images/x-a14f8582e24f.jpg",
       "images/x-b1e9544258e6.jpg",
       "images/x-e8241f552075.jpg"
-    ]
+    ],
+    "eventTitle": "JOYS 2026"
   },
   {
     "id": "v1783508167071",
@@ -323,7 +325,8 @@ export const INITIAL_VOLUNTEERING = [
     "title": "Organizer",
     "organization": "HTU Career Expo",
     "description": "Assisted with Career Day event operations.",
-    "photos": []
+    "photos": [],
+    "eventTitle": "Career Expo"
   },
   {
     "id": "v1783508097359",
@@ -335,7 +338,8 @@ export const INITIAL_VOLUNTEERING = [
       "images/x-ee778142f0ab.jpg",
       "images/x-21de57298458.jpg",
       "images/x-4c7230ab2f45.jpg"
-    ]
+    ],
+    "eventTitle": "Aliens Maze Arena Exhibit"
   },
   {
     "id": "v1783508058456",
@@ -347,7 +351,8 @@ export const INITIAL_VOLUNTEERING = [
       "images/x-972ddc8f14f4.jpg",
       "images/x-3431db01438a.jpg",
       "images/x-ab3982ee364b.jpg"
-    ]
+    ],
+    "eventTitle": "Majlis Forum"
   },
   {
     "id": "v1783507990544",
@@ -359,7 +364,8 @@ export const INITIAL_VOLUNTEERING = [
       "images/x-84dc3f8424a3.jpg",
       "images/x-db5cda4cdf92.jpg",
       "images/x-b3c12dc48e1d.jpg"
-    ]
+    ],
+    "eventTitle": "Independence Day Booth"
   },
   {
     "id": "v1783507915739",
@@ -367,7 +373,8 @@ export const INITIAL_VOLUNTEERING = [
     "title": "Arts Club Media Volunteer",
     "organization": "HTU",
     "description": "Photographing and filming in an event for the arts club.",
-    "photos": []
+    "photos": [],
+    "eventTitle": "Arts Club Event"
   },
   {
     "id": "v1783502172891",
@@ -375,7 +382,8 @@ export const INITIAL_VOLUNTEERING = [
     "title": "Orientation Volunteer",
     "organization": "HTU",
     "description": "Welcomed and guided new students during Orientation Day.",
-    "photos": []
+    "photos": [],
+    "eventTitle": "Orientation Day"
   },
   {
     "id": "v1783502135154",
@@ -383,7 +391,8 @@ export const INITIAL_VOLUNTEERING = [
     "title": "Volunteer",
     "organization": "Charity Bazaar (HTU)",
     "description": "Assisted with charity bazaar setup and operations.",
-    "photos": []
+    "photos": [],
+    "eventTitle": "Charity Bazaar"
   },
   {
     "id": "v1783502080141",
@@ -395,7 +404,8 @@ export const INITIAL_VOLUNTEERING = [
       "images/x-20a036ba55d6.jpg",
       "images/x-66546cf6cf13.jpg",
       "images/x-f684aabb77f6.jpg"
-    ]
+    ],
+    "eventTitle": "Charity Iftar"
   },
   {
     "id": "v1783502049377",
@@ -403,7 +413,8 @@ export const INITIAL_VOLUNTEERING = [
     "title": "Volunteer",
     "organization": "HTU STEM Lab Expo",
     "description": "Supported the STEM Lab Expo, engaging visitors with hands-on exhibits.",
-    "photos": []
+    "photos": [],
+    "eventTitle": "STEM Lab Expo"
   },
   {
     "id": "v1783502024546",
@@ -415,7 +426,8 @@ export const INITIAL_VOLUNTEERING = [
       "images/x-410ad7e8bdb3.jpg",
       "images/x-aacc4f733bd3.jpg",
       "images/x-1401deea57d8.jpg"
-    ]
+    ],
+    "eventTitle": "Children's Museum"
   },
   {
     "id": "v1783501984785",
@@ -423,6 +435,7 @@ export const INITIAL_VOLUNTEERING = [
     "title": "Volunteer",
     "organization": "HTU",
     "description": "Run for Life, Supported event logistics for the \"Run for Life\" charity run.",
-    "photos": []
+    "photos": [],
+    "eventTitle": "Run for Life"
   }
 ];
