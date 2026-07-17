@@ -6,6 +6,7 @@
   "runner": "ok",
   "siteTtfb": 0.025199,
   "links": "unknown",
-  "vr": "drift",
-  "backupAt": "2026-07-17T08:32:43Z"
+  "vr": "ok",
+  "backupAt": "2026-07-17T08:32:43Z",
+  "vrCheckedAt": "2026-07-17T19:16:41Z"
 }
