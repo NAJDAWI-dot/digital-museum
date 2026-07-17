@@ -1,0 +1,98 @@
+/* Health tab — owner-facing status board inside the admin panel.
+   Follows AdminPanel.css idiom: mono microcopy, dust/linen/gold palette,
+   hairline borders on near-black. Lamp colors match the public Status
+   Room so states read the same front and back of house. */
+
+.health-root { margin-top: 1rem; display: flex; flex-direction: column; gap: 1.75rem; }
+
+.health-muted { color: var(--dust); font-size: 0.7rem; }
+
+/* ── Systems board ── */
+.health-grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;
+}
+.health-cell {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: 'lamp label' 'lamp state';
+  column-gap: 0.55rem; align-items: center;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.health-lamp {
+  grid-area: lamp;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--dust);
+}
+.health-cell-label { grid-area: label; color: var(--linen); font-size: 0.78rem; }
+.health-cell-state {
+  grid-area: state;
+  font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--dust);
+}
+.health-cell.is-ok .health-lamp { background: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.5); }
+.health-cell.is-ok .health-cell-state { color: #4ade80; }
+.health-cell.is-down .health-lamp,
+.health-cell.is-broken .health-lamp { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
+.health-cell.is-down .health-cell-state,
+.health-cell.is-broken .health-cell-state { color: #ef4444; }
+.health-cell.is-drift .health-lamp { background: var(--gold); box-shadow: 0 0 8px rgba(201, 169, 110, 0.5); }
+.health-cell.is-drift .health-cell-state { color: var(--gold); }
+
+.health-figures {
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem;
+  font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--dust);
+}
+.health-spark { width: 220px; max-width: 100%; height: 36px; color: var(--gold); opacity: 0.85; }
+
+/* ── Blocks: broken links, errors, deploys ── */
+.health-block { display: flex; flex-direction: column; gap: 0.75rem; }
+.health-block-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.health-block .section-label { margin: 0; }
+
+.health-list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 0.6rem;
+}
+.health-list > li {
+  padding: 0.65rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
+
+.health-err-meta {
+  display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem;
+  font-size: 0.6rem; color: var(--dust); margin-bottom: 0.35rem;
+}
+.health-err-kind {
+  color: #ef4444; text-transform: uppercase; letter-spacing: 0.1em;
+}
+.health-err-msg { color: var(--linen); line-height: 1.5; margin: 0; white-space: pre-wrap; }
+.health-err-src { font-size: 0.6rem; margin: 0.3rem 0 0; }
+
+/* ── Deploy rows ── */
+.health-deploys > li {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.health-deploy-info {
+  display: flex; flex-direction: column; gap: 0.2rem; min-width: 0;
+}
+.health-deploy-sha { color: var(--gold); font-size: 0.65rem; }
+.health-deploy-msg {
+  color: var(--linen); font-size: 0.76rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.health-deploys .admin-reset-btn { flex-shrink: 0; }
+
+@media (max-width: 640px) {
+  .health-grid { grid-template-columns: repeat(2, 1fr); }
+  .health-deploys > li { flex-direction: column; align-items: stretch; }
+  .health-deploy-msg { white-space: normal; }
+}

@@ -8,6 +8,7 @@ import TestimonialsTab from './admin/TestimonialsTab';
 import NowBlockTab from './admin/NowBlockTab';
 import AnalyticsTab from './admin/AnalyticsTab';
 import GuestbookModerationTab from './admin/GuestbookModerationTab';
+import HealthTab from './admin/HealthTab';
 import './AdminPanel.css';
 
 const EMPTY = {
@@ -690,7 +691,7 @@ export default function AdminPanel() {
   } = useMuseum();
 
   const [localEditing, setLocalEditing] = useState(null);
-  const [activeView, setActiveView] = useState('projects'); // 'projects', 'settings', 'timeline', 'testimonials', 'nowblock', 'analytics', 'guestbook'
+  const [activeView, setActiveView] = useState('projects'); // 'projects', 'settings', 'timeline', 'testimonials', 'nowblock', 'analytics', 'guestbook', 'health'
 
   useEffect(() => { setLocalEditing(editingProject); setActiveView('projects'); }, [editingProject]);
   useEffect(() => {
@@ -754,6 +755,9 @@ export default function AdminPanel() {
                     </button>
                     <button className={`admin-reset-btn mono ${activeView === 'guestbook' ? 'active' : ''}`} onClick={() => setActiveView('guestbook')}>
                       📖 Guestbook
+                    </button>
+                    <button className={`admin-reset-btn mono ${activeView === 'health' ? 'active' : ''}`} onClick={() => setActiveView('health')}>
+                      🩺 Health
                     </button>
                     <button className={`admin-reset-btn mono ${activeView === 'settings' ? 'active' : ''}`} onClick={() => setActiveView('settings')}>
                       ⚙ Settings
@@ -841,6 +845,8 @@ export default function AdminPanel() {
                       />
                     ) : activeView === 'guestbook' ? (
                       <GuestbookModerationTab />
+                    ) : activeView === 'health' ? (
+                      <HealthTab githubToken={githubToken} />
                     ) : (
                       <ProjectForm
                         project={localEditing}
