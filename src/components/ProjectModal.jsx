@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset, isRealLink } from '../lib/assets';
 import ExhibitReel from './ExhibitReel';
+import ModelViewer from './ModelViewer';
+import AudioGuide from './AudioGuide';
 import ImageZoom from './anim/ImageZoom';
 import './ProjectModal.css';
 
@@ -88,8 +90,10 @@ export function Lightbox({ images, startIndex, onClose }) {
 const WRITEUP_CLAMP_CHARS = 420;
 
 export default function ProjectModal() {
-  const { viewingProject, setViewingProject } = useMuseum();
+  const { viewingProject, setViewingProject, projects } = useMuseum();
   const proj = viewingProject;
+  // The audio-guide handset number = the exhibit's position in the gallery.
+  const exhibitNumber = proj ? projects.findIndex(p => p.id === proj.id) + 1 : 0;
   const [lightboxIdx, setLightboxIdx] = useState(null);
   const [writeupOpen, setWriteupOpen] = useState(false);
   const [reelOpen, setReelOpen] = useState(false);
@@ -231,6 +235,17 @@ export default function ProjectModal() {
                       {proj.subtitle}
                     </motion.p>
                   )}
+                  {proj.audio && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.22, duration: 0.5 }}
+                      style={{ marginTop: '1rem' }}
+                    >
+                      {/* key: switching projects unmounts and stops the clip */}
+                      <AudioGuide key={proj.id} src={proj.audio} number={exhibitNumber} />
+                    </motion.div>
+                  )}
                 </div>
 
                 {/* Long description — long write-ups start clamped */}
@@ -277,6 +292,19 @@ export default function ProjectModal() {
                         </button>
                       ))}
                     </div>
+                  </motion.div>
+                )}
+
+                {/* Maquette — interactive 3D model, only when one is set */}
+                {proj.model && (
+                  <motion.div
+                    className="modal-gallery"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.32, duration: 0.6 }}
+                  >
+                    <h3 className="modal-heading serif">Maquette</h3>
+                    <ModelViewer src={proj.model} poster={proj.coverImage} label={proj.title} />
                   </motion.div>
                 )}
 

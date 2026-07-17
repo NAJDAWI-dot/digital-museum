@@ -1,0 +1,55 @@
+/* The Maquette plinth — the 3D model sits framed like a scale model in a
+   display case: hairline gold-tinted border on near-black, matching the
+   modal's plaque idiom. */
+
+.maquette-plinth {
+  border: 1px solid rgba(201, 169, 110, 0.18);
+  border-radius: 8px;
+  background:
+    radial-gradient(ellipse at 50% 85%, rgba(201, 169, 110, 0.06), transparent 60%),
+    rgba(255, 255, 255, 0.015);
+  padding: 0.5rem 0.5rem 0;
+  overflow: hidden;
+}
+
+.maquette-viewer {
+  display: block;
+  width: 100%;
+  height: min(52vh, 420px);
+  background: transparent;
+  --poster-color: transparent;
+  --progress-bar-color: transparent; /* we supply our own progress copy */
+}
+
+.maquette-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: min(52vh, 420px);
+  color: var(--dust);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.maquette-progress {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 12px;
+  text-align: center;
+  color: var(--dust);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.maquette-hint {
+  text-align: center;
+  color: var(--dust);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0;
+  padding: 0.55rem 0 0.65rem;
+}

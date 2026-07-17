@@ -18,6 +18,7 @@ const EMPTY = {
   tech: [], color: '#1a1a2e', accentColor: '#c9a96e',
   link: '#', repo: '#', featured: false, status: 'Live',
   coverImage: '', screenshots: [], collaborators: [], instructor: null,
+  model: '', audio: '',
 };
 
 const CATEGORIES = ['Engineering', 'Web Application', 'Website', 'Application'];
@@ -308,6 +309,16 @@ function ProjectForm({ project, onSave, onCancel }) {
               onChange={v => set('screenshots', v)}
               maxImages={6}
             />
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label mono" htmlFor="f-model">3D Model <span className="form-hint">— .glb committed under public/models/</span></label>
+                <input id="f-model" className="admin-input" value={form.model || ''} onChange={e => set('model', e.target.value)} placeholder="models/my-project.glb" />
+              </div>
+              <div className="form-group">
+                <label className="form-label mono" htmlFor="f-audio">Audio Guide <span className="form-hint">— .mp3 committed under public/audio-guide/</span></label>
+                <input id="f-audio" className="admin-input" value={form.audio || ''} onChange={e => set('audio', e.target.value)} placeholder="audio-guide/my-project.mp3" />
+              </div>
+            </div>
           </motion.div>
         )}
 

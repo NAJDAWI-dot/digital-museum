@@ -1,0 +1,48 @@
+/* The audio-guide handset button — quiet gold outline in the modal's
+   plaque idiom, with a hairline progress track along its bottom edge. */
+
+.audio-guide {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.1rem;
+  background: rgba(201, 169, 110, 0.06);
+  border: 1px solid rgba(201, 169, 110, 0.35);
+  border-radius: 4px;
+  color: var(--gold);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.audio-guide:hover {
+  background: rgba(201, 169, 110, 0.12);
+  border-color: rgba(201, 169, 110, 0.6);
+}
+
+.audio-guide-icon { font-size: 0.6rem; }
+
+.audio-guide-track {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  background: rgba(201, 169, 110, 0.15);
+}
+
+.audio-guide-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--gold);
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+@media (pointer: coarse) {
+  .audio-guide { padding: 0.85rem 1.2rem; min-height: 44px; }
+}
