@@ -245,7 +245,7 @@ export default function ProjectModal() {
                       style={{ marginTop: '1rem' }}
                     >
                       {/* key: switching projects unmounts and stops the clip */}
-                      <AudioGuide key={proj.id} src={proj.audio} number={exhibitNumber} />
+                      <AudioGuide key={proj.id} src={proj.audio} number={exhibitNumber} timestamps={proj.audioTimestamps} />
                     </motion.div>
                   )}
                 </div>

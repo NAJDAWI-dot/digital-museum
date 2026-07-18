@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import ImageUploader, { MultiImageUploader } from './ImageUploader';
 import MediaUploader from './admin/MediaUploader';
+import NarrationGenerator from './admin/NarrationGenerator';
 import { resolveAsset } from '../lib/assets';
 import CollaboratorsField from './admin/CollaboratorsField';
 import TestimonialsTab from './admin/TestimonialsTab';
@@ -19,7 +20,7 @@ const EMPTY = {
   tech: [], color: '#1a1a2e', accentColor: '#c9a96e',
   link: '#', repo: '#', featured: false, status: 'Live',
   coverImage: '', screenshots: [], collaborators: [], instructor: null,
-  model: '', audio: '',
+  model: '', audio: '', narrationScript: '', audioTimestamps: [],
 };
 
 const CATEGORIES = ['Engineering', 'Web Application', 'Website', 'Application'];
@@ -326,7 +327,7 @@ function ProjectForm({ project, onSave, onCancel }) {
               <div className="form-group">
                 <MediaUploader
                   label="Audio Guide"
-                  hint="narration clip"
+                  hint="upload your own clip, or generate one below"
                   value={form.audio || ''}
                   onChange={v => set('audio', v)}
                   folder="audio-guide"
@@ -336,6 +337,16 @@ function ProjectForm({ project, onSave, onCancel }) {
                 />
               </div>
             </div>
+
+            <NarrationGenerator
+              projectId={form.id}
+              script={form.narrationScript}
+              onScriptChange={v => set('narrationScript', v)}
+              onGenerated={({ audio, audioTimestamps }) => {
+                set('audio', audio);
+                set('audioTimestamps', audioTimestamps);
+              }}
+            />
           </motion.div>
         )}
 

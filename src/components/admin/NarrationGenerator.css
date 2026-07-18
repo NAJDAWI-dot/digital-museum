@@ -1,0 +1,21 @@
+.narration-gen {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.narration-gen-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--silver, #9a9a9a);
+}
+
+.narration-gen-count {
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  color: var(--dust, #9a9a9a);
+  text-transform: none;
+}
+
+.narration-gen-count.over { color: #ef4444; }

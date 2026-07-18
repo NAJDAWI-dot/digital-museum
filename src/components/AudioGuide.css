@@ -46,3 +46,30 @@
 @media (pointer: coarse) {
   .audio-guide { padding: 0.85rem 1.2rem; min-height: 44px; }
 }
+
+/* Word-synced transcript — reads like a caption track, one line of prose
+   with the currently-spoken word picked out in gold. */
+.audio-guide-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.audio-guide-transcript {
+  color: var(--dust);
+  font-size: 0.85rem;
+  line-height: 1.8;
+  max-width: 60ch;
+}
+
+.audio-word {
+  transition: color 0.15s ease;
+}
+
+.audio-word--active {
+  color: var(--gold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .audio-word { transition: none; }
+}
