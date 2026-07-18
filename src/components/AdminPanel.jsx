@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import ImageUploader, { MultiImageUploader } from './ImageUploader';
+import MediaUploader from './admin/MediaUploader';
 import { resolveAsset } from '../lib/assets';
 import CollaboratorsField from './admin/CollaboratorsField';
 import TestimonialsTab from './admin/TestimonialsTab';
@@ -311,12 +312,28 @@ function ProjectForm({ project, onSave, onCancel }) {
             />
             <div className="form-row">
               <div className="form-group">
-                <label className="form-label mono" htmlFor="f-model">3D Model <span className="form-hint">— .glb committed under public/models/</span></label>
-                <input id="f-model" className="admin-input" value={form.model || ''} onChange={e => set('model', e.target.value)} placeholder="models/my-project.glb" />
+                <MediaUploader
+                  label="3D Model"
+                  hint="the Maquette, .glb"
+                  value={form.model || ''}
+                  onChange={v => set('model', v)}
+                  folder="models"
+                  accept=".glb"
+                  extensions={['.glb']}
+                  maxSizeMB={50}
+                />
               </div>
               <div className="form-group">
-                <label className="form-label mono" htmlFor="f-audio">Audio Guide <span className="form-hint">— .mp3 committed under public/audio-guide/</span></label>
-                <input id="f-audio" className="admin-input" value={form.audio || ''} onChange={e => set('audio', e.target.value)} placeholder="audio-guide/my-project.mp3" />
+                <MediaUploader
+                  label="Audio Guide"
+                  hint="narration clip"
+                  value={form.audio || ''}
+                  onChange={v => set('audio', v)}
+                  folder="audio-guide"
+                  accept="audio/*"
+                  extensions={['.mp3', '.wav', '.m4a', '.ogg']}
+                  maxSizeMB={25}
+                />
               </div>
             </div>
           </motion.div>
