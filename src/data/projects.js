@@ -265,7 +265,7 @@ export const SITE_SETTINGS = {
     "updatedAt": ""
   },
   "goatcounterSiteCode": "najdawi",
-  "elevenlabsVoiceId": "auq43ws1oslv0tO4BDa7"
+  "elevenlabsVoiceId": "CwhRBWXzGAHq8TQ4Fs17"
 };
 
 export const INITIAL_TIMELINE = [
