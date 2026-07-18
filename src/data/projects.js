@@ -45,8 +45,550 @@ export const INITIAL_PROJECTS = [
       "url": "https://www.linkedin.com/in/leen-serhan-meng-a30439101/"
     },
     "model": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/models/1784369085108.glb",
-    "audio": "",
-    "narrationScript": "A smart vaccine cold box built for Jordan's last-mile healthcare delivery, combining active dual-Peltier cooling with a copper heat-pipe loop, a passive PCM thermal buffer, and a supercapacitor emergency backup into three independent layers of temperature protection. An RFID-based locking system authenticates every access event and automatically fail-locks if the box excursions outside the safe 2–8°C range, while an onboard microcontroller logs temperature, battery voltage, and access data every 5 minutes for 30 days. Designed to WHO's 43°C performance standard and aligned with JFDA, UNICEF E004, and EU Ecodesign requirements, the full prototype was built for roughly 118 JOD in materials. Developed for HTU's Engineering Project Management course."
+    "audio": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/audio-guide/p1783455970646-1784397419896.mp3",
+    "narrationScript": "A smart vaccine cold box built for Jordan's last-mile healthcare delivery, combining active dual-Peltier cooling with a copper heat-pipe loop, a passive PCM thermal buffer, and a supercapacitor emergency backup into three independent layers of temperature protection. An RFID-based locking system authenticates every access event and automatically fail-locks if the box excursions outside the safe 2–8°C range, while an onboard microcontroller logs temperature, battery voltage, and access data every 5 minutes for 30 days. Designed to WHO's 43°C performance standard and aligned with JFDA, UNICEF E004, and EU Ecodesign requirements, the full prototype was built for roughly 118 JOD in materials. Developed for HTU's Engineering Project Management course.",
+    "audioTimestamps": [
+      {
+        "word": "A",
+        "start": 0,
+        "end": 0.081
+      },
+      {
+        "word": "smart",
+        "start": 0.197,
+        "end": 0.534
+      },
+      {
+        "word": "vaccine",
+        "start": 0.58,
+        "end": 1.091
+      },
+      {
+        "word": "cold",
+        "start": 1.149,
+        "end": 1.44
+      },
+      {
+        "word": "box",
+        "start": 1.486,
+        "end": 1.811
+      },
+      {
+        "word": "built",
+        "start": 1.869,
+        "end": 2.055
+      },
+      {
+        "word": "for",
+        "start": 2.101,
+        "end": 2.206
+      },
+      {
+        "word": "Jordan's",
+        "start": 2.276,
+        "end": 2.705
+      },
+      {
+        "word": "last-mile",
+        "start": 2.786,
+        "end": 3.413
+      },
+      {
+        "word": "healthcare",
+        "start": 3.46,
+        "end": 3.924
+      },
+      {
+        "word": "delivery,",
+        "start": 3.971,
+        "end": 4.621
+      },
+      {
+        "word": "combining",
+        "start": 4.899,
+        "end": 5.492
+      },
+      {
+        "word": "active",
+        "start": 5.608,
+        "end": 6.049
+      },
+      {
+        "word": "dual-Peltier",
+        "start": 6.095,
+        "end": 6.885
+      },
+      {
+        "word": "cooling",
+        "start": 6.954,
+        "end": 7.279
+      },
+      {
+        "word": "with",
+        "start": 7.326,
+        "end": 7.442
+      },
+      {
+        "word": "a",
+        "start": 7.477,
+        "end": 7.512
+      },
+      {
+        "word": "copper",
+        "start": 7.581,
+        "end": 7.895
+      },
+      {
+        "word": "heat-pipe",
+        "start": 7.988,
+        "end": 8.498
+      },
+      {
+        "word": "loop,",
+        "start": 8.545,
+        "end": 8.975
+      },
+      {
+        "word": "a",
+        "start": 9.253,
+        "end": 9.323
+      },
+      {
+        "word": "passive",
+        "start": 9.416,
+        "end": 9.81
+      },
+      {
+        "word": "PCM",
+        "start": 9.857,
+        "end": 10.379
+      },
+      {
+        "word": "thermal",
+        "start": 10.495,
+        "end": 10.855
+      },
+      {
+        "word": "buffer,",
+        "start": 10.913,
+        "end": 11.459
+      },
+      {
+        "word": "and",
+        "start": 11.668,
+        "end": 11.842
+      },
+      {
+        "word": "a",
+        "start": 11.912,
+        "end": 11.935
+      },
+      {
+        "word": "supercapacitor",
+        "start": 12.016,
+        "end": 12.875
+      },
+      {
+        "word": "emergency",
+        "start": 12.934,
+        "end": 13.41
+      },
+      {
+        "word": "backup",
+        "start": 13.479,
+        "end": 13.839
+      },
+      {
+        "word": "into",
+        "start": 13.886,
+        "end": 14.06
+      },
+      {
+        "word": "three",
+        "start": 14.176,
+        "end": 14.524
+      },
+      {
+        "word": "independent",
+        "start": 14.594,
+        "end": 15.163
+      },
+      {
+        "word": "layers",
+        "start": 15.209,
+        "end": 15.511
+      },
+      {
+        "word": "of",
+        "start": 15.557,
+        "end": 15.627
+      },
+      {
+        "word": "temperature",
+        "start": 15.697,
+        "end": 16.173
+      },
+      {
+        "word": "protection.",
+        "start": 16.208,
+        "end": 16.962
+      },
+      {
+        "word": "An",
+        "start": 17.659,
+        "end": 17.81
+      },
+      {
+        "word": "RFID-based",
+        "start": 17.879,
+        "end": 18.808
+      },
+      {
+        "word": "locking",
+        "start": 18.878,
+        "end": 19.226
+      },
+      {
+        "word": "system",
+        "start": 19.284,
+        "end": 19.621
+      },
+      {
+        "word": "authenticates",
+        "start": 19.679,
+        "end": 20.387
+      },
+      {
+        "word": "every",
+        "start": 20.503,
+        "end": 20.77
+      },
+      {
+        "word": "access",
+        "start": 20.84,
+        "end": 21.211
+      },
+      {
+        "word": "event",
+        "start": 21.258,
+        "end": 21.513
+      },
+      {
+        "word": "and",
+        "start": 21.571,
+        "end": 21.664
+      },
+      {
+        "word": "automatically",
+        "start": 21.734,
+        "end": 22.361
+      },
+      {
+        "word": "fail-locks",
+        "start": 22.477,
+        "end": 23.174
+      },
+      {
+        "word": "if",
+        "start": 23.22,
+        "end": 23.313
+      },
+      {
+        "word": "the",
+        "start": 23.359,
+        "end": 23.429
+      },
+      {
+        "word": "box",
+        "start": 23.475,
+        "end": 23.708
+      },
+      {
+        "word": "excursions",
+        "start": 23.766,
+        "end": 24.346
+      },
+      {
+        "word": "outside",
+        "start": 24.439,
+        "end": 24.985
+      },
+      {
+        "word": "the",
+        "start": 25.02,
+        "end": 25.089
+      },
+      {
+        "word": "safe",
+        "start": 25.136,
+        "end": 25.368
+      },
+      {
+        "word": "2–8°C",
+        "start": 25.414,
+        "end": 26.041
+      },
+      {
+        "word": "range,",
+        "start": 26.134,
+        "end": 26.622
+      },
+      {
+        "word": "while",
+        "start": 27.005,
+        "end": 27.26
+      },
+      {
+        "word": "an",
+        "start": 27.295,
+        "end": 27.376
+      },
+      {
+        "word": "onboard",
+        "start": 27.469,
+        "end": 27.957
+      },
+      {
+        "word": "microcontroller",
+        "start": 28.026,
+        "end": 28.886
+      },
+      {
+        "word": "logs",
+        "start": 28.955,
+        "end": 29.234
+      },
+      {
+        "word": "temperature,",
+        "start": 29.292,
+        "end": 29.931
+      },
+      {
+        "word": "battery",
+        "start": 30.047,
+        "end": 30.418
+      },
+      {
+        "word": "voltage,",
+        "start": 30.476,
+        "end": 30.883
+      },
+      {
+        "word": "and",
+        "start": 30.906,
+        "end": 30.999
+      },
+      {
+        "word": "access",
+        "start": 31.08,
+        "end": 31.486
+      },
+      {
+        "word": "data",
+        "start": 31.544,
+        "end": 31.835
+      },
+      {
+        "word": "every",
+        "start": 31.893,
+        "end": 32.137
+      },
+      {
+        "word": "5",
+        "start": 32.253,
+        "end": 32.496
+      },
+      {
+        "word": "minutes",
+        "start": 32.555,
+        "end": 32.822
+      },
+      {
+        "word": "for",
+        "start": 32.88,
+        "end": 33.007
+      },
+      {
+        "word": "30",
+        "start": 33.077,
+        "end": 33.344
+      },
+      {
+        "word": "days.",
+        "start": 33.402,
+        "end": 33.913
+      },
+      {
+        "word": "Designed",
+        "start": 34.726,
+        "end": 35.155
+      },
+      {
+        "word": "to",
+        "start": 35.19,
+        "end": 35.341
+      },
+      {
+        "word": "WHO's",
+        "start": 35.457,
+        "end": 36.223
+      },
+      {
+        "word": "43°C",
+        "start": 36.316,
+        "end": 37.245
+      },
+      {
+        "word": "performance",
+        "start": 37.396,
+        "end": 37.872
+      },
+      {
+        "word": "standard",
+        "start": 37.895,
+        "end": 38.336
+      },
+      {
+        "word": "and",
+        "start": 38.429,
+        "end": 38.592
+      },
+      {
+        "word": "aligned",
+        "start": 38.627,
+        "end": 38.928
+      },
+      {
+        "word": "with",
+        "start": 38.963,
+        "end": 39.091
+      },
+      {
+        "word": "JFDA,",
+        "start": 39.184,
+        "end": 40.147
+      },
+      {
+        "word": "UNICEF",
+        "start": 40.24,
+        "end": 40.635
+      },
+      {
+        "word": "E004,",
+        "start": 40.728,
+        "end": 41.796
+      },
+      {
+        "word": "and",
+        "start": 42.04,
+        "end": 42.307
+      },
+      {
+        "word": "EU",
+        "start": 42.423,
+        "end": 42.829
+      },
+      {
+        "word": "Ecodesign",
+        "start": 42.945,
+        "end": 43.584
+      },
+      {
+        "word": "requirements,",
+        "start": 43.63,
+        "end": 44.385
+      },
+      {
+        "word": "the",
+        "start": 44.664,
+        "end": 44.803
+      },
+      {
+        "word": "full",
+        "start": 44.896,
+        "end": 45.116
+      },
+      {
+        "word": "prototype",
+        "start": 45.175,
+        "end": 45.697
+      },
+      {
+        "word": "was",
+        "start": 45.732,
+        "end": 45.825
+      },
+      {
+        "word": "built",
+        "start": 45.883,
+        "end": 46.08
+      },
+      {
+        "word": "for",
+        "start": 46.127,
+        "end": 46.243
+      },
+      {
+        "word": "roughly",
+        "start": 46.312,
+        "end": 46.66
+      },
+      {
+        "word": "118",
+        "start": 46.742,
+        "end": 47.612
+      },
+      {
+        "word": "JOD",
+        "start": 47.728,
+        "end": 48.146
+      },
+      {
+        "word": "in",
+        "start": 48.39,
+        "end": 48.483
+      },
+      {
+        "word": "materials.",
+        "start": 48.541,
+        "end": 49.319
+      },
+      {
+        "word": "Developed",
+        "start": 50.132,
+        "end": 50.584
+      },
+      {
+        "word": "for",
+        "start": 50.619,
+        "end": 50.747
+      },
+      {
+        "word": "HTU's",
+        "start": 50.793,
+        "end": 51.386
+      },
+      {
+        "word": "Engineering",
+        "start": 51.478,
+        "end": 51.966
+      },
+      {
+        "word": "Project",
+        "start": 52.012,
+        "end": 52.396
+      },
+      {
+        "word": "Management",
+        "start": 52.488,
+        "end": 52.953
+      },
+      {
+        "word": "course.",
+        "start": 53.011,
+        "end": 53.731
+      }
+    ]
   },
   {
     "title": "Engineering Design Expo 26 - Website",
