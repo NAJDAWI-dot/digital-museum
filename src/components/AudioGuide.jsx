@@ -46,6 +46,17 @@ export default function AudioGuide({ src, number, timestamps }) {
     }
   };
 
+  // Kicked off from Howler's `onplay`, not right after calling `.play()` —
+  // with html5:true, mobile browsers can take a beat to actually start
+  // producing audio (buffering/decode over a slower connection), so a frame
+  // scheduled immediately would find `.playing()` still false and the loop
+  // would die on its first tick, permanently freezing the transcript/progress
+  // even though the clip goes on to play fine.
+  const startTick = () => {
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(tick);
+  };
+
   const toggle = async () => {
     if (state === 'playing') {
       howlRef.current?.pause();
@@ -55,7 +66,6 @@ export default function AudioGuide({ src, number, timestamps }) {
     if (howlRef.current) {
       howlRef.current.play();
       setState('playing');
-      rafRef.current = requestAnimationFrame(tick);
       return;
     }
     setState('loading');
@@ -64,14 +74,15 @@ export default function AudioGuide({ src, number, timestamps }) {
       const howl = new Howl({
         src: [resolveAsset(src)],
         html5: true, // stream — narration can be minutes long
-        onend: () => { setState('paused'); setProgress(0); setActiveWord(-1); },
+        onplay: startTick,
+        onpause: () => cancelAnimationFrame(rafRef.current),
+        onend: () => { setState('paused'); setProgress(0); setActiveWord(-1); cancelAnimationFrame(rafRef.current); },
         onloaderror: () => setState('error'),
         onplayerror: () => setState('error'),
       });
       howlRef.current = howl;
       howl.play();
       setState('playing');
-      rafRef.current = requestAnimationFrame(tick);
     } catch {
       setState('error');
     }
