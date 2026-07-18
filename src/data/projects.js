@@ -632,7 +632,391 @@ export const INITIAL_PROJECTS = [
       "title": "Supervising Professor ",
       "organization": "HTU",
       "url": "https://linkedin.com/in/othman-smadi-7a330410/"
-    }
+    },
+    "narrationScript": "The HTU Design Expo Voting Platform is a custom-built, full-stack web application that empowers expo attendees to browse student projects, cast verified votes for their favorites, and watch results unfold in real time. Designed with a premium dark-mode aesthetic and full Arabic/English bilingual support, the platform served as the official audience-voting backbone of the expo, handling secure authentication, fraud prevention, live leaderboards, and a post-event Hall of Fame showcase, all from a single, mobile-first web interface.",
+    "audio": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/audio-guide/p1782929859694-1784409136329.mp3",
+    "audioTimestamps": [
+      {
+        "word": "The",
+        "start": 0,
+        "end": 0.163
+      },
+      {
+        "word": "HTU",
+        "start": 0.244,
+        "end": 0.743
+      },
+      {
+        "word": "Design",
+        "start": 0.813,
+        "end": 1.149
+      },
+      {
+        "word": "Expo",
+        "start": 1.207,
+        "end": 1.533
+      },
+      {
+        "word": "Voting",
+        "start": 1.602,
+        "end": 1.869
+      },
+      {
+        "word": "Platform",
+        "start": 1.927,
+        "end": 2.45
+      },
+      {
+        "word": "is",
+        "start": 2.496,
+        "end": 2.577
+      },
+      {
+        "word": "a",
+        "start": 2.647,
+        "end": 2.682
+      },
+      {
+        "word": "custom-built,",
+        "start": 2.775,
+        "end": 3.46
+      },
+      {
+        "word": "full-stack",
+        "start": 3.495,
+        "end": 4.052
+      },
+      {
+        "word": "web",
+        "start": 4.168,
+        "end": 4.365
+      },
+      {
+        "word": "application",
+        "start": 4.412,
+        "end": 5.016
+      },
+      {
+        "word": "that",
+        "start": 5.062,
+        "end": 5.178
+      },
+      {
+        "word": "empowers",
+        "start": 5.224,
+        "end": 5.642
+      },
+      {
+        "word": "expo",
+        "start": 5.7,
+        "end": 6.014
+      },
+      {
+        "word": "attendees",
+        "start": 6.072,
+        "end": 6.653
+      },
+      {
+        "word": "to",
+        "start": 6.722,
+        "end": 6.803
+      },
+      {
+        "word": "browse",
+        "start": 6.885,
+        "end": 7.221
+      },
+      {
+        "word": "student",
+        "start": 7.245,
+        "end": 7.558
+      },
+      {
+        "word": "projects,",
+        "start": 7.605,
+        "end": 8.255
+      },
+      {
+        "word": "cast",
+        "start": 8.638,
+        "end": 8.975
+      },
+      {
+        "word": "verified",
+        "start": 9.056,
+        "end": 9.532
+      },
+      {
+        "word": "votes",
+        "start": 9.578,
+        "end": 9.81
+      },
+      {
+        "word": "for",
+        "start": 9.857,
+        "end": 9.95
+      },
+      {
+        "word": "their",
+        "start": 9.985,
+        "end": 10.136
+      },
+      {
+        "word": "favorites,",
+        "start": 10.217,
+        "end": 10.844
+      },
+      {
+        "word": "and",
+        "start": 11.122,
+        "end": 11.331
+      },
+      {
+        "word": "watch",
+        "start": 11.424,
+        "end": 11.656
+      },
+      {
+        "word": "results",
+        "start": 11.703,
+        "end": 12.063
+      },
+      {
+        "word": "unfold",
+        "start": 12.121,
+        "end": 12.608
+      },
+      {
+        "word": "in",
+        "start": 12.666,
+        "end": 12.736
+      },
+      {
+        "word": "real",
+        "start": 12.852,
+        "end": 13.061
+      },
+      {
+        "word": "time.",
+        "start": 13.131,
+        "end": 13.63
+      },
+      {
+        "word": "Designed",
+        "start": 14.443,
+        "end": 14.884
+      },
+      {
+        "word": "with",
+        "start": 14.919,
+        "end": 15.058
+      },
+      {
+        "word": "a",
+        "start": 15.105,
+        "end": 15.14
+      },
+      {
+        "word": "premium",
+        "start": 15.256,
+        "end": 15.743
+      },
+      {
+        "word": "dark-mode",
+        "start": 15.825,
+        "end": 16.335
+      },
+      {
+        "word": "aesthetic",
+        "start": 16.359,
+        "end": 16.858
+      },
+      {
+        "word": "and",
+        "start": 16.916,
+        "end": 17.009
+      },
+      {
+        "word": "full",
+        "start": 17.09,
+        "end": 17.346
+      },
+      {
+        "word": "Arabic/English",
+        "start": 17.462,
+        "end": 18.611
+      },
+      {
+        "word": "bilingual",
+        "start": 18.692,
+        "end": 19.308
+      },
+      {
+        "word": "support,",
+        "start": 19.366,
+        "end": 19.993
+      },
+      {
+        "word": "the",
+        "start": 20.376,
+        "end": 20.492
+      },
+      {
+        "word": "platform",
+        "start": 20.573,
+        "end": 21.061
+      },
+      {
+        "word": "served",
+        "start": 21.119,
+        "end": 21.397
+      },
+      {
+        "word": "as",
+        "start": 21.444,
+        "end": 21.537
+      },
+      {
+        "word": "the",
+        "start": 21.595,
+        "end": 21.688
+      },
+      {
+        "word": "official",
+        "start": 21.757,
+        "end": 22.199
+      },
+      {
+        "word": "audience-voting",
+        "start": 22.28,
+        "end": 22.976
+      },
+      {
+        "word": "backbone",
+        "start": 23.058,
+        "end": 23.522
+      },
+      {
+        "word": "of",
+        "start": 23.545,
+        "end": 23.603
+      },
+      {
+        "word": "the",
+        "start": 23.65,
+        "end": 23.719
+      },
+      {
+        "word": "expo,",
+        "start": 23.789,
+        "end": 24.439
+      },
+      {
+        "word": "handling",
+        "start": 24.822,
+        "end": 25.275
+      },
+      {
+        "word": "secure",
+        "start": 25.368,
+        "end": 25.763
+      },
+      {
+        "word": "authentication,",
+        "start": 25.798,
+        "end": 26.773
+      },
+      {
+        "word": "fraud",
+        "start": 26.889,
+        "end": 27.191
+      },
+      {
+        "word": "prevention,",
+        "start": 27.237,
+        "end": 27.818
+      },
+      {
+        "word": "live",
+        "start": 27.992,
+        "end": 28.34
+      },
+      {
+        "word": "leaderboards,",
+        "start": 28.387,
+        "end": 29.141
+      },
+      {
+        "word": "and",
+        "start": 29.466,
+        "end": 29.699
+      },
+      {
+        "word": "a",
+        "start": 29.768,
+        "end": 29.803
+      },
+      {
+        "word": "post-event",
+        "start": 29.919,
+        "end": 30.511
+      },
+      {
+        "word": "Hall",
+        "start": 30.592,
+        "end": 30.801
+      },
+      {
+        "word": "of",
+        "start": 30.848,
+        "end": 30.906
+      },
+      {
+        "word": "Fame",
+        "start": 30.952,
+        "end": 31.231
+      },
+      {
+        "word": "showcase,",
+        "start": 31.277,
+        "end": 32.02
+      },
+      {
+        "word": "all",
+        "start": 32.136,
+        "end": 32.334
+      },
+      {
+        "word": "from",
+        "start": 32.392,
+        "end": 32.52
+      },
+      {
+        "word": "a",
+        "start": 32.578,
+        "end": 32.601
+      },
+      {
+        "word": "single,",
+        "start": 32.682,
+        "end": 33.077
+      },
+      {
+        "word": "mobile-first",
+        "start": 33.123,
+        "end": 33.773
+      },
+      {
+        "word": "web",
+        "start": 33.855,
+        "end": 34.052
+      },
+      {
+        "word": "interface.",
+        "start": 34.087,
+        "end": 34.969
+      }
+    ]
   },
   {
     "title": "Sumo Robot",
