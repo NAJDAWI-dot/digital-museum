@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import { startTour } from './GuidedTour';
 import HighlightsReelModal from './HighlightsReelModal';
@@ -44,6 +44,12 @@ export default function Hero({ revealed = true }) {
   const reducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Backdrop (orbs/blobs/noise) drifts slower than scroll — a subtle depth
+  // cue as the visitor leaves the hero, never applied to the text content.
+  const { scrollY } = useScroll();
+  const bgY = useTransform(scrollY, [0, 600], [0, reducedMotion ? 0 : 150]);
+  const bgOpacity = useTransform(scrollY, [0, 500], [1, reducedMotion ? 1 : 0.4]);
 
   // Hold the ambient particle field until the curtain lifts: no canvas rAF
   // competing with the preloader, so the reveal stays glass-smooth.
@@ -92,7 +98,7 @@ export default function Hero({ revealed = true }) {
     <section className={`hero ${revealed ? 'hero--revealed' : ''}`} id="hero">
       <canvas className="hero-particles" ref={particlesRef}></canvas>
 
-      <div className="hero-bg">
+      <motion.div className="hero-bg" style={{ y: bgY, opacity: bgOpacity }}>
         <div className="hero-orb hero-orb--1"></div>
         <div className="hero-orb hero-orb--2"></div>
         <div className="hero-orb hero-orb--3"></div>
@@ -125,7 +131,7 @@ export default function Hero({ revealed = true }) {
 
         <div className="hero-noise"></div>
         <div className="hero-vignette"></div>
-      </div>
+      </motion.div>
 
       <motion.div
         className="container hero-content"
