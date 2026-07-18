@@ -43,7 +43,9 @@ export const INITIAL_PROJECTS = [
       "title": "Supervising Engineer & Course Instructor",
       "organization": "HTU",
       "url": "https://www.linkedin.com/in/leen-serhan-meng-a30439101/"
-    }
+    },
+    "model": "models/vaccine-box.glb",
+    "audio": "audio-guide/vaccine-box.mp3"
   },
   {
     "title": "Engineering Design Expo 26 - Website",
