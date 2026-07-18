@@ -17,12 +17,8 @@
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 };
-
-// Rachel — a stable, well-documented default ElevenLabs voice. Callers may
-// override with their own voiceId from their ElevenLabs voice library.
-const DEFAULT_VOICE_ID = '21m00Tcm4TlvDq8ikWAM';
 
 // Generous but not unbounded — a single narration script shouldn't approach
 // a meaningful fraction of the free tier's monthly character budget in one
@@ -54,15 +50,49 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: CORS_HEADERS });
   }
-  if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'POST only' }), {
-      status: 405,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
-    });
-  }
   if (!isAuthenticatedSession(req.headers.get('authorization'))) {
     return new Response(JSON.stringify({ error: 'A signed-in editor session is required.' }), {
       status: 403,
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const apiKeyEarly = Deno.env.get('ELEVENLABS_API_KEY');
+  if (!apiKeyEarly) {
+    return new Response(JSON.stringify({ error: 'ELEVENLABS_API_KEY secret is not set' }), {
+      status: 500,
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    });
+  }
+
+  // GET — lists voices actually in this account (not the shared Voice
+  // Library), so the editor can pick a real one instead of guessing IDs
+  // that come back 402 (free tier can't call Library voices directly).
+  if (req.method === 'GET') {
+    const voicesRes = await fetch('https://api.elevenlabs.io/v1/voices', {
+      headers: { 'xi-api-key': apiKeyEarly },
+    });
+    if (!voicesRes.ok) {
+      const detail = await voicesRes.text().catch(() => '');
+      return new Response(
+        JSON.stringify({ error: `Could not list voices (HTTP ${voicesRes.status})`, detail: detail.slice(0, 500) }),
+        { status: voicesRes.status, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+      );
+    }
+    const voicesJson = await voicesRes.json();
+    const voices = (voicesJson.voices || []).map((v: { voice_id: string; name: string; category?: string }) => ({
+      voiceId: v.voice_id,
+      name: v.name,
+      category: v.category,
+    }));
+    return new Response(JSON.stringify({ voices }), {
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'GET or POST only' }), {
+      status: 405,
       headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
     });
   }
@@ -91,22 +121,19 @@ Deno.serve(async (req) => {
     });
   }
 
-  const apiKey = Deno.env.get('ELEVENLABS_API_KEY');
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'ELEVENLABS_API_KEY secret is not set' }), {
-      status: 500,
+  if (!body.voiceId) {
+    return new Response(JSON.stringify({ error: 'voiceId is required — GET this endpoint to list usable voices' }), {
+      status: 400,
       headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
     });
   }
 
-  const voiceId = body.voiceId || DEFAULT_VOICE_ID;
-
   const upstream = await fetch(
-    `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/with-timestamps`,
+    `https://api.elevenlabs.io/v1/text-to-speech/${body.voiceId}/with-timestamps`,
     {
       method: 'POST',
       headers: {
-        'xi-api-key': apiKey,
+        'xi-api-key': apiKeyEarly,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({

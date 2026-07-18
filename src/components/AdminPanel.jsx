@@ -4,6 +4,7 @@ import { useMuseum } from '../context/MuseumContext';
 import ImageUploader, { MultiImageUploader } from './ImageUploader';
 import MediaUploader from './admin/MediaUploader';
 import NarrationGenerator from './admin/NarrationGenerator';
+import VoicePicker from './admin/VoicePicker';
 import { resolveAsset } from '../lib/assets';
 import CollaboratorsField from './admin/CollaboratorsField';
 import TestimonialsTab from './admin/TestimonialsTab';
@@ -531,16 +532,13 @@ function SettingsForm({ settings, onSave, githubToken }) {
 
         <p className="section-label" style={{ marginTop: '2rem', marginBottom: '1rem' }}>Narration Voice</p>
         <p className="mono" style={{ fontSize: '0.7rem', color: 'var(--dust)', lineHeight: 1.6, marginBottom: '0.9rem' }}>
-          ElevenLabs' free API tier only allows voices added to your own account —
-          not the shared Voice Library directly. Add a voice at elevenlabs.io → Voices →
-          Voice Library → Add, then copy its ID from My Voices and paste it here. Every
-          project's Generate Narration uses this same voice.
+          ElevenLabs' free API tier only allows voices already in your account —
+          not the shared Voice Library directly. Click "Fetch my voices" to list the
+          ones that will actually work, or add one first at elevenlabs.io → Voices →
+          Voice Library → Add. Every project's Generate Narration uses this same voice.
         </p>
         <div className="form-row">
-          <div className="form-group">
-            <label className="form-label mono">ElevenLabs Voice ID</label>
-            <input className="admin-input" value={form.elevenlabsVoiceId || ''} onChange={e => set('elevenlabsVoiceId', e.target.value)} placeholder="e.g. EXAVITQu4vr4xnSDxMaL" />
-          </div>
+          <VoicePicker value={form.elevenlabsVoiceId} onChange={v => set('elevenlabsVoiceId', v)} />
         </div>
 
         <p className="section-label" style={{ marginTop: '2rem', marginBottom: '1rem' }}>Highlights Reel</p>
