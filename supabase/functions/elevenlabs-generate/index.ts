@@ -29,6 +29,27 @@ const DEFAULT_VOICE_ID = '21m00Tcm4TlvDq8ikWAM';
 // call by accident (e.g. a pasted write-up instead of a short script).
 const MAX_CHARS = 5000;
 
+// Supabase's platform-level JWT verification (the default deploy mode this
+// function relies on) only checks that the token is a validly SIGNED JWT
+// for this project — it does NOT check which role issued it. The public
+// anon key is itself a permanently-valid signed JWT (role: "anon"), shipped
+// in every visitor's browser bundle, so it passes that gateway check same
+// as a real login session. Without this extra role check, any visitor
+// could call this function directly with the anon key and spend the
+// owner's ElevenLabs quota with no login at all.
+function isAuthenticatedSession(authHeader: string | null): boolean {
+  const token = authHeader?.replace(/^Bearer\s+/i, '');
+  if (!token) return false;
+  const parts = token.split('.');
+  if (parts.length !== 3) return false;
+  try {
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    return payload.role === 'authenticated';
+  } catch {
+    return false;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: CORS_HEADERS });
@@ -36,6 +57,12 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'POST only' }), {
       status: 405,
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    });
+  }
+  if (!isAuthenticatedSession(req.headers.get('authorization'))) {
+    return new Response(JSON.stringify({ error: 'A signed-in editor session is required.' }), {
+      status: 403,
       headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
     });
   }
