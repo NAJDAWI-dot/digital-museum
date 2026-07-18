@@ -145,6 +145,32 @@
 }
 .modal-readmore:hover { color: var(--gold-light); }
 
+/* Expanded write-up — rendered Markdown */
+.modal-long-desc-md h1,
+.modal-long-desc-md h2,
+.modal-long-desc-md h3 {
+  font-size: 1.1rem;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+  margin: 1.25rem 0 0.5rem;
+}
+.modal-long-desc-md h1:first-child,
+.modal-long-desc-md h2:first-child,
+.modal-long-desc-md h3:first-child { margin-top: 0; }
+.modal-long-desc-md p { margin: 0 0 1rem; }
+.modal-long-desc-md p:last-child { margin-bottom: 0; }
+.modal-long-desc-md ul,
+.modal-long-desc-md ol {
+  margin: 0 0 1rem;
+  padding-left: 1.4rem;
+}
+.modal-long-desc-md li { margin-bottom: 0.4rem; }
+.modal-long-desc-md li:last-child { margin-bottom: 0; }
+.modal-long-desc-md strong { color: var(--linen); font-weight: 600; }
+.modal-long-desc-md em { font-style: italic; }
+
 /* Plaque-style sub-headings — deliberately not the mono eyebrow */
 .modal-heading {
   font-size: 1.1rem;

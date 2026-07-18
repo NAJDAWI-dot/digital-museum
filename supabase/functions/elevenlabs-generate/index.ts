@@ -65,9 +65,12 @@ Deno.serve(async (req) => {
     });
   }
 
-  // GET — lists voices actually in this account (not the shared Voice
-  // Library), so the editor can pick a real one instead of guessing IDs
-  // that come back 402 (free tier can't call Library voices directly).
+  // GET — lists voices actually usable by this account via the API. Even
+  // voices that show up under the account (added from the shared Voice
+  // Library) come back 402 "paid_plan_required" on free tier — ElevenLabs
+  // marks those with a `sharing.status === "copied"` (plus a
+  // public_owner_id pointing at the original creator), so we filter them
+  // out here rather than let the editor pick one that will fail later.
   if (req.method === 'GET') {
     const voicesRes = await fetch('https://api.elevenlabs.io/v1/voices', {
       headers: { 'xi-api-key': apiKeyEarly },
@@ -80,11 +83,14 @@ Deno.serve(async (req) => {
       );
     }
     const voicesJson = await voicesRes.json();
-    const voices = (voicesJson.voices || []).map((v: { voice_id: string; name: string; category?: string }) => ({
-      voiceId: v.voice_id,
-      name: v.name,
-      category: v.category,
-    }));
+    type ElevenLabsVoice = { voice_id: string; name: string; category?: string; sharing?: { status?: string } | null };
+    const voices = (voicesJson.voices || [])
+      .filter((v: ElevenLabsVoice) => v.sharing?.status !== 'copied')
+      .map((v: ElevenLabsVoice) => ({
+        voiceId: v.voice_id,
+        name: v.name,
+        category: v.category,
+      }));
     return new Response(JSON.stringify({ voices }), {
       headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
     });

@@ -291,8 +291,8 @@ function ProjectForm({ project, onSave, onCancel, voiceId }) {
               <span className="form-char-count mono">{form.description.length} chars</span>
             </div>
             <div className="form-group">
-              <label className="form-label mono" htmlFor="f-long">Full Write-up <span className="form-hint">— shown in the project detail modal</span></label>
-              <textarea id="f-long" className="admin-input admin-textarea" rows={8} value={form.longDescription} onChange={e => set('longDescription', e.target.value)} placeholder="Detailed technical write-up, outcomes, metrics..." />
+              <label className="form-label mono" htmlFor="f-long">Full Write-up <span className="form-hint">— shown in the project detail modal, Markdown supported: ## headings, **bold**, - lists</span></label>
+              <textarea id="f-long" className="admin-input admin-textarea" rows={8} value={form.longDescription} onChange={e => set('longDescription', e.target.value)} placeholder="Detailed technical write-up, outcomes, metrics... (Markdown: ## heading, **bold**, - list item)" />
               <span className="form-char-count mono">{form.longDescription.length} chars</span>
             </div>
           </motion.div>

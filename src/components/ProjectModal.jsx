@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import ReactMarkdown from 'react-markdown';
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset, isRealLink } from '../lib/assets';
 import ExhibitReel from './ExhibitReel';
@@ -8,6 +9,29 @@ import ModelViewer from './ModelViewer';
 import AudioGuide from './AudioGuide';
 import ImageZoom from './anim/ImageZoom';
 import './ProjectModal.css';
+
+// Collapsed write-ups clip with CSS line-clamp, which doesn't clip
+// predictably across mixed block elements (headings, lists) — so the
+// clamped preview shows plain stripped text instead of rendered Markdown.
+// Past write-ups were typed by hand with ad-hoc conventions CommonMark
+// doesn't recognize: a leading tab before a list number reads as an
+// indented code block (4-space/1-tab rule), and "•" isn't a bullet marker
+// remark understands. Normalize both to real Markdown before parsing.
+function normalizeMarkdown(text) {
+  return text
+    .replace(/\n[ \t]*(\d+)\.\t+/g, '\n$1. ')
+    .replace(/(^|\n)[ \t]*•[ \t]*/g, '$1- ');
+}
+
+function stripMarkdown(text) {
+  return text
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, '$1')
+    .replace(/^[-•]\s+/gm, '')
+    .replace(/^\d+\.\s+/gm, '')
+    .replace(/\n+/g, ' ')
+    .trim();
+}
 
 export function Lightbox({ images, startIndex, onClose }) {
   const [idx, setIdx] = useState(startIndex);
@@ -104,7 +128,7 @@ export default function ProjectModal() {
   // A reel needs at least two frames to be worth playing.
   const reelFrames = proj ? [proj.coverImage, ...(proj.screenshots || [])].filter(Boolean).length : 0;
 
-  const writeup = proj?.longDescription || proj?.description || '';
+  const writeup = normalizeMarkdown(proj?.longDescription || proj?.description || '');
   const writeupIsLong = writeup.length > WRITEUP_CLAMP_CHARS;
 
   // Every project opens with its write-up collapsed again.
@@ -257,9 +281,13 @@ export default function ProjectModal() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25, duration: 0.6 }}
                 >
-                  <p className={`modal-long-desc ${writeupIsLong && !writeupOpen ? 'clamped' : ''}`}>
-                    {writeup}
-                  </p>
+                  {writeupIsLong && !writeupOpen ? (
+                    <p className="modal-long-desc clamped">{stripMarkdown(writeup)}</p>
+                  ) : (
+                    <div className="modal-long-desc modal-long-desc-md">
+                      <ReactMarkdown>{writeup}</ReactMarkdown>
+                    </div>
+                  )}
                   {writeupIsLong && (
                     <button
                       type="button"
