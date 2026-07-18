@@ -172,7 +172,7 @@ function ProjectList({ projects, onSelect, onDelete, onNew, onMove, selectedId }
 }
 
 /* ── Tabbed Form ─────────────────────────── */
-function ProjectForm({ project, onSave, onCancel }) {
+function ProjectForm({ project, onSave, onCancel, voiceId }) {
   const [form, setForm]       = useState(project || EMPTY);
   const [tab, setTab]         = useState(0);
   const [techInput, setTech]  = useState('');
@@ -341,6 +341,7 @@ function ProjectForm({ project, onSave, onCancel }) {
             <NarrationGenerator
               projectId={form.id}
               script={form.narrationScript}
+              voiceId={voiceId}
               onScriptChange={v => set('narrationScript', v)}
               onGenerated={({ audio, audioTimestamps }) => {
                 set('audio', audio);
@@ -525,6 +526,20 @@ function SettingsForm({ settings, onSave, githubToken }) {
           <div className="form-group">
             <label className="form-label mono">GoatCounter Site Code</label>
             <input className="admin-input" value={form.goatcounterSiteCode || ''} onChange={e => set('goatcounterSiteCode', e.target.value)} placeholder="e.g. my-site" />
+          </div>
+        </div>
+
+        <p className="section-label" style={{ marginTop: '2rem', marginBottom: '1rem' }}>Narration Voice</p>
+        <p className="mono" style={{ fontSize: '0.7rem', color: 'var(--dust)', lineHeight: 1.6, marginBottom: '0.9rem' }}>
+          ElevenLabs' free API tier only allows voices added to your own account —
+          not the shared Voice Library directly. Add a voice at elevenlabs.io → Voices →
+          Voice Library → Add, then copy its ID from My Voices and paste it here. Every
+          project's Generate Narration uses this same voice.
+        </p>
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label mono">ElevenLabs Voice ID</label>
+            <input className="admin-input" value={form.elevenlabsVoiceId || ''} onChange={e => set('elevenlabsVoiceId', e.target.value)} placeholder="e.g. EXAVITQu4vr4xnSDxMaL" />
           </div>
         </div>
 
@@ -895,6 +910,7 @@ export default function AdminPanel() {
                         project={localEditing}
                         onSave={handleSave}
                         onCancel={handleClose}
+                        voiceId={settings.elevenlabsVoiceId}
                       />
                     )}
                   </div>

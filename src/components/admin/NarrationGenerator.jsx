@@ -38,7 +38,7 @@ function charsToWords(characters, charStart, charEnd) {
   return words;
 }
 
-export default function NarrationGenerator({ projectId, script, onScriptChange, onGenerated }) {
+export default function NarrationGenerator({ projectId, script, voiceId, onScriptChange, onGenerated }) {
   const [status, setStatus] = useState('idle'); // idle | generating | error
   const [error, setError] = useState('');
 
@@ -48,6 +48,7 @@ export default function NarrationGenerator({ projectId, script, onScriptChange, 
   const generate = async () => {
     const text = (script || '').trim();
     if (!text) { setError('Write a narration script first.'); return; }
+    if (!voiceId) { setError('Set an ElevenLabs Voice ID in Settings first — free-tier API access requires a voice added to your own account.'); return; }
 
     const supabase = getSupabaseClient();
     if (!supabase) { setError('Supabase is not configured.'); return; }
@@ -65,7 +66,7 @@ export default function NarrationGenerator({ projectId, script, onScriptChange, 
           Authorization: `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, voiceId }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || `Generation failed (HTTP ${res.status})`);
@@ -105,13 +106,18 @@ export default function NarrationGenerator({ projectId, script, onScriptChange, 
         {charsUsed.toLocaleString()} / {FREE_TIER_CHARS.toLocaleString()} chars (free tier is monthly, shared across all narrations)
       </div>
 
+      {!voiceId && (
+        <p className="mono" style={{ fontSize: '0.65rem', color: 'var(--dust)' }}>
+          Set an ElevenLabs Voice ID in Settings before generating.
+        </p>
+      )}
       {error && <p className="admin-error mono">{error}</p>}
 
       <button
         type="button"
         className="form-btn-save mono"
         onClick={generate}
-        disabled={status === 'generating' || !script?.trim()}
+        disabled={status === 'generating' || !script?.trim() || !voiceId}
       >
         {status === 'generating' ? 'Generating…' : '🎙️ Generate Narration'}
       </button>
