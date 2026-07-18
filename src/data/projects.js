@@ -45,7 +45,8 @@ export const INITIAL_PROJECTS = [
       "url": "https://www.linkedin.com/in/leen-serhan-meng-a30439101/"
     },
     "model": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/models/1784369085108.glb",
-    "audio": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/audio-guide/1784369093360.wav"
+    "audio": "",
+    "narrationScript": "A smart vaccine cold box built for Jordan's last-mile healthcare delivery, combining active dual-Peltier cooling with a copper heat-pipe loop, a passive PCM thermal buffer, and a supercapacitor emergency backup into three independent layers of temperature protection. An RFID-based locking system authenticates every access event and automatically fail-locks if the box excursions outside the safe 2–8°C range, while an onboard microcontroller logs temperature, battery voltage, and access data every 5 minutes for 30 days. Designed to WHO's 43°C performance standard and aligned with JFDA, UNICEF E004, and EU Ecodesign requirements, the full prototype was built for roughly 118 JOD in materials. Developed for HTU's Engineering Project Management course."
   },
   {
     "title": "Engineering Design Expo 26 - Website",
