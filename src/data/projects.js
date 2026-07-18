@@ -44,8 +44,8 @@ export const INITIAL_PROJECTS = [
       "organization": "HTU",
       "url": "https://www.linkedin.com/in/leen-serhan-meng-a30439101/"
     },
-    "model": "models/vaccine-box.glb",
-    "audio": "audio-guide/vaccine-box.mp3"
+    "model": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/models/1784369085108.glb",
+    "audio": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/audio-guide/1784369093360.wav"
   },
   {
     "title": "Engineering Design Expo 26 - Website",
