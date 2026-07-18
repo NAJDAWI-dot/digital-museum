@@ -1069,7 +1069,436 @@ export const INITIAL_PROJECTS = [
       "title": "Instructor",
       "organization": "Ex: HTU",
       "url": "https://www.linkedin.com/in/ibrahim-hjeij-9b92801b5/"
-    }
+    },
+    "narrationScript": "Our sumo robot is a compact, high-performance autonomous combat robot designed to dominate the sumo arena through speed, power, and intelligent sensing. Built with six JSumo Titan 200 RPM motors, precision line sensors, and opponent detection sensors, the robot combines strong mechanical traction with fast decision-making algorithms. Its aluminum chassis provides durability while maintaining a low center of gravity for maximum stability during pushing battles. The system is controlled by an Espressif Systems ESP32, enabling fast sensor processing and optimized attack strategies for competitive performance.",
+    "audio": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/audio-guide/p1782930214093-1784411961300.mp3",
+    "audioTimestamps": [
+      {
+        "word": "Our",
+        "start": 0,
+        "end": 0.174
+      },
+      {
+        "word": "sumo",
+        "start": 0.244,
+        "end": 0.569
+      },
+      {
+        "word": "robot",
+        "start": 0.639,
+        "end": 1.022
+      },
+      {
+        "word": "is",
+        "start": 1.068,
+        "end": 1.138
+      },
+      {
+        "word": "a",
+        "start": 1.196,
+        "end": 1.219
+      },
+      {
+        "word": "compact,",
+        "start": 1.289,
+        "end": 1.8
+      },
+      {
+        "word": "high-performance",
+        "start": 1.834,
+        "end": 2.566
+      },
+      {
+        "word": "autonomous",
+        "start": 2.601,
+        "end": 3.123
+      },
+      {
+        "word": "combat",
+        "start": 3.193,
+        "end": 3.599
+      },
+      {
+        "word": "robot",
+        "start": 3.657,
+        "end": 4.029
+      },
+      {
+        "word": "designed",
+        "start": 4.098,
+        "end": 4.47
+      },
+      {
+        "word": "to",
+        "start": 4.493,
+        "end": 4.551
+      },
+      {
+        "word": "dominate",
+        "start": 4.667,
+        "end": 5.12
+      },
+      {
+        "word": "the",
+        "start": 5.155,
+        "end": 5.224
+      },
+      {
+        "word": "sumo",
+        "start": 5.271,
+        "end": 5.584
+      },
+      {
+        "word": "arena",
+        "start": 5.642,
+        "end": 5.944
+      },
+      {
+        "word": "through",
+        "start": 5.991,
+        "end": 6.223
+      },
+      {
+        "word": "speed,",
+        "start": 6.281,
+        "end": 6.745
+      },
+      {
+        "word": "power,",
+        "start": 6.78,
+        "end": 7.14
+      },
+      {
+        "word": "and",
+        "start": 7.163,
+        "end": 7.245
+      },
+      {
+        "word": "intelligent",
+        "start": 7.303,
+        "end": 7.872
+      },
+      {
+        "word": "sensing.",
+        "start": 7.918,
+        "end": 8.51
+      },
+      {
+        "word": "Built",
+        "start": 9.323,
+        "end": 9.543
+      },
+      {
+        "word": "with",
+        "start": 9.59,
+        "end": 9.729
+      },
+      {
+        "word": "six",
+        "start": 9.822,
+        "end": 10.077
+      },
+      {
+        "word": "JSumo",
+        "start": 10.159,
+        "end": 10.681
+      },
+      {
+        "word": "Titan",
+        "start": 10.751,
+        "end": 11.099
+      },
+      {
+        "word": "200",
+        "start": 11.215,
+        "end": 11.726
+      },
+      {
+        "word": "RPM",
+        "start": 11.819,
+        "end": 12.202
+      },
+      {
+        "word": "motors,",
+        "start": 12.26,
+        "end": 12.748
+      },
+      {
+        "word": "precision",
+        "start": 12.829,
+        "end": 13.27
+      },
+      {
+        "word": "line",
+        "start": 13.351,
+        "end": 13.595
+      },
+      {
+        "word": "sensors,",
+        "start": 13.642,
+        "end": 14.211
+      },
+      {
+        "word": "and",
+        "start": 14.385,
+        "end": 14.524
+      },
+      {
+        "word": "opponent",
+        "start": 14.57,
+        "end": 14.988
+      },
+      {
+        "word": "detection",
+        "start": 15.035,
+        "end": 15.464
+      },
+      {
+        "word": "sensors,",
+        "start": 15.522,
+        "end": 16.091
+      },
+      {
+        "word": "the",
+        "start": 16.474,
+        "end": 16.567
+      },
+      {
+        "word": "robot",
+        "start": 16.637,
+        "end": 17.02
+      },
+      {
+        "word": "combines",
+        "start": 17.078,
+        "end": 17.484
+      },
+      {
+        "word": "strong",
+        "start": 17.531,
+        "end": 17.856
+      },
+      {
+        "word": "mechanical",
+        "start": 17.914,
+        "end": 18.402
+      },
+      {
+        "word": "traction",
+        "start": 18.46,
+        "end": 18.947
+      },
+      {
+        "word": "with",
+        "start": 19.005,
+        "end": 19.179
+      },
+      {
+        "word": "fast",
+        "start": 19.354,
+        "end": 19.679
+      },
+      {
+        "word": "decision-making",
+        "start": 19.737,
+        "end": 20.457
+      },
+      {
+        "word": "algorithms.",
+        "start": 20.573,
+        "end": 21.339
+      },
+      {
+        "word": "Its",
+        "start": 21.78,
+        "end": 21.966
+      },
+      {
+        "word": "aluminum",
+        "start": 22.012,
+        "end": 22.442
+      },
+      {
+        "word": "chassis",
+        "start": 22.5,
+        "end": 22.953
+      },
+      {
+        "word": "provides",
+        "start": 23.011,
+        "end": 23.394
+      },
+      {
+        "word": "durability",
+        "start": 23.44,
+        "end": 24.067
+      },
+      {
+        "word": "while",
+        "start": 24.125,
+        "end": 24.311
+      },
+      {
+        "word": "maintaining",
+        "start": 24.346,
+        "end": 24.81
+      },
+      {
+        "word": "a",
+        "start": 24.857,
+        "end": 24.88
+      },
+      {
+        "word": "low",
+        "start": 24.961,
+        "end": 25.135
+      },
+      {
+        "word": "center",
+        "start": 25.205,
+        "end": 25.46
+      },
+      {
+        "word": "of",
+        "start": 25.518,
+        "end": 25.565
+      },
+      {
+        "word": "gravity",
+        "start": 25.623,
+        "end": 26.041
+      },
+      {
+        "word": "for",
+        "start": 26.122,
+        "end": 26.273
+      },
+      {
+        "word": "maximum",
+        "start": 26.389,
+        "end": 26.935
+      },
+      {
+        "word": "stability",
+        "start": 26.981,
+        "end": 27.481
+      },
+      {
+        "word": "during",
+        "start": 27.55,
+        "end": 27.771
+      },
+      {
+        "word": "pushing",
+        "start": 27.841,
+        "end": 28.166
+      },
+      {
+        "word": "battles.",
+        "start": 28.224,
+        "end": 28.735
+      },
+      {
+        "word": "The",
+        "start": 29.687,
+        "end": 29.803
+      },
+      {
+        "word": "system",
+        "start": 29.861,
+        "end": 30.186
+      },
+      {
+        "word": "is",
+        "start": 30.232,
+        "end": 30.302
+      },
+      {
+        "word": "controlled",
+        "start": 30.36,
+        "end": 30.79
+      },
+      {
+        "word": "by",
+        "start": 30.813,
+        "end": 30.929
+      },
+      {
+        "word": "an",
+        "start": 30.987,
+        "end": 31.045
+      },
+      {
+        "word": "Espressif",
+        "start": 31.091,
+        "end": 31.614
+      },
+      {
+        "word": "Systems",
+        "start": 31.672,
+        "end": 32.113
+      },
+      {
+        "word": "ESP32,",
+        "start": 32.206,
+        "end": 33.541
+      },
+      {
+        "word": "enabling",
+        "start": 33.82,
+        "end": 34.331
+      },
+      {
+        "word": "fast",
+        "start": 34.412,
+        "end": 34.691
+      },
+      {
+        "word": "sensor",
+        "start": 34.714,
+        "end": 35.004
+      },
+      {
+        "word": "processing",
+        "start": 35.05,
+        "end": 35.608
+      },
+      {
+        "word": "and",
+        "start": 35.654,
+        "end": 35.735
+      },
+      {
+        "word": "optimized",
+        "start": 35.817,
+        "end": 36.351
+      },
+      {
+        "word": "attack",
+        "start": 36.386,
+        "end": 36.676
+      },
+      {
+        "word": "strategies",
+        "start": 36.734,
+        "end": 37.268
+      },
+      {
+        "word": "for",
+        "start": 37.314,
+        "end": 37.442
+      },
+      {
+        "word": "competitive",
+        "start": 37.512,
+        "end": 38.046
+      },
+      {
+        "word": "performance.",
+        "start": 38.081,
+        "end": 38.963
+      }
+    ]
   },
   {
     "title": "STEM wall tracking robot",
