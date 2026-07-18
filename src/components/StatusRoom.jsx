@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import './StatusRoom.css';
 
 // The Status Room: live health of the museum's machinery, read straight from
@@ -53,6 +54,7 @@ function Sparkline({ points }) {
 }
 
 export default function StatusRoom() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState(null);
   const [history, setHistory] = useState([]);
@@ -150,16 +152,15 @@ export default function StatusRoom() {
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="status-kicker mono">Back of house</p>
-            <h3 className="status-title serif">The Status Room</h3>
+            <p className="status-kicker mono">{t('status.kicker')}</p>
+            <h3 className="status-title serif">{t('status.title')}</h3>
 
             {failed && (
               <p className="status-empty">
-                The logbook is unreachable right now — the museum itself is
-                evidently open, since you're reading this.
+                {t('status.unreachable')}
               </p>
             )}
-            {!failed && !status && <p className="status-empty">Consulting the logbook…</p>}
+            {!failed && !status && <p className="status-empty">{t('status.loading')}</p>}
 
             {status && (
               <>
@@ -194,7 +195,7 @@ export default function StatusRoom() {
             )}
 
             <button type="button" className="status-close mono" onClick={() => setOpen(false)}>
-              Close
+              {t('status.close')}
             </button>
           </motion.div>
         </motion.div>

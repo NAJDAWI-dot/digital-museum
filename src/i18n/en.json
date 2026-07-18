@@ -1,0 +1,138 @@
+{
+  "nav": {
+    "gallery": "Gallery",
+    "featured": "Featured",
+    "about": "About",
+    "editorAccess": "Editor Access",
+    "arrow": "→"
+  },
+  "hero": {
+    "eyebrow": "Digital Museum  ·  Est. 2023",
+    "line1": "A museum",
+    "line2": "of infinite",
+    "line3": "creations",
+    "desc": "Engineering systems, web applications, and digital experiences — each a chapter in the archive of craft.",
+    "enter": "Enter Exhibition",
+    "tour": "Take the guided tour",
+    "highlights": "Watch the highlights",
+    "scroll": "Scroll",
+    "catalogue": "Catalogue — {{exhibits}} exhibits · {{disciplines}} disciplines · est. 2023"
+  },
+  "featured": {
+    "eyebrow": "Editor's Pick",
+    "explore": "Explore"
+  },
+  "gallery": {
+    "title1": "The Complete",
+    "title2": "Collection",
+    "desc": "Each work is a distinct chapter — an artefact of engineering, design, and digital craft. Browse by discipline or explore the archive in full.",
+    "all": "All"
+  },
+  "timeline": {
+    "title": "Career Journey",
+    "subtitle": "The path so far"
+  },
+  "vol": {
+    "title": "Volunteering",
+    "subtitle": "Service beyond the exhibits",
+    "entries_one": "entry",
+    "entries_other": "entries",
+    "showFewer": "Show fewer ↑",
+    "showMore": "Show {{count}} more ↓"
+  },
+  "contact": {
+    "title": "Let's build something extraordinary.",
+    "desc": "I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.",
+    "getInTouch": "Get in touch",
+    "downloadCv": "Download CV",
+    "cvDownloads": "CV downloads"
+  },
+  "gb": {
+    "eyebrow": "Sign the Register",
+    "title": "Visitor's Log",
+    "subtitle": "Leave a note for the next visitor",
+    "namePlaceholder": "Your name",
+    "notePlaceholder": "Leave a note…",
+    "posting": "Posting…",
+    "sign": "Sign the guestbook",
+    "hint": "New entries are reviewed before they appear publicly.",
+    "verify": "Please complete the verification check.",
+    "received": "Note received",
+    "thanks": "Thanks — your note is awaiting a quick review before it appears here.",
+    "another": "Leave another note",
+    "empty": "No entries yet — be the first to sign it."
+  },
+  "modal": {
+    "screenshots": "Screenshots",
+    "maquette": "Maquette",
+    "stack": "Stack",
+    "instructor": "Instructor",
+    "collaborators": "Collaborators",
+    "repository": "Repository",
+    "visitLive": "Visit Live",
+    "playReel": "Play reel",
+    "readMore": "Continue reading ↓",
+    "showLess": "Show less ↑"
+  },
+  "status": {
+    "kicker": "Back of house",
+    "title": "The Status Room",
+    "loading": "Consulting the logbook…",
+    "unreachable": "The logbook is unreachable right now — the museum itself is evidently open, since you're reading this.",
+    "close": "Close"
+  },
+  "ticket": {
+    "collect": "Collect your admission ticket",
+    "locked": "Locked",
+    "save": "Save ticket",
+    "close": "Close"
+  },
+  "tour": {
+    "progress": "Guided tour — {{current}} of {{total}}",
+    "end": "End",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish tour",
+    "featured": { "title": "Editor's Pick", "caption": "The centrepiece of the current collection. Tap the card for the full story." },
+    "gallery": { "title": "The Complete Collection", "caption": "Every exhibit in the archive — browse by discipline, open any card to read its plaque." },
+    "career": { "title": "Career Journey", "caption": "The path that built the museum, milestone by milestone." },
+    "volunteering": { "title": "Wing of Service", "caption": "Contributions beyond the exhibits — organizing, mentoring, giving back." },
+    "testimonials": { "title": "Visitor Remarks", "caption": "Words from the people who worked alongside the curator." },
+    "guestbook": { "title": "The Guestbook", "caption": "Leave a note before you go — every signature joins the permanent record." },
+    "contact": { "title": "The Curator's Desk", "caption": "Commission a work, offer a role, or simply say hello." }
+  },
+  "delight": {
+    "achievement": "Achievement earned",
+    "allPlaques": "All plaques found!",
+    "keyAppears": "A key appears in the museum footer…",
+    "plaqueFound_one": "Brass plaque {{count}} of {{total}}",
+    "plaqueFound_other": "Brass plaque {{count}} of {{total}}",
+    "keepLooking": "Keep looking — the museum hides its history.",
+    "huntComplete": "Hunt complete",
+    "keyInFooter": "The Restricted Archives key is in the footer.",
+    "plaquesCollected_one": "{{count}} of {{total}} plaques collected",
+    "plaquesCollected_other": "{{count}} of {{total}} plaques collected",
+    "alreadyHave": "This one is already in your satchel."
+  },
+  "footer": {
+    "tagline": "A digital museum of engineering, applications & web craft.",
+    "navigate": "Navigate",
+    "home": "Home",
+    "ticket": "Your ticket",
+    "status": "Status",
+    "connect": "Connect",
+    "email": "Email",
+    "share": "Share this page",
+    "shareLinkedin": "Share on LinkedIn",
+    "copyLink": "Copy Link",
+    "copied": "Copied!",
+    "museumName": "Hashem Najdawi Museum",
+    "crafted": "Crafted with precision"
+  },
+  "time": {
+    "justNow": "just now",
+    "minsAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago"
+  }
+}

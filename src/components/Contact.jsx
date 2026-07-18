@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useMuseum } from '../context/MuseumContext';
@@ -11,6 +12,7 @@ const CV_COUNTER_KEY = 'cv-downloads';
 
 export default function Contact() {
   const { settings } = useMuseum();
+  const { t } = useTranslation();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-50px' });
 
@@ -38,15 +40,15 @@ export default function Contact() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="contact-content">
-            <h2 className="contact-title serif">Let's build something extraordinary.</h2>
+            <h2 className="contact-title serif">{t('contact.title')}</h2>
             <p className="contact-desc">
-              I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.
+              {t('contact.desc')}
             </p>
             
             <div className="contact-actions">
               <Magnetic>
                 <a href={`mailto:${settings.email}`} className="contact-btn primary">
-                  <span className="mono">Get in touch</span>
+                  <span className="mono">{t('contact.getInTouch')}</span>
                 </a>
               </Magnetic>
               {settings.cvLink && (
@@ -58,7 +60,7 @@ export default function Contact() {
                     className="contact-btn secondary"
                     onClick={handleCvClick}
                   >
-                    <span className="mono">Download CV</span>
+                    <span className="mono">{t('contact.downloadCv')}</span>
                   </a>
                 </Magnetic>
               )}
@@ -66,7 +68,7 @@ export default function Contact() {
 
             {settings.cvLink && cvDownloads !== null && (
               <p className="contact-cv-count mono">
-                <SlidingNumber value={cvDownloads} /> CV downloads
+                <SlidingNumber value={cvDownloads} /> {t('contact.cvDownloads')}
               </p>
             )}
           </div>

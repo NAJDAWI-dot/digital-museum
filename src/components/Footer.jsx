@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMuseum } from '../context/MuseumContext';
 import { buildShareLink } from '../utils/shareLinks';
 import BrassPlaque from './BrassPlaque';
@@ -13,7 +14,7 @@ import './Footer.css';
 const SHARE_SOURCES = [
   {
     source: 'linkedin',
-    label: 'Share on LinkedIn',
+    label: 'footer.shareLinkedin',
     action: 'linkedin-share',
     icon: (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -23,7 +24,7 @@ const SHARE_SOURCES = [
   },
   {
     source: 'copy-link',
-    label: 'Copy Link',
+    label: 'footer.copyLink',
     action: 'copy',
     icon: (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -36,6 +37,7 @@ const SHARE_SOURCES = [
 
 export default function Footer() {
   const { settings } = useMuseum();
+  const { t, i18n } = useTranslation();
   const year = new Date().getFullYear();
   const [copiedSource, setCopiedSource] = useState(null);
 
@@ -67,42 +69,49 @@ export default function Footer() {
           <div className="footer-brand">
             <div className="footer-logo serif">Hashem Najdawi</div>
             <p className="footer-tagline">
-              A digital museum of engineering,<br />
-              applications & web craft.
+              {t('footer.tagline')}
             </p>
           </div>
 
           <div className="footer-links-col">
-            <p className="footer-col-title mono">Navigate</p>
-            <a href="#hero">Home</a>
-            <a href="#featured">Featured</a>
-            <a href="#gallery">Gallery</a>
+            <p className="footer-col-title mono">{t('footer.navigate')}</p>
+            <a href="#hero">{t('footer.home')}</a>
+            <a href="#featured">{t('nav.featured')}</a>
+            <a href="#gallery">{t('nav.gallery')}</a>
             <button
               type="button"
               className="footer-ticket-link"
               onClick={() => window.dispatchEvent(new CustomEvent('museum:open-ticket'))}
             >
-              Your ticket
+              {t('footer.ticket')}
             </button>
             <button
               type="button"
               className="footer-ticket-link"
               onClick={() => window.dispatchEvent(new CustomEvent('museum:open-status'))}
             >
-              Status
+              {t('footer.status')}
+            </button>
+            <button
+              type="button"
+              className="footer-ticket-link footer-lang-toggle mono"
+              onClick={() => i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar')}
+              aria-label={i18n.language === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
+            >
+              {i18n.language === 'ar' ? 'English' : 'العربية'}
             </button>
           </div>
 
           <div className="footer-links-col">
-            <p className="footer-col-title mono">Connect</p>
+            <p className="footer-col-title mono">{t('footer.connect')}</p>
             {settings.social?.github && <a href={settings.social.github} target="_blank" rel="noreferrer">GitHub</a>}
             {settings.social?.linkedin && <a href={settings.social.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>}
-            <a href={`mailto:${settings.email}`}>Email</a>
+            <a href={`mailto:${settings.email}`}>{t('footer.email')}</a>
           </div>
         </div>
 
         <div className="footer-share">
-          <p className="footer-col-title mono">Share this page</p>
+          <p className="footer-col-title mono">{t('footer.share')}</p>
           <div className="footer-share-btns">
             {SHARE_SOURCES.map(({ source, label, action, icon }) => (
               <Magnetic key={source} strength={0.2}>
@@ -110,11 +119,11 @@ export default function Footer() {
                   type="button"
                   className="footer-share-btn"
                   onClick={() => handleShare(source, action)}
-                  aria-label={label}
-                  title={label}
+                  aria-label={t(label)}
+                  title={t(label)}
                 >
                   {icon}
-                  <span className="mono">{copiedSource === source ? 'Copied!' : label}</span>
+                  <span className="mono">{copiedSource === source ? t('footer.copied') : t(label)}</span>
                 </button>
               </Magnetic>
             ))}
@@ -124,9 +133,9 @@ export default function Footer() {
         <div className="footer-divider"></div>
 
         <div className="footer-bottom">
-          <span className="mono footer-copy">© {year} Hashem Najdawi Museum</span>
+          <span className="mono footer-copy">© {year} {t('footer.museumName')}</span>
           <span className="mono footer-copy">
-            Crafted with precision <BrassPlaque id={5} />
+            {t('footer.crafted')} <BrassPlaque id={5} />
           </span>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import { startTour } from './GuidedTour';
@@ -30,6 +31,10 @@ const slideIn = {
 
 export default function Hero({ revealed = true }) {
   const { projects } = useMuseum();
+  const { t, i18n } = useTranslation();
+  // Arabic letters must stay connected — per-character splitting would break
+  // the script's shaping, so Arabic gets the plain (still mask-risen) line.
+  const isAr = i18n.language === 'ar';
   const particlesRef = useRef(null);
   const [reelOpen, setReelOpen] = useState(false);
 
@@ -129,7 +134,7 @@ export default function Hero({ revealed = true }) {
         animate={anim}
       >
         <motion.div className="hero-eyebrow section-label" variants={slideIn}>
-          <ShimmeringText text={'Digital Museum  ·  Est. 2023'} />
+          <ShimmeringText text={t('hero.eyebrow')} />
         </motion.div>
 
         {/* Headline: per-character rise + focus-pull (SplittingText), gated
@@ -137,39 +142,37 @@ export default function Hero({ revealed = true }) {
             blur language the old lineRise had, at letter grain. */}
         <h1 className="hero-headline-wrap">
           <span className="hero-headline serif">
-            <SplittingText text="A museum" active={revealed} delay={0.25} stagger={0.035} />
+            {isAr ? t('hero.line1') : <SplittingText text={t('hero.line1')} active={revealed} delay={0.25} stagger={0.035} />}
           </span>
           <span className="hero-headline serif hero-headline--italic">
-            <SplittingText text="of infinite" active={revealed} delay={0.55} stagger={0.035} />
+            {isAr ? t('hero.line2') : <SplittingText text={t('hero.line2')} active={revealed} delay={0.55} stagger={0.035} />}
             {' '}
             <span className="hero-gold-outline">
-              <SplittingText text="creations" active={revealed} delay={0.95} stagger={0.045} />
+              {isAr ? t('hero.line3') : <SplittingText text={t('hero.line3')} active={revealed} delay={0.95} stagger={0.045} />}
             </span>
           </span>
         </h1>
 
         <div className="hero-bottom">
           <motion.p className="hero-desc" variants={rise}>
-            Engineering systems, web applications,<br />
-            and digital experiences — each a chapter<br />
-            in the archive of craft.
+            {t('hero.desc')}
           </motion.p>
 
           <motion.div className="hero-cta" variants={rise}>
             <Magnetic>
               <a href="#gallery" className="hero-btn">
-                <span>Enter Exhibition</span>
-                <span className="hero-btn-arrow">→</span>
+                <span>{t('hero.enter')}</span>
+                <span className="hero-btn-arrow">{isAr ? '←' : '→'}</span>
               </a>
             </Magnetic>
             <Magnetic strength={0.18}>
               <button type="button" className="hero-tour-link mono" onClick={startTour}>
-                Take the guided tour
+                {t('hero.tour')}
               </button>
             </Magnetic>
             <Magnetic strength={0.18}>
               <button type="button" className="hero-tour-link mono" onClick={() => setReelOpen(true)}>
-                Watch the highlights
+                {t('hero.highlights')}
               </button>
             </Magnetic>
           </motion.div>
@@ -186,7 +189,7 @@ export default function Hero({ revealed = true }) {
         transition={{ delay: 0.95, duration: 0.9, ease: EASE }}
       >
         <span className="mono hero-catalogue">
-          Catalogue&nbsp;—&nbsp;{exhibitCount} exhibits&nbsp;·&nbsp;{disciplineCount} disciplines&nbsp;·&nbsp;est. 2023
+          {t('hero.catalogue', { exhibits: exhibitCount, disciplines: disciplineCount })}
         </span>
         <BrassPlaque id={1} />
       </motion.div>
@@ -199,7 +202,7 @@ export default function Hero({ revealed = true }) {
         transition={{ delay: 1.4, duration: 1 }}
       >
         <div className="hero-scroll-line"></div>
-        <span className="mono">Scroll</span>
+        <span className="mono">{t('hero.scroll')}</span>
       </motion.div>
     </section>
   );

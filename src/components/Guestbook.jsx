@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, useInView } from 'framer-motion';
 import { getSupabaseClient } from '../utils/supabaseClient';
 import ShimmeringText from './anim/ShimmeringText';
@@ -9,16 +10,16 @@ import './Guestbook.css';
 const TABLE = 'guestbook_entries';
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
-function timeAgo(iso) {
+function timeAgo(iso, t, lang) {
   const diffMs = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diffMs / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return t('time.justNow');
+  if (mins < 60) return t('time.minsAgo', { count: mins });
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return t('time.hoursAgo', { count: hours });
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  if (days < 30) return t('time.daysAgo', { count: days });
+  return new Date(iso).toLocaleDateString(lang === 'ar' ? 'ar' : undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 // Renders the Cloudflare Turnstile widget into `containerRef` once the
@@ -64,6 +65,7 @@ function useTurnstile(containerRef, onToken) {
 
 export default function Guestbook() {
   const supabase = getSupabaseClient();
+  const { t, i18n } = useTranslation();
 
   const sectionRef = useRef(null);
   const inView = useInView(sectionRef, { once: true, margin: '-100px' });
@@ -125,7 +127,7 @@ export default function Guestbook() {
     const trimmedMessage = message.trim();
     if (!trimmedName || !trimmedMessage) return;
     if (TURNSTILE_SITE_KEY && !turnstileToken) {
-      setError('Please complete the verification check.');
+      setError(t('gb.verify'));
       return;
     }
 
@@ -158,9 +160,9 @@ export default function Guestbook() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="section-label"><ShimmeringText text="Sign the Register" /></div>
-          <h2 className="guestbook-title serif">Visitor's Log</h2>
-          <p className="guestbook-subtitle mono">Leave a note for the next visitor</p>
+          <div className="section-label"><ShimmeringText text={t('gb.eyebrow')} /></div>
+          <h2 className="guestbook-title serif">{t('gb.title')}</h2>
+          <p className="guestbook-subtitle mono">{t('gb.subtitle')}</p>
         </motion.div>
 
         <motion.div
@@ -178,10 +180,10 @@ export default function Guestbook() {
               <div className="guestbook-composer">
                 {submitted ? (
                   <div className="guestbook-submitted mono">
-                    <LottieBadge animationData={goldSeal} size={48} label="Note received" />
-                    Thanks — your note is awaiting a quick review before it appears here.
+                    <LottieBadge animationData={goldSeal} size={48} label={t('gb.received')} />
+                    {t('gb.thanks')}
                     <button type="button" className="guestbook-signout" onClick={() => setSubmitted(false)}>
-                      Leave another note
+                      {t('gb.another')}
                     </button>
                   </div>
                 ) : (
@@ -190,14 +192,14 @@ export default function Guestbook() {
                       className="guestbook-name-input mono"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Your name"
+                      placeholder={t('gb.namePlaceholder')}
                       maxLength={80}
                     />
                     <textarea
                       className="guestbook-input mono"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Leave a note…"
+                      placeholder={t('gb.notePlaceholder')}
                       maxLength={500}
                       rows={3}
                     />
@@ -207,10 +209,10 @@ export default function Guestbook() {
                       className="guestbook-submit mono"
                       disabled={posting || !name.trim() || !message.trim() || (Boolean(TURNSTILE_SITE_KEY) && !turnstileToken)}
                     >
-                      {posting ? 'Posting…' : 'Sign the guestbook'}
+                      {posting ? t('gb.posting') : t('gb.sign')}
                     </button>
                     <p className="guestbook-hint mono">
-                      New entries are reviewed before they appear publicly.
+                      {t('gb.hint')}
                     </p>
                   </form>
                 )}
@@ -219,14 +221,14 @@ export default function Guestbook() {
 
               <div className="guestbook-entries">
                 {loaded && entries.length === 0 && (
-                  <p className="guestbook-empty mono">No entries yet — be the first to sign it.</p>
+                  <p className="guestbook-empty mono">{t('gb.empty')}</p>
                 )}
                 {entries.map((entry) => (
                   <div className="guestbook-entry" key={entry.id}>
                     <div className="guestbook-entry-body">
                       <div className="guestbook-entry-meta">
                         <span className="guestbook-entry-name">{entry.display_name}</span>
-                        <span className="mono guestbook-entry-time">{timeAgo(entry.created_at)}</span>
+                        <span className="mono guestbook-entry-time">{timeAgo(entry.created_at, t, i18n.language)}</span>
                       </div>
                       <p className="guestbook-entry-message">{entry.message}</p>
                     </div>

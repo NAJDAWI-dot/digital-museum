@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import ProjectCard from './ProjectCard';
@@ -7,6 +8,7 @@ import './Gallery.css';
 
 export default function Gallery() {
   const { projects, isAdmin, setEditingProject, setAdminPanel } = useMuseum();
+  const { t } = useTranslation();
   const [filter, setFilter] = useState('All');
 
   // Only show categories that at least one project actually has — a filter tab
@@ -30,15 +32,13 @@ export default function Gallery() {
         <div className="gallery-header">
           <div className="gallery-header-left">
             <h2 className="gallery-title serif">
-              The Complete<br />
-              <em>Collection</em> <BrassPlaque id={2} />
+              {t('gallery.title1')}<br />
+              <em>{t('gallery.title2')}</em> <BrassPlaque id={2} />
             </h2>
           </div>
           <div className="gallery-header-right">
             <p className="gallery-desc">
-              Each work is a distinct chapter — an artefact of engineering,
-              design, and digital craft. Browse by discipline or explore the
-              archive in full.
+              {t('gallery.desc')}
             </p>
             {isAdmin && (
               <button
@@ -72,7 +72,7 @@ export default function Gallery() {
                   transition={{ type: 'spring', stiffness: 400, damping: 34 }}
                 />
               )}
-              <span className="gallery-filter-label">{cat}</span>
+              <span className="gallery-filter-label">{cat === 'All' ? t('gallery.all') : cat}</span>
               {cat !== 'All' && (
                 <span className="gallery-filter-count">
                   {projects.filter(p => p.category === cat).length}

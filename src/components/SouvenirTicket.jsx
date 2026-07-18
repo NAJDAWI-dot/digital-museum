@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { getCount, incrementCount } from '../utils/counterApi';
 import { ACHIEVEMENTS, getEarned } from '../lib/achievements';
 import './SouvenirTicket.css';
@@ -104,6 +105,7 @@ function drawTicket(canvas, { number, dateText }) {
 }
 
 export default function SouvenirTicket() {
+  const { t } = useTranslation();
   const [chipVisible, setChipVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const [number, setNumber] = useState(null);
@@ -178,7 +180,7 @@ export default function SouvenirTicket() {
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             onClick={openTicket}
           >
-            🎟 Collect your admission ticket
+            🎟 {t('ticket.collect')}
           </motion.button>
         )}
       </AnimatePresence>
@@ -208,7 +210,7 @@ export default function SouvenirTicket() {
                   <span
                     key={a.id}
                     className={`ticket-medal ${earned[a.id] ? 'earned' : ''}`}
-                    title={earned[a.id] ? a.title : `Locked — ${a.hint}`}
+                    title={earned[a.id] ? a.title : `${t('ticket.locked')} — ${a.hint}`}
                   >
                     <span className="ticket-medal-icon">{a.icon}</span>
                     <span className="ticket-medal-label mono">{earned[a.id] ? a.title : '???'}</span>
@@ -217,8 +219,8 @@ export default function SouvenirTicket() {
               </div>
 
               <div className="ticket-actions">
-                <button type="button" className="ticket-btn mono" onClick={download}>↓ Save ticket</button>
-                <button type="button" className="ticket-btn ghost mono" onClick={() => setOpen(false)}>Close</button>
+                <button type="button" className="ticket-btn mono" onClick={download}>↓ {t('ticket.save')}</button>
+                <button type="button" className="ticket-btn ghost mono" onClick={() => setOpen(false)}>{t('ticket.close')}</button>
               </div>
             </motion.div>
           </motion.div>

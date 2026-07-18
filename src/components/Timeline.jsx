@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import BrassPlaque from './BrassPlaque';
@@ -6,6 +7,7 @@ import ShimmeringText from './anim/ShimmeringText';
 import './Timeline.css';
 
 export default function Timeline() {
+  const { t } = useTranslation();
   const { timeline } = useMuseum();
   const containerRef = useRef(null);
 
@@ -22,8 +24,8 @@ export default function Timeline() {
     <section id="career" className="timeline-section" ref={containerRef}>
       <div className="container">
         <div className="timeline-header">
-          <h2 className="timeline-title serif">Career Journey</h2>
-          <p className="timeline-subtitle mono"><ShimmeringText text="The path so far" /> <BrassPlaque id={3} /></p>
+          <h2 className="timeline-title serif">{t('timeline.title')}</h2>
+          <p className="timeline-subtitle mono"><ShimmeringText text={t('timeline.subtitle')} /> <BrassPlaque id={3} /></p>
         </div>
 
         <div className="timeline-container">

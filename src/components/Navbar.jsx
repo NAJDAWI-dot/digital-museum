@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMuseum } from '../context/MuseumContext';
 import './Navbar.css';
 
 export default function Navbar({ revealed = true }) {
   const { isAdmin, logout, setAdminPanel, adminPanel } = useMuseum();
+  const { t, i18n } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -15,9 +17,9 @@ export default function Navbar({ revealed = true }) {
 
 
   const navLinks = [
-    { href: '#gallery', label: 'Gallery' },
-    { href: '#featured', label: 'Featured' },
-    { href: '#about', label: 'About' },
+    { href: '#gallery', label: t('nav.gallery') },
+    { href: '#featured', label: t('nav.featured') },
+    { href: '#about', label: t('nav.about') },
   ];
 
   return (
@@ -42,6 +44,13 @@ export default function Navbar({ revealed = true }) {
               {l.label}
             </a>
           ))}
+          <button
+            className="navbar-link mono navbar-lang-btn"
+            onClick={() => i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar')}
+            aria-label={i18n.language === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
+          >
+            {i18n.language === 'ar' ? 'EN' : 'ع'}
+          </button>
           {isAdmin ? (
             <div className="navbar-admin-group">
               <button
@@ -63,7 +72,7 @@ export default function Navbar({ revealed = true }) {
               className="navbar-link mono navbar-admin-link"
               onClick={() => setAdminPanel(true)}
             >
-              Editor Access
+              {t('nav.editorAccess')}
             </button>
           )}
         </div>

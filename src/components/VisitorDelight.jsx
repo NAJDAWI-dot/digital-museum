@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import SouvenirTicket from './SouvenirTicket';
 import MuseumCat from './MuseumCat';
 import ArchivesRoom from './ArchivesRoom';
@@ -15,6 +16,7 @@ const TOUR_SECTIONS = ['hero', 'featured', 'gallery', 'career', 'volunteering', 
  * observers, the archives key, the ticket, and the cat. One component so
  * App.jsx stays clean. */
 export default function VisitorDelight() {
+  const { t } = useTranslation();
   const [toasts, setToasts] = useState([]);
   const [archivesOpen, setArchivesOpen] = useState(false);
   const [hasKey, setHasKey] = useState(huntComplete);
@@ -29,23 +31,23 @@ export default function VisitorDelight() {
   useEffect(() => {
     const onAchievement = (e) => {
       // seal: true renders the animated gold-seal Lottie instead of an emoji.
-      pushToast({ seal: true, title: 'Achievement earned', body: e.detail.title });
+      pushToast({ seal: true, title: t('delight.achievement'), body: e.detail.title });
     };
     const onPlaque = (e) => {
       const { count, total } = e.detail;
       setHasKey(count >= TOTAL_PLAQUES);
       pushToast(
         count >= total
-          ? { icon: '🗝️', title: 'All plaques found!', body: 'A key appears in the museum footer…' }
-          : { icon: '🜲', title: `Brass plaque ${count} of ${total}`, body: 'Keep looking — the museum hides its history.' }
+          ? { icon: '🗝️', title: t('delight.allPlaques'), body: t('delight.keyAppears') }
+          : { icon: '🜲', title: t('delight.plaqueFound', { count, total }), body: t('delight.keepLooking') }
       );
     };
     const onPlaqueStatus = (e) => {
       const { count, total } = e.detail;
       pushToast(
         count >= total
-          ? { icon: '🗝️', title: 'Hunt complete', body: 'The Restricted Archives key is in the footer.' }
-          : { icon: '🜲', title: `${count} of ${total} plaques collected`, body: 'This one is already in your satchel.' }
+          ? { icon: '🗝️', title: t('delight.huntComplete'), body: t('delight.keyInFooter') }
+          : { icon: '🜲', title: t('delight.plaquesCollected', { count, total }), body: t('delight.alreadyHave') }
       );
     };
     window.addEventListener('museum:achievement', onAchievement);

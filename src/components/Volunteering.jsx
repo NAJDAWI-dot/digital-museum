@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset } from '../lib/assets';
 import { Lightbox } from './ProjectModal';
@@ -21,6 +22,7 @@ const VISIBLE_DEFAULT = 3;
 
 export default function Volunteering() {
   const { volunteering } = useMuseum();
+  const { t } = useTranslation();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
   // { photos: [...], idx: number } while the lightbox is open, else null
@@ -38,11 +40,11 @@ export default function Volunteering() {
       <div className="container">
         <header className="vol-header">
           <div>
-            <h2 className="vol-title serif">Volunteering</h2>
-            <p className="vol-subtitle mono"><ShimmeringText text="Service beyond the exhibits" /> <BrassPlaque id={4} /></p>
+            <h2 className="vol-title serif">{t('vol.title')}</h2>
+            <p className="vol-subtitle mono"><ShimmeringText text={t('vol.subtitle')} /> <BrassPlaque id={4} /></p>
           </div>
           <span className="vol-count mono">
-            {String(volunteering.length).padStart(2, '0')} {volunteering.length === 1 ? 'entry' : 'entries'}
+            {String(volunteering.length).padStart(2, '0')} {t('vol.entries', { count: volunteering.length })}
           </span>
         </header>
         <div className="animated-rule vol-rule"></div>
@@ -109,7 +111,7 @@ export default function Volunteering() {
               onClick={() => setShowAll(s => !s)}
               aria-expanded={showAll}
             >
-              {showAll ? 'Show fewer ↑' : `Show ${hiddenCount} more ↓`}
+              {showAll ? t('vol.showFewer') : t('vol.showMore', { count: hiddenCount })}
             </button>
           </div>
         )}

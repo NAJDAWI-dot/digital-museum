@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset } from '../lib/assets';
 import ShimmeringText from './anim/ShimmeringText';
@@ -10,6 +11,7 @@ import './FeaturedBanner.css';
 
 export default function FeaturedBanner() {
   const { projects, setViewingProject } = useMuseum();
+  const { t } = useTranslation();
   const featured = projects.filter(p => p.featured)[0];
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-100px' });
@@ -26,7 +28,7 @@ export default function FeaturedBanner() {
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="featured-label-col">
-            <div className="section-label"><ShimmeringText text="Editor's Pick" /></div>
+            <div className="section-label"><ShimmeringText text={t('featured.eyebrow')} /></div>
           </div>
 
           <Shine className="featured-shine">
@@ -64,7 +66,7 @@ export default function FeaturedBanner() {
                     )}
                   </div>
                   <button className="featured-cta mono" onClick={(e) => { e.stopPropagation(); setViewingProject(featured); }}>
-                    Explore →
+                    {t('featured.explore')} {t('nav.arrow')}
                   </button>
                 </div>
               </div>

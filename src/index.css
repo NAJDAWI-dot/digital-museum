@@ -20,6 +20,11 @@
   --font-serif:  'Cormorant Garamond', Georgia, serif;
   --font-sans:   'DM Sans', system-ui, sans-serif;
   --font-mono:   'DM Mono', 'Courier New', monospace;
+  /* Arabic counterparts: Amiri pairs with the Cormorant display voice
+     (a calligraphic serif built for the same kind of headline elegance),
+     Noto Sans Arabic pairs with DM Sans for body/UI text. */
+  --font-serif-ar: 'Amiri', 'Cormorant Garamond', serif;
+  --font-sans-ar:  'Noto Sans Arabic', 'DM Sans', system-ui, sans-serif;
 
   --ease-smooth:  cubic-bezier(0.16, 1, 0.3, 1);
   --ease-precise: cubic-bezier(0.4, 0, 0.2, 1);
@@ -89,6 +94,21 @@ input, textarea, select { font-family: inherit; }
 
 .serif { font-family: var(--font-serif); }
 .mono  { font-family: var(--font-mono); }
+
+/* ── Arabic ──
+   Arabic script doesn't have a monospace tradition — Noto Sans Arabic
+   stands in for `.mono` labels too, at the same size/tracking, rather
+   than rendering Arabic in a Latin monospace font (which breaks shaping)
+   or forcing Latin-only mono tokens through Arabic text (which is empty
+   for RTL runs anyway, since numerals/labels are what .mono marks here). */
+:lang(ar) { font-family: var(--font-sans-ar); }
+:lang(ar) .serif { font-family: var(--font-serif-ar); font-style: normal; }
+:lang(ar) .mono { font-family: var(--font-sans-ar); letter-spacing: 0; text-transform: none; }
+
+/* RTL: logical flow first. Flexbox/grid direction already mirrors under
+   dir="rtl" natively; these are the few spots that hardcode a physical
+   side and need an explicit flip. */
+[dir='rtl'] .hero-headline--italic { font-style: normal; } /* Arabic has no italic tradition */
 
 /* ── Grain overlay ── */
 .grain-overlay::before {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset, isRealLink } from '../lib/assets';
 import ExhibitReel from './ExhibitReel';
@@ -91,6 +92,7 @@ const WRITEUP_CLAMP_CHARS = 420;
 
 export default function ProjectModal() {
   const { viewingProject, setViewingProject, projects } = useMuseum();
+  const { t } = useTranslation();
   const proj = viewingProject;
   // The audio-guide handset number = the exhibit's position in the gallery.
   const exhibitNumber = proj ? projects.findIndex(p => p.id === proj.id) + 1 : 0;
@@ -202,7 +204,7 @@ export default function ProjectModal() {
                       className="modal-reel-btn mono"
                       onClick={(e) => { e.stopPropagation(); setReelOpen(true); }}
                     >
-                      ▶ Play reel
+                      ▶ {t('modal.playReel')}
                     </button>
                   )}
                 </div>
@@ -265,7 +267,7 @@ export default function ProjectModal() {
                       onClick={() => setWriteupOpen(o => !o)}
                       aria-expanded={writeupOpen}
                     >
-                      {writeupOpen ? 'Show less ↑' : 'Continue reading ↓'}
+                      {writeupOpen ? t('modal.showLess') : t('modal.readMore')}
                     </button>
                   )}
                 </motion.div>
@@ -278,7 +280,7 @@ export default function ProjectModal() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.6 }}
                   >
-                    <h3 className="modal-heading serif">Screenshots</h3>
+                    <h3 className="modal-heading serif">{t('modal.screenshots')}</h3>
                     <div className="modal-gallery-grid">
                       {allScreenshots.map((src, i) => (
                         <button
@@ -303,7 +305,7 @@ export default function ProjectModal() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.32, duration: 0.6 }}
                   >
-                    <h3 className="modal-heading serif">Maquette</h3>
+                    <h3 className="modal-heading serif">{t('modal.maquette')}</h3>
                     <ModelViewer src={proj.model} poster={proj.coverImage} label={proj.title} />
                   </motion.div>
                 )}
@@ -315,7 +317,7 @@ export default function ProjectModal() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.35, duration: 0.6 }}
                 >
-                  <h3 className="modal-heading serif">Stack</h3>
+                  <h3 className="modal-heading serif">{t('modal.stack')}</h3>
                   <div className="modal-tech-list">
                     {proj.tech.map((t, i) => (
                       <span key={i} className="modal-tech-tag mono">{t}</span>
@@ -331,7 +333,7 @@ export default function ProjectModal() {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.37, duration: 0.6 }}
                   >
-                    <h3 className="modal-heading serif">Instructor</h3>
+                    <h3 className="modal-heading serif">{t('modal.instructor')}</h3>
                     <ul className="modal-collab-list">
                       <li className="modal-collab-item">
                         {isRealLink(proj.instructor.url) ? (
@@ -357,7 +359,7 @@ export default function ProjectModal() {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.38, duration: 0.6 }}
                   >
-                    <h3 className="modal-heading serif">Collaborators</h3>
+                    <h3 className="modal-heading serif">{t('modal.collaborators')}</h3>
                     <ul className="modal-collab-list">
                       {proj.collaborators.map((c, i) => (
                         <li key={i} className="modal-collab-item">
@@ -383,7 +385,7 @@ export default function ProjectModal() {
                   >
                     {isRealLink(proj.repo) && (
                       <a href={proj.repo} className="modal-btn modal-btn-outline mono" target="_blank" rel="noreferrer">
-                        Repository
+                        {t('modal.repository')}
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                           <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -392,7 +394,7 @@ export default function ProjectModal() {
                     )}
                     {isRealLink(proj.link) && (
                       <a href={proj.link} className="modal-btn modal-btn-gold mono" target="_blank" rel="noreferrer">
-                        Visit Live
+                        {t('modal.visitLive')}
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M5 12h14M12 5l7 7-7 7"/>
                         </svg>

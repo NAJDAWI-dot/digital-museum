@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import './GuidedTour.css';
 
 /* Anything can start the tour by dispatching this event on window —
@@ -8,16 +9,9 @@ export const TOUR_EVENT = 'museum:start-tour';
 export const startTour = () => window.dispatchEvent(new Event(TOUR_EVENT));
 
 /* Stops are matched against the DOM at start time, so sections that
-   aren't rendered (e.g. empty volunteering) drop out automatically. */
-const STOPS = [
-  { id: 'featured',     title: "Editor's Pick",           caption: 'The centrepiece of the current collection. Tap the card for the full story.' },
-  { id: 'gallery',      title: 'The Complete Collection', caption: 'Every exhibit in the archive — browse by discipline, open any card to read its plaque.' },
-  { id: 'career',       title: 'Career Journey',          caption: 'The path that built the museum, milestone by milestone.' },
-  { id: 'volunteering', title: 'Wing of Service',         caption: 'Contributions beyond the exhibits — organizing, mentoring, giving back.' },
-  { id: 'testimonials', title: 'Visitor Remarks',         caption: 'Words from the people who worked alongside the curator.' },
-  { id: 'guestbook',    title: 'The Guestbook',           caption: 'Leave a note before you go — every signature joins the permanent record.' },
-  { id: 'contact',      title: "The Curator's Desk",      caption: 'Commission a work, offer a role, or simply say hello.' },
-];
+   aren't rendered (e.g. empty volunteering) drop out automatically. Title
+   and caption resolve through i18n at render time (below), not here. */
+const STOP_IDS = ['featured', 'gallery', 'career', 'volunteering', 'testimonials', 'guestbook', 'contact'];
 
 const prefersReduced = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -33,17 +27,24 @@ function scrollToStop(id) {
 }
 
 export default function GuidedTour() {
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === 'rtl';
+  const backArrow = isRtl ? '→' : '←';
+  const nextArrow = isRtl ? '←' : '→';
+  // `stops` holds ids only — title/caption resolve through t() at render,
+  // so a language switch mid-tour (or a stale effect closure) never shows
+  // the wrong language.
   const [stops, setStops] = useState(null); // null → tour inactive
   const [idx, setIdx] = useState(0);
   const cardRef = useRef(null);
 
   useEffect(() => {
     const start = () => {
-      const available = STOPS.filter(s => document.getElementById(s.id));
+      const available = STOP_IDS.filter(id => document.getElementById(id));
       if (!available.length) return;
       setStops(available);
       setIdx(0);
-      scrollToStop(available[0].id);
+      scrollToStop(available[0]);
     };
     window.addEventListener(TOUR_EVENT, start);
     return () => window.removeEventListener(TOUR_EVENT, start);
@@ -69,10 +70,11 @@ export default function GuidedTour() {
     if (next < 0) return;
     if (next >= stops.length) { setStops(null); return; }
     setIdx(next);
-    scrollToStop(stops[next].id);
+    scrollToStop(stops[next]);
   };
 
-  const stop = stops?.[idx];
+  const stopId = stops?.[idx];
+  const stop = stopId ? { title: t(`tour.${stopId}.title`), caption: t(`tour.${stopId}.caption`) } : null;
 
   return (
     <AnimatePresence>
@@ -89,19 +91,19 @@ export default function GuidedTour() {
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="tour-head">
-            <span className="tour-progress mono">Guided tour — {idx + 1} of {stops.length}</span>
+            <span className="tour-progress mono">{t('tour.progress', { current: idx + 1, total: stops.length })}</span>
             <button type="button" className="tour-end mono" onClick={() => setStops(null)}>
-              End
+              {t('tour.end')}
             </button>
           </div>
           <h3 className="tour-title serif">{stop.title}</h3>
           <p className="tour-caption">{stop.caption}</p>
           <div className="tour-controls">
             <button type="button" className="tour-btn mono" onClick={() => go(-1)} disabled={idx === 0}>
-              ← Back
+              {backArrow} {t('tour.back')}
             </button>
             <button type="button" className="tour-btn tour-btn--gold mono" onClick={() => go(1)}>
-              {idx === stops.length - 1 ? 'Finish tour' : 'Next →'}
+              {idx === stops.length - 1 ? t('tour.finish') : `${t('tour.next')} ${nextArrow}`}
             </button>
           </div>
         </motion.aside>
