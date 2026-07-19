@@ -1523,9 +1523,265 @@ export const INITIAL_PROJECTS = [
     "collaborators": [],
     "instructor": null,
     "model": "",
-    "audio": "",
-    "narrationScript": "",
-    "audioTimestamps": [],
+    "audio": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/audio-guide/p1784452155058-1784452400750.mp3",
+    "narrationScript": "Sudra, Portable Hygiene Assistant for Elderly Care\n\nA compact, wheel-mounted washing station that lets elderly and mobility-limited users wash their hands and feet seated, in one basin — no plumbing, no bending, no risk of slipping. Designed by Mira Al-Fatafta, Abdallah Khresat, and Hashem Najdawi as an HTU Engineering Design project.",
+    "audioTimestamps": [
+      {
+        "word": "Sudra,",
+        "start": 0,
+        "end": 0.65
+      },
+      {
+        "word": "Portable",
+        "start": 0.894,
+        "end": 1.347
+      },
+      {
+        "word": "Hygiene",
+        "start": 1.393,
+        "end": 1.881
+      },
+      {
+        "word": "Assistant",
+        "start": 1.904,
+        "end": 2.357
+      },
+      {
+        "word": "for",
+        "start": 2.415,
+        "end": 2.543
+      },
+      {
+        "word": "Elderly",
+        "start": 2.612,
+        "end": 3.019
+      },
+      {
+        "word": "Care",
+        "start": 3.077,
+        "end": 3.518
+      },
+      {
+        "word": "A",
+        "start": 3.843,
+        "end": 3.959
+      },
+      {
+        "word": "compact,",
+        "start": 4.075,
+        "end": 4.679
+      },
+      {
+        "word": "wheel-mounted",
+        "start": 4.714,
+        "end": 5.329
+      },
+      {
+        "word": "washing",
+        "start": 5.387,
+        "end": 5.735
+      },
+      {
+        "word": "station",
+        "start": 5.793,
+        "end": 6.188
+      },
+      {
+        "word": "that",
+        "start": 6.235,
+        "end": 6.351
+      },
+      {
+        "word": "lets",
+        "start": 6.397,
+        "end": 6.629
+      },
+      {
+        "word": "elderly",
+        "start": 6.711,
+        "end": 7.187
+      },
+      {
+        "word": "and",
+        "start": 7.245,
+        "end": 7.314
+      },
+      {
+        "word": "mobility-limited",
+        "start": 7.361,
+        "end": 8.162
+      },
+      {
+        "word": "users",
+        "start": 8.231,
+        "end": 8.661
+      },
+      {
+        "word": "wash",
+        "start": 8.94,
+        "end": 9.276
+      },
+      {
+        "word": "their",
+        "start": 9.323,
+        "end": 9.485
+      },
+      {
+        "word": "hands",
+        "start": 9.532,
+        "end": 9.799
+      },
+      {
+        "word": "and",
+        "start": 9.834,
+        "end": 9.927
+      },
+      {
+        "word": "feet",
+        "start": 9.985,
+        "end": 10.286
+      },
+      {
+        "word": "seated,",
+        "start": 10.612,
+        "end": 10.995
+      },
+      {
+        "word": "in",
+        "start": 11.018,
+        "end": 11.088
+      },
+      {
+        "word": "one",
+        "start": 11.157,
+        "end": 11.343
+      },
+      {
+        "word": "basin",
+        "start": 11.389,
+        "end": 11.773
+      },
+      {
+        "word": "—",
+        "start": 11.947,
+        "end": 12.028
+      },
+      {
+        "word": "no",
+        "start": 12.202,
+        "end": 12.353
+      },
+      {
+        "word": "plumbing,",
+        "start": 12.423,
+        "end": 12.875
+      },
+      {
+        "word": "no",
+        "start": 12.968,
+        "end": 13.119
+      },
+      {
+        "word": "bending,",
+        "start": 13.212,
+        "end": 13.735
+      },
+      {
+        "word": "no",
+        "start": 13.886,
+        "end": 14.036
+      },
+      {
+        "word": "risk",
+        "start": 14.118,
+        "end": 14.362
+      },
+      {
+        "word": "of",
+        "start": 14.42,
+        "end": 14.478
+      },
+      {
+        "word": "slipping.",
+        "start": 14.524,
+        "end": 15.035
+      },
+      {
+        "word": "Designed",
+        "start": 15.418,
+        "end": 15.917
+      },
+      {
+        "word": "by",
+        "start": 15.964,
+        "end": 16.08
+      },
+      {
+        "word": "Mira",
+        "start": 16.161,
+        "end": 16.44
+      },
+      {
+        "word": "Al-Fatafta,",
+        "start": 16.51,
+        "end": 17.485
+      },
+      {
+        "word": "Abdallah",
+        "start": 17.636,
+        "end": 18.089
+      },
+      {
+        "word": "Khresat,",
+        "start": 18.112,
+        "end": 18.774
+      },
+      {
+        "word": "and",
+        "start": 18.843,
+        "end": 18.971
+      },
+      {
+        "word": "Hashem",
+        "start": 19.017,
+        "end": 19.377
+      },
+      {
+        "word": "Najdawi",
+        "start": 19.435,
+        "end": 20.016
+      },
+      {
+        "word": "as",
+        "start": 20.132,
+        "end": 20.283
+      },
+      {
+        "word": "an",
+        "start": 20.329,
+        "end": 20.387
+      },
+      {
+        "word": "HTU",
+        "start": 20.445,
+        "end": 20.979
+      },
+      {
+        "word": "Engineering",
+        "start": 21.049,
+        "end": 21.479
+      },
+      {
+        "word": "Design",
+        "start": 21.525,
+        "end": 21.815
+      },
+      {
+        "word": "project.",
+        "start": 21.873,
+        "end": 22.756
+      }
+    ],
     "id": "p1784452155058"
   },
   {
