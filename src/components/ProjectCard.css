@@ -62,6 +62,24 @@
   background: rgba(0,0,0,0.15);
 }
 
+/* Explicit "this opens the full exhibit" cue — the zoom/dim alone read as
+   ambient polish, not an affordance, especially with no hover on touch. */
+.pcard-view-label {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.92);
+  z-index: 2;
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s var(--ease-smooth);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+}
+.pcard:hover .pcard-view-label { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
 .pcard-accent-dot {
   position: absolute;
   top: 50%; left: 50%;
