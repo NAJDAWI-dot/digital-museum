@@ -1917,7 +1917,246 @@ export const INITIAL_PROJECTS = [
       "title": "Supervising Instructor",
       "organization": "IEC, WadiTech Academy",
       "url": "https://www.linkedin.com/in/ashraf-abukhait/"
-    }
+    },
+    "narrationScript": "The ANS project presents an innovative solution to support individuals with paralysis by developing a system that utilizes artificial intelligence (AI) to restore motor functions. The system works by capturing brain signals, analyzing them, and transmitting them to a device that can move the affected body part.",
+    "audio": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/audio-guide/p1782928799984-1784437257877.mp3",
+    "audioTimestamps": [
+      {
+        "word": "The",
+        "start": 0,
+        "end": 0.174
+      },
+      {
+        "word": "ANS",
+        "start": 0.267,
+        "end": 0.708
+      },
+      {
+        "word": "project",
+        "start": 0.789,
+        "end": 1.289
+      },
+      {
+        "word": "presents",
+        "start": 1.347,
+        "end": 1.753
+      },
+      {
+        "word": "an",
+        "start": 1.8,
+        "end": 1.869
+      },
+      {
+        "word": "innovative",
+        "start": 1.927,
+        "end": 2.392
+      },
+      {
+        "word": "solution",
+        "start": 2.426,
+        "end": 2.926
+      },
+      {
+        "word": "to",
+        "start": 2.984,
+        "end": 3.053
+      },
+      {
+        "word": "support",
+        "start": 3.123,
+        "end": 3.483
+      },
+      {
+        "word": "individuals",
+        "start": 3.541,
+        "end": 4.214
+      },
+      {
+        "word": "with",
+        "start": 4.261,
+        "end": 4.4
+      },
+      {
+        "word": "paralysis",
+        "start": 4.447,
+        "end": 5.166
+      },
+      {
+        "word": "by",
+        "start": 5.55,
+        "end": 5.689
+      },
+      {
+        "word": "developing",
+        "start": 5.735,
+        "end": 6.165
+      },
+      {
+        "word": "a",
+        "start": 6.211,
+        "end": 6.235
+      },
+      {
+        "word": "system",
+        "start": 6.304,
+        "end": 6.653
+      },
+      {
+        "word": "that",
+        "start": 6.699,
+        "end": 6.815
+      },
+      {
+        "word": "utilizes",
+        "start": 6.896,
+        "end": 7.488
+      },
+      {
+        "word": "artificial",
+        "start": 7.558,
+        "end": 8.162
+      },
+      {
+        "word": "intelligence",
+        "start": 8.22,
+        "end": 8.951
+      },
+      {
+        "word": "(AI)",
+        "start": 9.009,
+        "end": 9.729
+      },
+      {
+        "word": "to",
+        "start": 9.752,
+        "end": 9.845
+      },
+      {
+        "word": "restore",
+        "start": 9.927,
+        "end": 10.333
+      },
+      {
+        "word": "motor",
+        "start": 10.379,
+        "end": 10.635
+      },
+      {
+        "word": "functions.",
+        "start": 10.693,
+        "end": 11.343
+      },
+      {
+        "word": "The",
+        "start": 11.854,
+        "end": 11.981
+      },
+      {
+        "word": "system",
+        "start": 12.051,
+        "end": 12.399
+      },
+      {
+        "word": "works",
+        "start": 12.469,
+        "end": 12.759
+      },
+      {
+        "word": "by",
+        "start": 12.817,
+        "end": 12.934
+      },
+      {
+        "word": "capturing",
+        "start": 13.015,
+        "end": 13.537
+      },
+      {
+        "word": "brain",
+        "start": 13.595,
+        "end": 13.862
+      },
+      {
+        "word": "signals,",
+        "start": 13.944,
+        "end": 14.501
+      },
+      {
+        "word": "analyzing",
+        "start": 14.652,
+        "end": 15.244
+      },
+      {
+        "word": "them,",
+        "start": 15.291,
+        "end": 15.569
+      },
+      {
+        "word": "and",
+        "start": 15.685,
+        "end": 15.825
+      },
+      {
+        "word": "transmitting",
+        "start": 15.871,
+        "end": 16.44
+      },
+      {
+        "word": "them",
+        "start": 16.486,
+        "end": 16.614
+      },
+      {
+        "word": "to",
+        "start": 16.661,
+        "end": 16.73
+      },
+      {
+        "word": "a",
+        "start": 16.788,
+        "end": 16.811
+      },
+      {
+        "word": "device",
+        "start": 16.858,
+        "end": 17.218
+      },
+      {
+        "word": "that",
+        "start": 17.253,
+        "end": 17.369
+      },
+      {
+        "word": "can",
+        "start": 17.404,
+        "end": 17.52
+      },
+      {
+        "word": "move",
+        "start": 17.589,
+        "end": 17.798
+      },
+      {
+        "word": "the",
+        "start": 17.833,
+        "end": 17.903
+      },
+      {
+        "word": "affected",
+        "start": 17.961,
+        "end": 18.379
+      },
+      {
+        "word": "body",
+        "start": 18.437,
+        "end": 18.704
+      },
+      {
+        "word": "part.",
+        "start": 18.75,
+        "end": 19.319
+      }
+    ]
   }
 ];
 
