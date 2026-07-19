@@ -32,7 +32,12 @@ async function shoot(outPath) {
     reducedMotion: 'reduce',
     deviceScaleFactor: 1,
   });
-  await page.goto(SITE_URL, { waitUntil: 'networkidle', timeout: 60_000 });
+  // Not 'networkidle': Turnstile's background script and Guestbook's
+  // Supabase realtime channel both keep long-lived network activity going,
+  // so the page would never go idle. The explicit waits below (preloader
+  // detach, scroll-to-settle, fixed pause) already cover what networkidle
+  // was standing in for.
+  await page.goto(SITE_URL, { waitUntil: 'load', timeout: 60_000 });
   // Let the preloader hand off (it exits on its own schedule) and lazy
   // sections settle.
   await page.waitForSelector('.preloader', { state: 'detached', timeout: 30_000 }).catch(() => {});
