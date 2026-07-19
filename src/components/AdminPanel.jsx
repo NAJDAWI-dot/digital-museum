@@ -654,6 +654,8 @@ function TimelineForm({ timeline, onSave }) {
 function VolunteeringForm({ volunteering, onSave }) {
   const [items, setItems] = useState([...volunteering]);
   const [saved, setSaved] = useState(false);
+  const dragIdx = React.useRef(null);
+  const [overIdx, setOverIdx] = useState(null);
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -676,6 +678,36 @@ function VolunteeringForm({ volunteering, onSave }) {
     setItems(items.filter((_, i) => i !== index));
   };
 
+  const moveItem = (fromIdx, toIdx) => {
+    setItems(prev => {
+      const arr = [...prev];
+      const [m] = arr.splice(fromIdx, 1);
+      arr.splice(toIdx, 0, m);
+      return arr;
+    });
+  };
+
+  const handleDragStart = (e, i) => {
+    dragIdx.current = i;
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => e.target.classList.add('dragging'), 0);
+  };
+  const handleDragEnd = (e) => {
+    e.target.classList.remove('dragging');
+    setOverIdx(null);
+    dragIdx.current = null;
+  };
+  const handleDragOver = (e, i) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setOverIdx(i);
+  };
+  const handleDrop = (e, i) => {
+    e.preventDefault();
+    if (dragIdx.current !== null && dragIdx.current !== i) moveItem(dragIdx.current, i);
+    setOverIdx(null);
+  };
+
   return (
     <form className="project-form" onSubmit={handleSave}>
       <div className="form-tabs">
@@ -683,9 +715,39 @@ function VolunteeringForm({ volunteering, onSave }) {
         <button type="button" className="form-tab mono" onClick={addItem} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)' }}>+ Add Entry</button>
       </div>
 
-      <div className="form-section" style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      {items.length > 1 && (
+        <div className="proj-list-reorder-hint mono" style={{ marginTop: '0.75rem' }}>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+          Drag to reorder
+        </div>
+      )}
+
+      <div className="form-section" style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         {items.map((item, i) => (
-          <div key={item.id} style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px', position: 'relative' }}>
+          <div
+            key={item.id}
+            className={overIdx === i ? 'drop-target' : ''}
+            style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px', position: 'relative' }}
+            draggable
+            onDragStart={(e) => handleDragStart(e, i)}
+            onDragEnd={handleDragEnd}
+            onDragOver={(e) => handleDragOver(e, i)}
+            onDragLeave={() => setOverIdx(null)}
+            onDrop={(e) => handleDrop(e, i)}
+          >
+            <div className="proj-drag-handle" title="Drag to reorder" style={{ position: 'absolute', top: '10px', left: '10px', cursor: 'grab' }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="9"  cy="5"  r="1" fill="currentColor"/>
+                <circle cx="9"  cy="12" r="1" fill="currentColor"/>
+                <circle cx="9"  cy="19" r="1" fill="currentColor"/>
+                <circle cx="15" cy="5"  r="1" fill="currentColor"/>
+                <circle cx="15" cy="12" r="1" fill="currentColor"/>
+                <circle cx="15" cy="19" r="1" fill="currentColor"/>
+              </svg>
+            </div>
             <button type="button" onClick={() => removeItem(i)} aria-label="Remove entry" style={{ position: 'absolute', top: '10px', right: '10px', background: 'none', border: 'none', color: '#ff4444', cursor: 'pointer', fontSize: '1.2rem' }}>×</button>
             <div className="form-row">
               <div className="form-group" style={{ flex: '0 0 100px' }}>
