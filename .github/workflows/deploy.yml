@@ -58,7 +58,14 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add src/data/projects.js public/images
             git commit -m "chore: extract embedded images to public/images [skip ci]"
-            git push
+            # actions/checkout@v4 checks out github.sha (a raw commit), which
+            # always leaves HEAD detached — a bare `git push` has no upstream
+            # to infer and fails with "You are not currently on a branch".
+            # Push explicitly to main; if that races with another push and
+            # gets rejected, don't fail the whole deploy over a best-effort
+            # persistence step — the build below already uses this run's
+            # locally-extracted files regardless of whether the commit lands.
+            git push origin HEAD:main || echo "::warning::Could not push extracted images back to main (will retry on the next deploy) — continuing with this build."
           fi
 
       - name: Build
