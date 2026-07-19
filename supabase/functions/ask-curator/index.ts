@@ -23,7 +23,10 @@ const MAX_TOKENS = 300;
 const PER_SESSION_LIMIT = 8;
 const PER_SESSION_WINDOW_MINUTES = 10;
 const DAILY_CEILING = 500;
-const MODEL = 'gemini-2.5-flash';
+// The "-latest" alias always points to Google's current recommended flash
+// model, so this doesn't need updating every time a dated model version
+// (e.g. gemini-2.5-flash) gets retired for new users.
+const MODEL = 'gemini-flash-latest';
 
 // Public repo — the site's own source of truth for project content, so the
 // function never has to trust client-supplied project fields (which a
@@ -193,7 +196,11 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: buildSystemPrompt(project) }] },
         contents: [{ role: 'user', parts: [{ text: question }] }],
-        generationConfig: { maxOutputTokens: MAX_TOKENS },
+        // thinkingBudget: 0 — this is a short grounded-facts Q&A, not a
+        // reasoning task; disabling the model's default "thinking" keeps
+        // answers fast and avoids burning the token budget on internal
+        // deliberation instead of the visible answer.
+        generationConfig: { maxOutputTokens: MAX_TOKENS, thinkingConfig: { thinkingBudget: 0 } },
       }),
     }
   );

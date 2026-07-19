@@ -233,13 +233,6 @@ export default function ProjectModal() {
                       ▶ {t('modal.playReel')}
                     </button>
                   )}
-                  <button
-                    type="button"
-                    className="modal-curator-btn mono"
-                    onClick={(e) => { e.stopPropagation(); setCuratorOpen(true); }}
-                  >
-                    💬 Ask the Curator
-                  </button>
                 </div>
 
                 <button className="modal-close" onClick={() => setViewingProject(null)} aria-label="Close">
@@ -463,7 +456,25 @@ export default function ProjectModal() {
         )}
       </AnimatePresence>
 
-      {/* Ask the Curator */}
+      {/* Ask the Curator — a fixed FAB rather than squeezed into the swatch
+          header, so it never fights the reel button/close button for space
+          at small widths. Hidden while its own panel is open. */}
+      <AnimatePresence>
+        {proj && !curatorOpen && (
+          <motion.button
+            type="button"
+            className="curator-fab"
+            onClick={() => setCuratorOpen(true)}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.25 }}
+            aria-label="Ask the Curator"
+          >
+            💬
+          </motion.button>
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {curatorOpen && proj && (
           <CuratorChat project={proj} onClose={() => setCuratorOpen(false)} />
