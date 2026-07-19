@@ -8,6 +8,7 @@ import ExhibitReel from './ExhibitReel';
 import ModelViewer from './ModelViewer';
 import AudioGuide from './AudioGuide';
 import ImageZoom from './anim/ImageZoom';
+import CuratorChat from './CuratorChat';
 import './ProjectModal.css';
 
 // Collapsed write-ups clip with CSS line-clamp, which doesn't clip
@@ -123,6 +124,7 @@ export default function ProjectModal() {
   const [lightboxIdx, setLightboxIdx] = useState(null);
   const [writeupOpen, setWriteupOpen] = useState(false);
   const [reelOpen, setReelOpen] = useState(false);
+  const [curatorOpen, setCuratorOpen] = useState(false);
   const panelRef = useRef(null);
 
   // A reel needs at least two frames to be worth playing.
@@ -132,7 +134,7 @@ export default function ProjectModal() {
   const writeupIsLong = writeup.length > WRITEUP_CLAMP_CHARS;
 
   // Every project opens with its write-up collapsed again.
-  useEffect(() => { setWriteupOpen(false); }, [proj?.id]);
+  useEffect(() => { setWriteupOpen(false); setCuratorOpen(false); }, [proj?.id]);
 
   useEffect(() => {
     document.body.style.overflow = proj ? 'hidden' : '';
@@ -231,6 +233,13 @@ export default function ProjectModal() {
                       ▶ {t('modal.playReel')}
                     </button>
                   )}
+                  <button
+                    type="button"
+                    className="modal-curator-btn mono"
+                    onClick={(e) => { e.stopPropagation(); setCuratorOpen(true); }}
+                  >
+                    💬 Ask the Curator
+                  </button>
                 </div>
 
                 <button className="modal-close" onClick={() => setViewingProject(null)} aria-label="Close">
@@ -451,6 +460,13 @@ export default function ProjectModal() {
             startIndex={lightboxIdx === -1 ? 0 : lightboxIdx}
             onClose={() => setLightboxIdx(null)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Ask the Curator */}
+      <AnimatePresence>
+        {curatorOpen && proj && (
+          <CuratorChat project={proj} onClose={() => setCuratorOpen(false)} />
         )}
       </AnimatePresence>
     </>
