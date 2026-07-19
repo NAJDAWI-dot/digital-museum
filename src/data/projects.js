@@ -2162,7 +2162,7 @@ export const INITIAL_PROJECTS = [
 
 export const SITE_SETTINGS = {
   "email": "najdawihashem01@gmail.com",
-  "cvLink": "/CV.pdf",
+  "cvLink": "/digital-museum/CV.pdf",
   "social": {
     "github": "https://github.com/NAJDAWI-dot",
     "linkedin": "https://linkedin.com/in/hashemnajdawi"
