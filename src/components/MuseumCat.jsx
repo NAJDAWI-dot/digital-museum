@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import './MuseumCat.css';
 
 const WALK_DURATION = 26_000; // one full crossing, ms
-const FIRST_APPEARANCE = 45_000;
+const FIRST_APPEARANCE = 8_000;
 
 /** The museum cat. Every museum has one; ours crosses the bottom of the
  * page every few minutes, pausing mid-journey to sit. Clicking it earns an
