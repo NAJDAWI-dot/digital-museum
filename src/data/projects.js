@@ -2504,17 +2504,6 @@ export const INITIAL_TESTIMONIALS = [];
 
 export const INITIAL_VOLUNTEERING = [
   {
-    "id": "v1784452997465",
-    "year": "2026",
-    "eventTitle": "JISTEF",
-    "title": "Organizing Volunteer",
-    "organization": "Ideal Ideas Foundation",
-    "description": "Delivered support for JISTEF 2026.",
-    "photos": [
-      "images/x-868bd89d066e.jpg"
-    ]
-  },
-  {
     "id": "v1784452725085",
     "year": "2025",
     "eventTitle": "JOYS",
@@ -2564,7 +2553,7 @@ export const INITIAL_VOLUNTEERING = [
   },
   {
     "id": "v1783508190928",
-    "year": "2025",
+    "year": "2026",
     "title": "Organizer / Volunteer",
     "organization": "JOYS - Irish Embassy Program",
     "description": "Delivered support for JOYS 2026.",
@@ -2587,7 +2576,7 @@ export const INITIAL_VOLUNTEERING = [
   },
   {
     "id": "v1783508097359",
-    "year": "2026 & 2025",
+    "year": "2026",
     "title": "Robotics Volunteer / Exhibit Organizer",
     "organization": "HTU",
     "description": "Ran the robotics-themed \"Aliens Maze Arena\" exhibit at the STEM Lab Expo with Technical Support for the contestants",
@@ -2623,6 +2612,17 @@ export const INITIAL_VOLUNTEERING = [
       "images/x-b3c12dc48e1d.jpg"
     ],
     "eventTitle": "Independence Day Booth"
+  },
+  {
+    "id": "v1784452997465",
+    "year": "2026",
+    "eventTitle": "JISTEF",
+    "title": "Organizing Volunteer",
+    "organization": "Ideal Ideas Foundation",
+    "description": "Delivered support for JISTEF 2026.",
+    "photos": [
+      "images/x-868bd89d066e.jpg"
+    ]
   },
   {
     "id": "v1783507915739",
