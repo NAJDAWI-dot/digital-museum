@@ -29,6 +29,13 @@ jobs:
           # Rollback support: the admin app dispatches with a pinned sha to
           # redeploy a previous good build. Empty = normal deploy of main.
           ref: ${{ inputs.sha || github.sha }}
+          # public/highlights*.mp4 and the poster are Git LFS pointers as of
+          # .gitattributes — without this, checkout leaves the literal ~130
+          # byte pointer text files in place instead of the real video, and
+          # the build just copies those into dist/ verbatim. Confirmed live:
+          # the deployed highlights.mp4 was a 133-byte pointer file, not a
+          # video, until this was added.
+          lfs: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
