@@ -2504,6 +2504,70 @@ export const INITIAL_TESTIMONIALS = [];
 
 export const INITIAL_VOLUNTEERING = [
   {
+    "id": "v1783508190928",
+    "year": "2026",
+    "title": "Organizer / Volunteer",
+    "organization": "JOYS - Irish Embassy Program",
+    "description": "Delivered support for JOYS 2026.",
+    "photos": [
+      "images/x-4050342d7032.jpg",
+      "images/x-a14f8582e24f.jpg",
+      "images/x-b1e9544258e6.jpg",
+      "images/x-e8241f552075.jpg"
+    ],
+    "eventTitle": "JOYS 2026"
+  },
+  {
+    "id": "v1783508273301",
+    "year": "2026",
+    "title": "Head Organizer & Developer",
+    "organization": "HTU",
+    "description": "Organized the Engineering Design Expo, including building the event's voting platform for the fan favourite prize.",
+    "photos": [
+      "images/x-e1c17d0bb0c3.jpg",
+      "images/x-1dbd910dd856.jpg",
+      "images/x-4b0ca7bf4189.jpg",
+      "images/x-d7abaa0376e6.jpg"
+    ],
+    "eventTitle": "Engineering Design Expo"
+  },
+  {
+    "id": "v1784451459868",
+    "year": "2026",
+    "eventTitle": "FFRC",
+    "title": "Lead Public Relations",
+    "organization": "IEEE RAS HTU",
+    "description": "Hosted the Fire Fighting Robot Competition.",
+    "photos": [
+      "images/x-2c36a8be676d.jpg",
+      "images/x-130fe4ba58c0.jpg"
+    ]
+  },
+  {
+    "id": "v1783508097359",
+    "year": "2026",
+    "title": "Robotics Volunteer / Exhibit Organizer",
+    "organization": "HTU",
+    "description": "Ran the robotics-themed \"Aliens Maze Arena\" exhibit at the STEM Lab Expo with Technical Support for the contestants",
+    "photos": [
+      "images/x-ee778142f0ab.jpg",
+      "images/x-21de57298458.jpg",
+      "images/x-4c7230ab2f45.jpg"
+    ],
+    "eventTitle": "STEM Lab Expo"
+  },
+  {
+    "id": "v1784452997465",
+    "year": "2026",
+    "eventTitle": "JISTEF",
+    "title": "Organizing Volunteer",
+    "organization": "Ideal Ideas Foundation",
+    "description": "Delivered support for JISTEF 2026.",
+    "photos": [
+      "images/x-868bd89d066e.jpg"
+    ]
+  },
+  {
     "id": "v1784452725085",
     "year": "2025",
     "eventTitle": "JOYS",
@@ -2526,46 +2590,6 @@ export const INITIAL_VOLUNTEERING = [
     ]
   },
   {
-    "id": "v1784451459868",
-    "year": "2026",
-    "eventTitle": "FFRC",
-    "title": "Lead Public Relations",
-    "organization": "IEEE RAS HTU",
-    "description": "Hosted the Fire Fighting Robot Competition.",
-    "photos": [
-      "images/x-2c36a8be676d.jpg",
-      "images/x-130fe4ba58c0.jpg"
-    ]
-  },
-  {
-    "id": "v1783508273301",
-    "year": "2026",
-    "title": "Head Organizer & Developer",
-    "organization": "HTU",
-    "description": "Organized the Engineering Design Expo, including building the event's voting platform for the fan favourite prize.",
-    "photos": [
-      "images/x-e1c17d0bb0c3.jpg",
-      "images/x-1dbd910dd856.jpg",
-      "images/x-4b0ca7bf4189.jpg",
-      "images/x-d7abaa0376e6.jpg"
-    ],
-    "eventTitle": "Engineering Design Expo"
-  },
-  {
-    "id": "v1783508190928",
-    "year": "2026",
-    "title": "Organizer / Volunteer",
-    "organization": "JOYS - Irish Embassy Program",
-    "description": "Delivered support for JOYS 2026.",
-    "photos": [
-      "images/x-4050342d7032.jpg",
-      "images/x-a14f8582e24f.jpg",
-      "images/x-b1e9544258e6.jpg",
-      "images/x-e8241f552075.jpg"
-    ],
-    "eventTitle": "JOYS 2026"
-  },
-  {
     "id": "v1783508167071",
     "year": "2025 (July)",
     "title": "Organizer",
@@ -2573,19 +2597,6 @@ export const INITIAL_VOLUNTEERING = [
     "description": "Assisted with Career Day event operations.",
     "photos": [],
     "eventTitle": "Career Expo"
-  },
-  {
-    "id": "v1783508097359",
-    "year": "2026",
-    "title": "Robotics Volunteer / Exhibit Organizer",
-    "organization": "HTU",
-    "description": "Ran the robotics-themed \"Aliens Maze Arena\" exhibit at the STEM Lab Expo with Technical Support for the contestants",
-    "photos": [
-      "images/x-ee778142f0ab.jpg",
-      "images/x-21de57298458.jpg",
-      "images/x-4c7230ab2f45.jpg"
-    ],
-    "eventTitle": "STEM Lab Expo"
   },
   {
     "id": "v1783508058456",
@@ -2612,17 +2623,6 @@ export const INITIAL_VOLUNTEERING = [
       "images/x-b3c12dc48e1d.jpg"
     ],
     "eventTitle": "Independence Day Booth"
-  },
-  {
-    "id": "v1784452997465",
-    "year": "2026",
-    "eventTitle": "JISTEF",
-    "title": "Organizing Volunteer",
-    "organization": "Ideal Ideas Foundation",
-    "description": "Delivered support for JISTEF 2026.",
-    "photos": [
-      "images/x-868bd89d066e.jpg"
-    ]
   },
   {
     "id": "v1783507915739",
