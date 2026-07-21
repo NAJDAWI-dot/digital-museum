@@ -2515,7 +2515,7 @@ export const INITIAL_VOLUNTEERING = [
       "images/x-b1e9544258e6.jpg",
       "images/x-e8241f552075.jpg"
     ],
-    "eventTitle": "JOYS 2026"
+    "eventTitle": "JOYS"
   },
   {
     "id": "v1783508273301",
