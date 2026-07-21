@@ -18,6 +18,7 @@ import GuidedTour from './components/GuidedTour';
 import VisitorDelight from './components/VisitorDelight';
 import StatusRoom from './components/StatusRoom';
 import ScrollProgress from './components/anim/ScrollProgress';
+import ExhibitDolly from './components/ExhibitDolly';
 import MorphDivider from './components/MorphDivider';
 import LiquidTransition from './components/LiquidTransition';
 import Lenis from 'lenis';
@@ -118,6 +119,7 @@ function MuseumApp() {
           <Hero revealed={revealed} />
           <NowBlock />
           <FeaturedBanner />
+          <ExhibitDolly />
           <MorphDivider />
           <Gallery />
           <MorphDivider />
