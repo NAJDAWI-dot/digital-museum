@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Highlights Reel — Control Station</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header>
+  <h1>Highlights Reel Control Station</h1>
+  <p class="sub">localhost only — settings write directly to <code>reel-config.json</code> / <code>render-settings.json</code></p>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>Sections</h2>
+    <label><input type="checkbox" id="sec-timeline" /> Timeline</label>
+    <label><input type="checkbox" id="sec-volunteering" /> Volunteering</label>
+    <label><input type="checkbox" id="sec-testimonial" /> Testimonial</label>
+  </section>
+
+  <section class="panel">
+    <h2>Music track</h2>
+    <select id="track"></select>
+  </section>
+
+  <section class="panel">
+    <h2>Star projects (order = order in the reel)</h2>
+    <p class="hint">Leave empty to use the default (featured-first, newest-first).</p>
+    <ul id="star-list" class="star-list"></ul>
+    <select id="star-add"></select>
+    <button id="star-add-btn" type="button">Add</button>
+  </section>
+
+  <section class="panel">
+    <h2>Quality &amp; format</h2>
+    <div class="grid">
+      <label>FPS <input type="number" id="fps" min="15" max="60" /></label>
+      <label>Width <input type="number" id="width" min="480" max="3840" /></label>
+      <label>Height <input type="number" id="height" min="480" max="3840" /></label>
+      <label>Master CRF (lower = higher quality) <input type="number" id="masterCrf" min="0" max="30" /></label>
+      <label>Web CRF <input type="number" id="webCrf" min="0" max="35" /></label>
+      <label>Web preset
+        <select id="webPreset">
+          <option>ultrafast</option><option>fast</option><option>medium</option><option>slow</option><option>veryslow</option>
+        </select>
+      </label>
+      <label>Audio bitrate (kbps) <input type="number" id="audioBitrateKbps" min="64" max="320" /></label>
+      <label>Image format
+        <select id="imageFormat"><option>png</option><option>jpeg</option></select>
+      </label>
+      <label>Photos per project (1-4) <input type="number" id="photosPerProject" min="1" max="4" /></label>
+      <label>Max showcase projects (blank = show all)
+        <input type="number" id="maxShowcaseProjects" min="1" max="20" placeholder="all" />
+      </label>
+    </div>
+
+    <h2 class="spaced">Rendering speed</h2>
+    <p class="hint">This machine has an NVIDIA GPU (RTX 4070). NVENC gives a confirmed ~4.7x faster web-delivery encode, verified by timing both. Note: "Hardware acceleration" below currently has no effect on the master render itself. Remotion disables it whenever a CRF quality target is set, which we always do. The real lever for render speed is Concurrency, since that parallelizes frame capture, the actual bottleneck. NVENC's file sizes also run larger than libx264 at the same nominal quality number: a real trade-off, not a bug.</p>
+    <div class="grid">
+      <label>Hardware acceleration (currently a no-op, see note above)
+        <select id="hardwareAcceleration">
+          <option value="disable">disable</option>
+          <option value="if-possible">if-possible (use GPU when available)</option>
+          <option value="required">required (fail if no GPU encoder)</option>
+        </select>
+      </label>
+      <label>Web-delivery encoder (confirmed ~4.7x faster on nvenc)
+        <select id="webEncoder">
+          <option value="libx264">libx264 (software, smaller file)</option>
+          <option value="h264_nvenc">h264_nvenc (NVIDIA hardware, faster, larger file)</option>
+        </select>
+      </label>
+      <label>Concurrency (parallel render workers, blank = auto)
+        <input type="number" id="concurrency" min="1" max="32" placeholder="auto" />
+      </label>
+    </div>
+    <button id="save-settings" type="button">Save settings</button>
+    <span id="save-status"></span>
+  </section>
+
+  <section class="panel">
+    <h2>Render</h2>
+    <button id="render-btn" type="button">Render</button>
+    <pre id="render-log" class="log"></pre>
+  </section>
+
+  <section class="panel">
+    <h2>Preview — 16:9</h2>
+    <video id="preview" controls preload="none"></video>
+  </section>
+
+  <section class="panel">
+    <h2>Preview — 9:16 (vertical)</h2>
+    <video id="preview-vertical" controls preload="none" class="vertical"></video>
+    <div id="downloads"></div>
+  </section>
+
+  <section class="panel danger">
+    <h2>Publish</h2>
+    <p class="hint">Commits the rendered files to <code>public/</code>, pushes to <code>main</code>, and triggers deploy. First resets your local checkout to <code>origin/main</code> — discarding any uncommitted changes repo-wide.</p>
+    <button id="publish-check-btn" type="button">Check what would be discarded</button>
+    <pre id="publish-preview" class="log"></pre>
+    <label id="publish-confirm-wrap" class="hidden">
+      <input type="checkbox" id="publish-confirm" /> Yes, discard local changes and publish
+    </label>
+    <button id="publish-btn" type="button" class="hidden" disabled>Publish</button>
+    <pre id="publish-log" class="log"></pre>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -39,7 +39,7 @@ function StatBlock({ value, label, delay }) {
       >
         <CountUp to={value} startFrame={delay} />
       </div>
-      <GoldRule width={44} startFrame={delay + 14} style={{ margin: '20px auto 0' }} />
+      <GoldRule width={44} startFrame={delay + 28} style={{ margin: '20px auto 0' }} />
       <div style={{ fontFamily: FONT_SANS, fontSize: 18, letterSpacing: 3, textTransform: 'uppercase', color: COLORS.dust, marginTop: 16 }}>
         {label}
       </div>
@@ -65,7 +65,7 @@ export default function StatsSlide({ projectCount, categoryCount, timelineCount 
             justifyContent: 'center',
           }}
         >
-          <GoldRule width={64} startFrame={2} style={{ marginBottom: 28 }} />
+          <GoldRule width={64} startFrame={4} style={{ marginBottom: 28 }} />
           <span
             style={{
               fontFamily: FONT_SANS,
@@ -76,12 +76,12 @@ export default function StatsSlide({ projectCount, categoryCount, timelineCount 
               opacity: headingProgress,
             }}
           >
-            <TrackingIn text="The Collection, In Numbers" startFrame={4} letterSpacing={4} />
+            <TrackingIn text="The Collection, In Numbers" startFrame={8} letterSpacing={4} />
           </span>
           <div style={{ display: 'flex', flexDirection: fmt(format, 'row', 'column'), alignItems: fmt(format, 'flex-start', 'center') }}>
-            <StatBlock value={projectCount} label="Exhibits" delay={14} />
-            <StatBlock value={categoryCount} label="Disciplines" delay={24} />
-            <StatBlock value={timelineCount} label="Milestones" delay={34} />
+            <StatBlock value={projectCount} label="Exhibits" delay={28} />
+            <StatBlock value={categoryCount} label="Disciplines" delay={48} />
+            <StatBlock value={timelineCount} label="Milestones" delay={68} />
           </div>
         </AbsoluteFill>
       </SlideDrift>

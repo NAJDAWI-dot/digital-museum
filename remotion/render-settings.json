@@ -1,0 +1,16 @@
+{
+  "fps": 60,
+  "width": 1920,
+  "height": 1080,
+  "masterCrf": 14,
+  "webCrf": 22,
+  "webPreset": "fast",
+  "audioBitrateKbps": 128,
+  "imageFormat": "jpeg",
+  "photosPerProject": 2,
+  "hardwareAcceleration": "required",
+  "webEncoder": "h264_nvenc",
+  "masterBitrate": "40M",
+  "concurrency": null,
+  "maxShowcaseProjects": null
+}

@@ -11,7 +11,7 @@ import { AbsoluteFill, useCurrentFrame, random } from 'remotion';
  * Remotion's frame-independent rendering model, unlike `Math.random()`. */
 export default function FilmGrain({ opacity = 0.05, vignetteStrength = 0.55 }) {
   const frame = useCurrentFrame();
-  const grainStep = Math.floor(frame / 2);
+  const grainStep = Math.floor(frame / 4);
   const turbulenceSeed = Math.floor(random(`grain-${grainStep}`) * 999);
 
   return (

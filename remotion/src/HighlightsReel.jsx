@@ -10,7 +10,7 @@ import { useFormat } from './format.jsx';
 import Letterbox from './components/Letterbox.jsx';
 import FilmGrain from './components/FilmGrain.jsx';
 import TitleSlide from './slides/TitleSlide.jsx';
-import ProjectsMontage, { PROJECTS_MONTAGE_FRAMES_PER_ITEM } from './slides/ProjectsMontage.jsx';
+import ProjectsMontage, { buildProjectShotList, PROJECTS_MONTAGE_SHOT_FRAMES } from './slides/ProjectsMontage.jsx';
 import StatsSlide from './slides/StatsSlide.jsx';
 import TimelineMontage from './slides/TimelineMontage.jsx';
 import VolunteeringSlide from './slides/VolunteeringSlide.jsx';
@@ -41,8 +41,9 @@ import {
  * which optional sections precede them, so those two stay fixed even as
  * sections are added/removed above them. */
 export function calculateTotalFrames(data) {
+  const projectShots = buildProjectShotList(data.showcaseProjects, data.photosPerProject);
   const sections = [{ frames: TITLE_FRAMES }];
-  sections.push({ frames: data.showcaseProjects.length * PROJECTS_MONTAGE_FRAMES_PER_ITEM, transitionIn: FADE_FRAMES });
+  sections.push({ frames: projectShots.length * PROJECTS_MONTAGE_SHOT_FRAMES, transitionIn: FADE_FRAMES });
   sections.push({ frames: STATS_FRAMES, transitionIn: CROSSZOOM_FRAMES });
   if (data.showTimeline) sections.push({ frames: TIMELINE_FRAMES, transitionIn: FADE_FRAMES });
   if (data.showVolunteering) sections.push({ frames: VOLUNTEERING_FRAMES, transitionIn: SLIDE_FRAMES });
@@ -68,15 +69,16 @@ const T_CROSSZOOM = <TransitionSeries.Transition presentation={crossZoom({ stren
  * rather than baked into the audio file, since only the composition knows
  * its own duration. */
 function scoreVolume(frame, totalFrames) {
-  const attack = interpolate(frame, [0, 45], [0, 1], { extrapolateRight: 'clamp' });
-  const release = interpolate(frame, [totalFrames - 55, totalFrames], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-  const tremolo = 0.92 + 0.08 * Math.sin(frame / 70);
+  const attack = interpolate(frame, [0, 90], [0, 1], { extrapolateRight: 'clamp' });
+  const release = interpolate(frame, [totalFrames - 110, totalFrames], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const tremolo = 0.92 + 0.08 * Math.sin(frame / 140);
   return Math.min(attack, release) * tremolo;
 }
 
 export default function HighlightsReel({ data }) {
   const totalFrames = calculateTotalFrames(data);
   const format = useFormat();
+  const projectShots = buildProjectShotList(data.showcaseProjects, data.photosPerProject);
 
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
@@ -89,8 +91,8 @@ export default function HighlightsReel({ data }) {
 
         {T_FADE}
 
-        <TransitionSeries.Sequence durationInFrames={data.showcaseProjects.length * PROJECTS_MONTAGE_FRAMES_PER_ITEM}>
-          <ProjectsMontage projects={data.showcaseProjects} />
+        <TransitionSeries.Sequence durationInFrames={projectShots.length * PROJECTS_MONTAGE_SHOT_FRAMES}>
+          <ProjectsMontage projects={data.showcaseProjects} photosPerProject={data.photosPerProject} />
         </TransitionSeries.Sequence>
 
         {T_CROSSZOOM}

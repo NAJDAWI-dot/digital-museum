@@ -14,7 +14,7 @@ const MAX_NAMES_SHOWN = 48;
 function NameTag({ name, index }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const delay = 26 + index * 2;
+  const delay = 52 + index * 4;
   // Bouncy pop (visible overshoot) — each signature stamps itself onto the
   // wall rather than drifting in, like a visitor pressing their name in.
   const pop = spring({ frame: frame - delay, fps, config: { damping: 13, stiffness: 190, mass: 0.6 } });
@@ -45,8 +45,8 @@ export default function GuestbookSlide({ count, names, quote }) {
   const { fps } = useVideoConfig();
   const format = useFormat();
   const headingProgress = spring({ frame, fps, config: { damping: 200, stiffness: 80 } });
-  const countPop = spring({ frame: frame - 6, fps, config: { damping: 16, stiffness: 120, mass: 0.8 } });
-  const quoteProgress = spring({ frame: frame - 72, fps, config: { damping: 200, stiffness: 90 } });
+  const countPop = spring({ frame: frame - 12, fps, config: { damping: 16, stiffness: 120, mass: 0.8 } });
+  const quoteProgress = spring({ frame: frame - 144, fps, config: { damping: 200, stiffness: 90 } });
 
   const shown = names.slice(0, fmt(format, MAX_NAMES_SHOWN, 24));
   const overflow = names.length - shown.length;
@@ -66,7 +66,7 @@ export default function GuestbookSlide({ count, names, quote }) {
           }}
         >
           <span style={{ fontFamily: FONT_SANS, fontSize: 18, textTransform: 'uppercase', color: COLORS.gold, opacity: headingProgress, marginBottom: 14 }}>
-            <TrackingIn text="The Guestbook" startFrame={2} letterSpacing={4} />
+            <TrackingIn text="The Guestbook" startFrame={4} letterSpacing={4} />
           </span>
           <div
             style={{
@@ -78,7 +78,7 @@ export default function GuestbookSlide({ count, names, quote }) {
               transform: `scale(${0.9 + countPop * 0.1})`,
             }}
           >
-            <CountUp to={count} startFrame={6} durationInFrames={30} />
+            <CountUp to={count} startFrame={12} durationInFrames={60} />
             <span style={{ fontSize: 26, color: COLORS.dust, fontStyle: 'italic', marginLeft: 12 }}>
               {count === 1 ? 'signature' : 'signatures'}
             </span>
@@ -106,7 +106,7 @@ export default function GuestbookSlide({ count, names, quote }) {
                 maxWidth: 800,
               }}
             >
-              <GoldRule width={36} startFrame={70} style={{ margin: '0 auto 16px' }} />
+              <GoldRule width={36} startFrame={140} style={{ margin: '0 auto 16px' }} />
               <p style={{ fontFamily: FONT_SERIF, fontStyle: 'italic', fontSize: 24, color: COLORS.mist, margin: 0 }}>
                 “{quote.message}” — {quote.name}
               </p>

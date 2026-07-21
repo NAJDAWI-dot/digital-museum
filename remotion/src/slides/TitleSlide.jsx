@@ -5,7 +5,8 @@ import { FONT_SERIF, FONT_SANS } from '../fonts.js';
 import RevealText from '../components/RevealText.jsx';
 import TrackingIn from '../components/TrackingIn.jsx';
 import GoldRule from '../components/GoldRule.jsx';
-import AtmosphereParticles from '../components/AtmosphereParticles.jsx';
+import AtmosphereParticles3D from '../components/AtmosphereParticles3D.jsx';
+import GoldEmblem3D from '../components/GoldEmblem3D.jsx';
 import SlideDrift from '../components/SlideDrift.jsx';
 import useAudioPulse from '../hooks/useAudioPulse.js';
 import { TITLE_FRAMES } from '../durations.js';
@@ -24,8 +25,8 @@ export default function TitleSlide({ siteName, projectCount }) {
   const pulse = useAudioPulse();
   const format = useFormat();
 
-  const roomLight = interpolate(frame, [0, 18], [0, 1], { extrapolateRight: 'clamp' });
-  const countProgress = spring({ frame: frame - 45, fps, config: { damping: 200, stiffness: 90 } });
+  const roomLight = interpolate(frame, [0, 36], [0, 1], { extrapolateRight: 'clamp' });
+  const countProgress = spring({ frame: frame - 90, fps, config: { damping: 200, stiffness: 90 } });
 
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
@@ -41,37 +42,45 @@ export default function TitleSlide({ siteName, projectCount }) {
             textAlign: 'center',
           }}
         >
-          <AtmosphereParticles opacity={0.4} />
-          <span style={{ fontFamily: FONT_SANS, fontSize: fmt(format, 22, 19), textTransform: 'uppercase', color: COLORS.gold, marginBottom: 28 }}>
-            <TrackingIn text="The Archives Present" startFrame={4} letterSpacing={fmt(format, 6, 4)} />
-          </span>
-          <h1
-            style={{
-              fontFamily: FONT_SERIF,
-              fontStyle: 'italic',
-              fontWeight: 400,
-              fontSize: fmt(format, 108, 74),
-              color: COLORS.linen,
-              margin: 0,
-              lineHeight: 1.05,
-              padding: fmt(format, 0, '0 40px'),
-            }}
-          >
-            <RevealText text={siteName} startFrame={12} stagger={4} />
-          </h1>
-          <GoldRule width={64} startFrame={34} glow={pulse} style={{ margin: '34px 0' }} />
-          <span
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: 20,
-              letterSpacing: 2,
-              color: COLORS.dust,
-              opacity: countProgress,
-              transform: `translateY(${(1 - countProgress) * 12}px)`,
-            }}
-          >
-            {projectCount} exhibits, and counting
-          </span>
+          <AtmosphereParticles3D opacity={0.4} width={fmt(format, 1920, 1080)} height={fmt(format, 1080, 1920)} />
+          <GoldEmblem3D pulse={pulse} opacity={0.68} />
+          {/* Text-shadow (not a background scrim box, which reads as a hard
+              rectangle over the round coin) keeps the headline legible
+              against the emblem's gold face while its rim/glow still shows
+              through everywhere else. */}
+          <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', textShadow: `0 4px 28px ${COLORS.ink}, 0 2px 10px ${COLORS.ink}` }}>
+            <span style={{ fontFamily: FONT_SANS, fontSize: fmt(format, 22, 19), textTransform: 'uppercase', color: COLORS.gold, marginBottom: 28 }}>
+              <TrackingIn text="The Archives Present" startFrame={8} letterSpacing={fmt(format, 6, 4)} />
+            </span>
+            <h1
+              style={{
+                fontFamily: FONT_SERIF,
+                fontStyle: 'italic',
+                fontWeight: 400,
+                fontSize: fmt(format, 108, 74),
+                color: COLORS.linen,
+                margin: 0,
+                lineHeight: 1.05,
+                padding: fmt(format, 0, '0 40px'),
+                textAlign: 'center',
+              }}
+            >
+              <RevealText text={siteName} startFrame={24} stagger={8} />
+            </h1>
+            <GoldRule width={64} startFrame={68} glow={pulse} style={{ margin: '34px 0' }} />
+            <span
+              style={{
+                fontFamily: FONT_SANS,
+                fontSize: 20,
+                letterSpacing: 2,
+                color: COLORS.dust,
+                opacity: countProgress,
+                transform: `translateY(${(1 - countProgress) * 12}px)`,
+              }}
+            >
+              {projectCount} exhibits, and counting
+            </span>
+          </div>
         </AbsoluteFill>
       </SlideDrift>
     </AbsoluteFill>

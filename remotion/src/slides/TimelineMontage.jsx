@@ -14,7 +14,7 @@ const ROW_HEIGHT = 92; // milestone row + margin, for sizing the drawn spine
 function Milestone({ entry, index }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const delay = 24 + index * 14;
+  const delay = 48 + index * 28;
   const progress = spring({ frame: frame - delay, fps, config: { damping: 30, stiffness: 120, mass: 0.9 } });
   const dotPop = spring({ frame: frame - delay, fps, config: { damping: 14, stiffness: 180, mass: 0.6 } });
 
@@ -62,7 +62,7 @@ export default function TimelineMontage({ timeline }) {
   const headingProgress = spring({ frame, fps, config: { damping: 200, stiffness: 80 } });
   const entries = timeline.slice(0, 4);
   // The spine inks downward just ahead of the milestones appearing along it.
-  const spineProgress = spring({ frame: frame - 18, fps, config: { damping: 200, stiffness: 50 } });
+  const spineProgress = spring({ frame: frame - 36, fps, config: { damping: 200, stiffness: 50 } });
 
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
@@ -77,12 +77,12 @@ export default function TimelineMontage({ timeline }) {
           }}
         >
           <div style={{ flex: '0 0 auto', marginRight: fmt(format, 130, 0), marginBottom: fmt(format, 0, 60), opacity: headingProgress }}>
-            <GoldRule width={48} startFrame={2} style={{ marginBottom: 22 }} />
+            <GoldRule width={48} startFrame={4} style={{ marginBottom: 22 }} />
             <span style={{ fontFamily: FONT_SANS, fontSize: 18, textTransform: 'uppercase', color: COLORS.gold, display: 'block' }}>
-              <TrackingIn text="Career" startFrame={4} letterSpacing={4} />
+              <TrackingIn text="Career" startFrame={8} letterSpacing={4} />
             </span>
             <h2 style={{ fontFamily: FONT_SERIF, fontStyle: 'italic', fontWeight: 400, fontSize: 56, color: COLORS.linen, margin: '10px 0 0', maxWidth: 380 }}>
-              <RevealText text="The Path So Far" startFrame={8} stagger={3} />
+              <RevealText text="The Path So Far" startFrame={16} stagger={6} />
             </h2>
           </div>
           <div style={{ position: 'relative' }}>

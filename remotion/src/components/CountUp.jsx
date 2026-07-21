@@ -4,7 +4,7 @@ import { EASE_PRECISE } from '../theme.js';
 
 /** Animated number count-up, eased to a soft stop rather than a linear
  * ramp — reads as deliberate, not like a loading spinner. */
-export default function CountUp({ to, startFrame = 0, durationInFrames = 45, style }) {
+export default function CountUp({ to, startFrame = 0, durationInFrames = 90, style }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const localFrame = frame - startFrame;

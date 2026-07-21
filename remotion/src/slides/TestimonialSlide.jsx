@@ -15,8 +15,8 @@ export default function TestimonialSlide({ testimonial }) {
   // The big quote mark blooms in first — oversized, blurred, scaling down
   // into place — then the words of the quote follow one by one, so the
   // slide reads as someone *speaking*, not a paragraph appearing.
-  const markProgress = spring({ frame: frame - 2, fps, config: { damping: 24, stiffness: 70, mass: 1.1 } });
-  const attrProgress = spring({ frame: frame - 44, fps, config: { damping: 200, stiffness: 120 } });
+  const markProgress = spring({ frame: frame - 4, fps, config: { damping: 24, stiffness: 70, mass: 1.1 } });
+  const attrProgress = spring({ frame: frame - 88, fps, config: { damping: 200, stiffness: 120 } });
 
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
@@ -58,9 +58,9 @@ export default function TestimonialSlide({ testimonial }) {
               margin: '20px 0 0',
             }}
           >
-            <RevealText text={testimonial.quote} startFrame={10} stagger={2} />
+            <RevealText text={testimonial.quote} startFrame={20} stagger={4} />
           </p>
-          <GoldRule width={48} startFrame={40} style={{ margin: '32px 0 20px' }} />
+          <GoldRule width={48} startFrame={80} style={{ margin: '32px 0 20px' }} />
           <span
             style={{
               fontFamily: FONT_SANS,

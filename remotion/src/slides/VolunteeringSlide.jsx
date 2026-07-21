@@ -67,12 +67,12 @@ export default function VolunteeringSlide({ photos, count, orgCount }) {
           }}
         >
           <div style={{ opacity: headingProgress, textAlign: 'center', marginBottom: 40 }}>
-            <GoldRule width={48} startFrame={2} style={{ margin: '0 auto 20px' }} />
+            <GoldRule width={48} startFrame={4} style={{ margin: '0 auto 20px' }} />
             <span style={{ fontFamily: FONT_SANS, fontSize: 18, textTransform: 'uppercase', color: COLORS.gold }}>
-              <TrackingIn text="Wing of Service" startFrame={4} letterSpacing={4} />
+              <TrackingIn text="Wing of Service" startFrame={8} letterSpacing={4} />
             </span>
             <h2 style={{ fontFamily: FONT_SERIF, fontStyle: 'italic', fontWeight: 400, fontSize: 52, color: COLORS.linen, margin: '14px 0 0' }}>
-              <CountUp to={count} startFrame={6} durationInFrames={35} /> {count === 1 ? 'Contribution' : 'Contributions'}
+              <CountUp to={count} startFrame={12} durationInFrames={70} /> {count === 1 ? 'Contribution' : 'Contributions'}
               {orgCount > 0 && (
                 <span style={{ fontSize: 26, color: COLORS.dust, fontStyle: 'normal' }}>
                   {' '}across {orgCount} {orgCount === 1 ? 'organization' : 'organizations'}
@@ -84,7 +84,7 @@ export default function VolunteeringSlide({ photos, count, orgCount }) {
           {shown.length > 0 ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 22, maxWidth: fmt(format, 1500, 560) }}>
               {shown.map((photo, i) => (
-                <Print key={photo.src + i} photo={photo} index={i} delay={16 + i * 4} />
+                <Print key={photo.src + i} photo={photo} index={i} delay={32 + i * 8} />
               ))}
             </div>
           ) : (

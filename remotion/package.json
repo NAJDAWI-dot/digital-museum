@@ -7,7 +7,7 @@
     "dev": "remotion studio src/index.jsx",
     "fetch-stats": "node scripts/fetch-live-stats.mjs",
     "select-score": "node scripts/select-score.mjs",
-    "render": "remotion render src/index.jsx HighlightsReel out/highlights.mp4"
+    "render": "remotion render src/index.jsx HighlightsReel out/highlights.mp4 --hardware-acceleration=if-possible"
   },
   "dependencies": {
     "@remotion/google-fonts": "^4.0.487",

@@ -7,6 +7,7 @@ import {
 } from '../../src/data/projects.js';
 import liveStats from './live-stats.json';
 import reelConfig from '../reel-config.json';
+import renderSettings from '../render-settings.json';
 
 const projects = INITIAL_PROJECTS || [];
 const timeline = INITIAL_TIMELINE || [];
@@ -21,10 +22,14 @@ const starIds = Array.isArray(reelConfig.starProjects) && reelConfig.starProject
   ? reelConfig.starProjects
   : null;
 const featured = projects.find(p => p.featured) || projects[0] || null;
-const showcaseProjects = (starIds
+// null/0/blank = show every real project (accurate to the actual
+// collection, whatever its size) — a positive number caps it explicitly,
+// e.g. for a large collection where director wants a shorter reel.
+const maxShowcase = renderSettings.maxShowcaseProjects;
+const showcaseProjectsFull = starIds
   ? starIds.map(id => projects.find(p => p.id === id)).filter(Boolean)
-  : [featured, ...projects.filter(p => p !== featured)].filter(Boolean)
-).slice(0, 5);
+  : [featured, ...projects.filter(p => p !== featured)].filter(Boolean);
+const showcaseProjects = maxShowcase ? showcaseProjectsFull.slice(0, maxShowcase) : showcaseProjectsFull;
 
 // Section toggles — a director switching a section off must not distort the
 // stats slide's real numbers, so these are separate show* flags rather than
@@ -32,6 +37,12 @@ const showcaseProjects = (starIds
 const sections = reelConfig.sections || {};
 
 const categories = [...new Set(projects.map(p => p.category).filter(Boolean))];
+
+// How many photos (cover + screenshots) the gallery corridor shows per
+// project — controllable from the local render control station's
+// render-settings.json; clamped here as a last line of defense in case
+// that file is hand-edited with an out-of-range value.
+const photosPerProject = Math.max(1, Math.min(4, renderSettings.photosPerProject ?? 3));
 
 const latestVolunteering = volunteering[0] || null;
 const latestTimeline = timeline[0] || null;
@@ -50,6 +61,7 @@ export const reelData = {
   ownerName: 'Hashem Najdawi',
   projects,
   showcaseProjects,
+  photosPerProject,
   projectCount: projects.length,
   categories,
   categoryCount: categories.length,

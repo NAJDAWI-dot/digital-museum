@@ -36,6 +36,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # public/highlights*.mp4 and the poster jpg are tracked via Git LFS
+      # (.gitattributes) so repeated regenerations don't keep bloating repo
+      # history with full-size binary blobs, and so a future higher-quality
+      # render can exceed GitHub's 100MB plain-git per-file block. Idempotent
+      # — safe to run even if this runner already has LFS configured.
+      - name: Ensure Git LFS is set up
+        run: git lfs install
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -75,7 +83,7 @@ jobs:
 
       - name: Render (9:16 vertical master)
         working-directory: remotion
-        run: npx remotion render src/index.jsx HighlightsReelVertical out/highlights-vertical.mp4
+        run: npx remotion render src/index.jsx HighlightsReelVertical out/highlights-vertical.mp4 --hardware-acceleration=if-possible
 
       # A settled frame from the title slide — the site modal's poster, so
       # the (preload=none) player shows the reel's cover instead of black.
