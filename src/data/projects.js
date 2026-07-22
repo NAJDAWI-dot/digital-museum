@@ -2178,7 +2178,7 @@ export const INITIAL_PROJECTS = [
     "accentColor": "#c9a96e",
     "link": "https://www.linkedin.com/in/hashemnajdawi/",
     "repo": "#",
-    "featured": true,
+    "featured": false,
     "status": "Live",
     "coverImage": "images/p1782928799984-cover.jpg",
     "screenshots": [
