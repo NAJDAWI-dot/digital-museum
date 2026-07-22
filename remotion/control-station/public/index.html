@@ -86,6 +86,18 @@
   </section>
 
   <section class="panel">
+    <h2>Editor's decisions</h2>
+    <p class="hint">Automated pre-render editorial pass — which projects star, which sections show, and why.</p>
+    <div id="agent-edit-report" class="log">Not run yet — render to see the editor's decisions here.</div>
+  </section>
+
+  <section class="panel">
+    <h2>QA review</h2>
+    <p class="hint">Automated post-render QA pass — advisory only, review before publishing.</p>
+    <div id="agent-review-report" class="log">Not run yet — render to see the QA review here.</div>
+  </section>
+
+  <section class="panel">
     <h2>Preview — 16:9</h2>
     <video id="preview" controls preload="none"></video>
   </section>
@@ -106,6 +118,27 @@
     </label>
     <button id="publish-btn" type="button" class="hidden" disabled>Publish</button>
     <pre id="publish-log" class="log"></pre>
+  </section>
+
+  <section class="panel">
+    <h2>Project Trailer</h2>
+    <p class="hint">15s single-exhibit teaser. Renders and web-encodes, same as `render-trailer.yml` — publishing is a separate step below.</p>
+    <select id="trailer-project"></select>
+    <button id="trailer-render-btn" type="button">Render Trailer</button>
+    <pre id="trailer-render-log" class="log"></pre>
+    <video id="trailer-preview" controls preload="none"></video>
+  </section>
+
+  <section class="panel danger">
+    <h2>Publish Trailer</h2>
+    <p class="hint">Commits <code>public/trailers/&lt;project-id&gt;.mp4</code>, pushes to <code>main</code>, and triggers deploy. Same repo-wide reset caveat as the reel Publish above — for the project currently selected in the dropdown.</p>
+    <button id="trailer-publish-check-btn" type="button">Check what would be discarded</button>
+    <pre id="trailer-publish-preview" class="log"></pre>
+    <label id="trailer-publish-confirm-wrap" class="hidden">
+      <input type="checkbox" id="trailer-publish-confirm" /> Yes, discard local changes and publish this trailer
+    </label>
+    <button id="trailer-publish-btn" type="button" class="hidden" disabled>Publish Trailer</button>
+    <pre id="trailer-publish-log" class="log"></pre>
   </section>
 </main>
 

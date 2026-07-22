@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { copyFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { jobs } from './runScript.mjs';
@@ -119,4 +119,93 @@ export function publish({ confirm }) {
 export async function previewDiscard() {
   const status = await run('git', ['status', '--porcelain'], {});
   return status.stdout;
+}
+
+// Matches render-trailer.yml's filename validation intent: project ids are
+// always plain alphanumeric (see src/data/projects.js — generated as
+// `p${Date.now()}`), so this also doubles as a defense-in-depth guard
+// against a path-traversal-shaped projectId ever reaching a filesystem path.
+const SAFE_PROJECT_ID = /^[A-Za-z0-9_-]+$/;
+
+/** Local port of render-trailer.yml's "Publish trailer" step — same
+ * sequence, same git commands, run from the developer's own working tree
+ * instead of a CI runner. Requires an explicit `{confirm: true}` from the
+ * caller (the route layer also enforces this) since `git reset --hard`
+ * discards ALL uncommitted local changes repo-wide, not just remotion/. */
+export function publishTrailer({ confirm, projectId }) {
+  const id = randomUUID();
+  const job = new Job(id);
+  jobs.set(id, job);
+
+  if (!confirm) {
+    job.push('Refused: publish requires explicit confirmation.\n');
+    job.finish('error');
+    return job;
+  }
+  if (!projectId || !SAFE_PROJECT_ID.test(projectId)) {
+    job.push(`Refused: invalid projectId "${projectId}".\n`);
+    job.finish('error');
+    return job;
+  }
+
+  (async () => {
+    try {
+      job.push('Ensuring Git LFS is installed in this working tree...\n');
+      await run('git', ['lfs', 'install'], { job });
+
+      job.push('\nFetching origin/main...\n');
+      const fetch = await run('git', ['fetch', 'origin', 'main'], { job });
+      if (fetch.code !== 0) throw new Error('git fetch failed');
+
+      job.push('\nResetting to origin/main (discards local changes)...\n');
+      const reset = await run('git', ['reset', '--hard', 'origin/main'], { job });
+      if (reset.code !== 0) throw new Error('git reset --hard failed');
+
+      const trailerDir = join(PUBLIC_DIR, 'trailers');
+      const destPath = join(trailerDir, `${projectId}.mp4`);
+      job.push('\nCopying rendered trailer into public/trailers/...\n');
+      mkdirSync(trailerDir, { recursive: true });
+      copyFileSync(join(OUT_DIR, 'trailer-web.mp4'), destPath);
+
+      const relPath = `public/trailers/${projectId}.mp4`;
+      await run('git', ['add', relPath], { job });
+
+      const diff = await run('git', ['diff', '--cached', '--quiet'], { job: null });
+      if (diff.code === 0) {
+        job.push('\nNo changes to publish (output is identical to what\'s already live).\n');
+        job.finish('done');
+        return;
+      }
+
+      job.push('\nCommitting...\n');
+      await run('git', ['commit', '-m', `chore: render trailer for ${projectId} (local)`], { job });
+
+      job.push('\nPushing to origin/main...\n');
+      const push = await run('git', ['push', 'origin', 'HEAD:main'], { job });
+      if (push.code !== 0) throw new Error('git push failed');
+
+      const rev = await run('git', ['rev-parse', 'HEAD'], { job: null });
+      const newSha = rev.stdout;
+
+      job.push('\nWaiting for GitHub to catch up before dispatching deploy...\n');
+      let caughtUp = false;
+      for (let i = 0; i < 15; i++) {
+        const remote = await run('gh', ['api', 'repos/{owner}/{repo}/git/ref/heads/main', '--jq', '.object.sha'], { job: null });
+        if (remote.stdout === newSha) { caughtUp = true; break; }
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+      if (!caughtUp) job.push('Warning: main ref did not catch up in time; dispatching deploy anyway.\n');
+
+      job.push('\nDispatching deploy.yml...\n');
+      await run('gh', ['workflow', 'run', 'deploy.yml', '--ref', 'main'], { job });
+
+      job.push('\nPublish complete.\n');
+      job.finish('done');
+    } catch (err) {
+      job.push(`\n[error] ${err.message}\n`);
+      job.finish('error');
+    }
+  })();
+
+  return job;
 }

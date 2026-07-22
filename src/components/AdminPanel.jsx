@@ -467,9 +467,10 @@ function SettingsForm({ settings, onSave, githubToken }) {
   };
 
   // Kicks off the render-highlights workflow on GitHub. The render runs on
-  // the self-hosted runner, then commits the new video and dispatches the
-  // site deploy itself — so one click here is the whole pipeline. Uses the
-  // same PAT the live editor already holds for content commits.
+  // the self-hosted runner (the owner's own PC) and stops after an
+  // automated editorial + QA pass — it no longer auto-publishes. Publishing
+  // is a separate, explicit step from the Control Station on that same
+  // machine. Uses the same PAT the live editor already holds for content commits.
   const regenerateReel = async () => {
     if (!githubToken || renderState === 'dispatching') return;
     setRenderState('dispatching');
@@ -545,9 +546,10 @@ function SettingsForm({ settings, onSave, githubToken }) {
         <p className="section-label" style={{ marginTop: '2rem', marginBottom: '1rem' }}>Highlights Reel</p>
         <p className="mono" style={{ fontSize: '0.7rem', color: 'var(--dust)', lineHeight: 1.6, marginBottom: '0.9rem' }}>
           Re-renders the hero's highlights video from the latest site content (projects,
-          timeline, volunteering, guestbook), then commits it and redeploys the site —
-          all automatic after this one click. Takes ~10 minutes; the render machine must
-          be online. Requires the GitHub PAT (top bar) to be set.
+          timeline, volunteering, guestbook) and runs an automated editorial pass on it.
+          Takes ~10 minutes; the render machine must be online. It no longer publishes
+          automatically — review the editor's cut and QA notes in the Control Station
+          and publish from there when ready. Requires the GitHub PAT (top bar) to be set.
         </p>
         <button
           type="button"
@@ -558,7 +560,7 @@ function SettingsForm({ settings, onSave, githubToken }) {
           title={!githubToken ? 'Paste your GitHub PAT in the top bar first' : 'Start a fresh render of the highlights reel'}
         >
           {renderState === 'dispatching' && 'Starting render…'}
-          {renderState === 'started' && '✓ Render started — video will be live in ~10 min'}
+          {renderState === 'started' && '✓ Render started — review and publish from the Control Station when ready'}
           {renderState === 'error' && '✗ Could not start — check the PAT and try again'}
           {renderState === 'idle' && '🎬 Regenerate Highlights Reel'}
         </button>

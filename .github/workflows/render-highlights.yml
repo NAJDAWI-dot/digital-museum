@@ -9,14 +9,12 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  actions: write   # needed to dispatch deploy.yml explicitly — see below
+  contents: read
 
-# Two overlapping runs (e.g. a manual trigger landing while a live-editor
-# push also triggered one) each produce a commit that fully replaces
-# public/highlights.mp4 — git can't 3-way-merge conflicting binary blobs,
-# so a second run rebasing its own video commit onto a base that already
-# has a *different* video from the first run fails outright. Only one
+# This job no longer commits or pushes anything (see the note at the end of
+# the job below — publishing moved to a manual Control Station step), but
+# two renders still shouldn't run concurrently on the same self-hosted
+# machine: they'd trample each other's remotion/out/ files and GPU. Only one
 # render at a time; later triggers wait rather than run concurrently.
 concurrency:
   group: render-highlights
@@ -70,9 +68,25 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
+      # Automated editorial pass: reviews the real project content (incl.
+      # cover images) and picks which projects star, section on/off toggles,
+      # photos-per-project, and a fitting music track — written into
+      # reel-config.json/render-settings.json BEFORE Select score runs, so
+      # select-score.mjs picks up any pinned track through its existing
+      # path. Runs a headless `claude` CLI invocation using whatever Claude
+      # Code login is already active on this self-hosted runner (the
+      # owner's own PC) — no API key/secret needed. Never fails the render:
+      # on any error (CLI missing/not logged in, malformed output) it
+      # leaves today's defaults (random track, featured-first order) in
+      # place. See remotion/scripts/agent-edit.mjs.
+      - name: Run editing agent
+        working-directory: remotion
+        run: npm run agent-edit
+
       # Picks a random track (and a random ~100s window within it) from
       # music/cinematic/ on every run, so the reel gets a different piece
       # of music each time it regenerates — see scripts/select-score.mjs.
+      # (Unless the editing agent above already pinned one.)
       - name: Select score
         working-directory: remotion
         run: npm run select-score
@@ -101,6 +115,14 @@ jobs:
           node scripts/web-encode.mjs out/highlights.mp4 out/highlights-web.mp4
           node scripts/web-encode.mjs out/highlights-vertical.mp4 out/highlights-vertical-web.mp4
 
+      # QA pass on the rendered master — advisory only (see remotion/scripts/agent-review.mjs).
+      # Same headless `claude` CLI approach as the editing agent above, no
+      # API key needed. Never fails the render or blocks publishing; the
+      # report just sits alongside the video for the human review step below.
+      - name: Run QA review
+        working-directory: remotion
+        run: npm run agent-review
+
       - name: Archive full-quality masters
         uses: actions/upload-artifact@v4
         with:
@@ -110,68 +132,13 @@ jobs:
             remotion/out/highlights-vertical.mp4
           retention-days: 90
 
-      # `shell: bash` alone resolves to whatever "bash" the runner's PATH
-      # finds first — under the runner service's own (non-interactive)
-      # PATH that turned out to be C:\Windows\System32\bash.exe, the WSL
-      # shim, not Git Bash. WSL has no distro installed here, so it failed
-      # immediately. Pointing at Git Bash's real path sidesteps PATH
-      # ordering entirely. The runner's custom-shell field parser doesn't
-      # respect quoting around the executable path (tried that — it left
-      # the literal quote in place and broke PATH resolution), so the
-      # 8.3 short path is used instead to dodge the space in
-      # "Program Files" without needing to quote anything.
-      - name: Publish rendered video
-        shell: 'C:\PROGRA~1\Git\usr\bin\bash.exe -e -o pipefail {0}'
-        run: |
-          set -eo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          # Sync to the absolute latest main and discard everything local
-          # (extract-images' and fetch-stats' uncommitted side effects,
-          # which have already served their purpose) BEFORE copying in the
-          # new video, rather than committing first and rebasing after.
-          # public/highlights.mp4 is always a full replacement, never a
-          # real merge — reset-then-commit makes that atomic and avoids
-          # the binary-merge-conflict class of failure entirely, on top of
-          # the concurrency group above removing the race that triggered
-          # it here.
-          git fetch origin main
-          git reset --hard origin/main
-
-          cp remotion/out/highlights-web.mp4 public/highlights.mp4
-          cp remotion/out/highlights-vertical-web.mp4 public/highlights-vertical.mp4
-          cp remotion/out/highlights-poster.jpg public/highlights-poster.jpg
-          git add public/highlights.mp4 public/highlights-vertical.mp4 public/highlights-poster.jpg
-          # `git diff --quiet` only compares tracked files against the
-          # working tree — it silently reports "no difference" for a
-          # brand-new untracked file. Diffing the staged version against
-          # HEAD (--cached) catches new files too.
-          if ! git diff --cached --quiet; then
-            git commit -m "chore: regenerate highlights reel"
-            git push origin HEAD:main
-            NEW_SHA=$(git rev-parse HEAD)
-
-            # GitHub Actions does not trigger other workflows from a push
-            # made with the default GITHUB_TOKEN (an anti-loop safeguard) —
-            # deploy.yml's own push trigger would silently never fire for
-            # this commit. The site's own deploy.yml sidesteps this by
-            # doing its bot-commit and the actual build/deploy in the SAME
-            # run; dispatching deploy.yml explicitly here is the equivalent
-            # fix for a commit made from a separate workflow.
-            #
-            # Dispatching immediately after push is itself racy: observed
-            # directly, a deploy fired right after this exact push built
-            # the *previous* commit — GitHub's own ref-tracking for "main"
-            # hadn't caught up yet even though the push had already
-            # succeeded from git's point of view. Poll until the API
-            # agrees the ref has moved before dispatching.
-            for i in $(seq 1 15); do
-              REMOTE_SHA=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)
-              if [ "$REMOTE_SHA" = "$NEW_SHA" ]; then break; fi
-              sleep 2
-            done
-            gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref main
-          fi
-        env:
-          GH_TOKEN: ${{ github.token }}
+      # This job intentionally stops here — it no longer auto-publishes.
+      # The editing agent above now makes real creative calls (project
+      # selection/order, section toggles, music) worth a human glance
+      # before they go live, so publishing is a separate, explicit step
+      # done from the Control Station (remotion/control-station) on this
+      # same machine — the self-hosted runner IS the owner's own PC, so
+      # the rendered files in remotion/out/ (plus agent-edit.json and
+      # agent-review.json) are already sitting where Control Station reads
+      # them. Open it, review the editor's decisions and QA verdict, watch
+      # the preview, and hit Publish when ready.

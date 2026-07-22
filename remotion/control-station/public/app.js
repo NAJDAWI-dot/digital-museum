@@ -152,11 +152,60 @@ $('render-btn').addEventListener('click', async () => {
     } else if (data.type === 'finish') {
       es.close();
       btn.disabled = false;
-      if (data.status === 'done') loadOutputs();
+      if (data.status === 'done') { loadOutputs(); loadAgentReports(); }
     }
   };
   es.onerror = () => { es.close(); btn.disabled = false; };
 });
+
+function renderAgentEditReport(report) {
+  const el = $('agent-edit-report');
+  if (!report || report.status === 'none') {
+    el.textContent = 'Not run yet — render to see the editor\'s decisions here.';
+  } else if (report.status === 'skipped') {
+    el.textContent = `Agent unavailable — used today's defaults (${report.reason || 'unknown reason'}).`;
+  } else {
+    const d = report.decision || {};
+    const titles = (d.starProjects || []).map((id) => projectTitle(id));
+    const lines = [
+      `Star projects (order): ${titles.length ? titles.join(' -> ') : '(default: featured-first, newest-first)'}`,
+      `Sections: timeline=${d.sections?.timeline}, volunteering=${d.sections?.volunteering}, testimonial=${d.sections?.testimonial}`,
+      `Photos per project: ${d.photosPerProject}`,
+      `Track: ${d.track}`,
+      '',
+      report.rationale?.overall || '',
+      report.rationale?.projectOrder ? `Project order: ${report.rationale.projectOrder}` : '',
+      report.rationale?.sections ? `Sections: ${report.rationale.sections}` : '',
+      report.rationale?.music ? `Music: ${report.rationale.music}` : '',
+    ];
+    el.textContent = lines.filter(Boolean).join('\n');
+  }
+}
+
+function renderAgentReviewReport(report) {
+  const el = $('agent-review-report');
+  if (!report || report.status === 'none') {
+    el.textContent = 'Not run yet — render to see the QA review here.';
+  } else if (report.status === 'skipped') {
+    el.textContent = `QA review unavailable (${report.reason || 'unknown reason'}).`;
+  } else {
+    const badge = { pass: '[PASS]', warn: '[WARN]', fail: '[FAIL]' }[report.verdict] || `[${report.verdict}]`;
+    const lines = [`${badge} ${report.summary || ''}`, ''];
+    (report.checks || []).forEach((c) => {
+      lines.push(`- (${c.severity}) ${c.slide}${c.timestamp != null ? ` @${c.timestamp.toFixed(1)}s` : ''}: ${c.issue}`);
+    });
+    el.textContent = lines.join('\n');
+  }
+}
+
+async function loadAgentReports() {
+  const [editRes, reviewRes] = await Promise.all([
+    fetch('/api/agent-edit'),
+    fetch('/api/agent-review'),
+  ]);
+  renderAgentEditReport(await editRes.json());
+  renderAgentReviewReport(await reviewRes.json());
+}
 
 async function loadOutputs() {
   const res = await fetch('/api/outputs');
@@ -225,9 +274,110 @@ $('publish-btn').addEventListener('click', async () => {
   es.onerror = () => es.close();
 });
 
+// --- trailer ----------------------------------------------------------------
+function renderTrailerProjectOptions() {
+  const select = $('trailer-project');
+  select.innerHTML = '';
+  allProjects.forEach((p) => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${p.title} (${p.category})`;
+    select.appendChild(opt);
+  });
+}
+
+async function loadTrailerOutputs() {
+  const res = await fetch('/api/trailer-outputs');
+  const files = await res.json();
+  const video = files.find((f) => f.name === 'trailer-web.mp4');
+  if (video) {
+    $('trailer-preview').src = video.url;
+    $('trailer-preview').load();
+  }
+}
+
+$('trailer-render-btn').addEventListener('click', async () => {
+  const btn = $('trailer-render-btn');
+  const log = $('trailer-render-log');
+  const projectId = $('trailer-project').value;
+  if (!projectId) return;
+  btn.disabled = true;
+  log.textContent = '';
+  const res = await fetch('/api/render-trailer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ projectId }),
+  });
+  if (!res.ok) {
+    log.textContent = 'Render request rejected (invalid project?).';
+    btn.disabled = false;
+    return;
+  }
+  const { jobId } = await res.json();
+  const es = new EventSource(`/api/render/stream?jobId=${jobId}`);
+  es.onmessage = (evt) => {
+    const data = JSON.parse(evt.data);
+    if (data.type === 'log') {
+      log.textContent += data.text;
+      log.scrollTop = log.scrollHeight;
+    } else if (data.type === 'finish') {
+      es.close();
+      btn.disabled = false;
+      if (data.status === 'done') loadTrailerOutputs();
+    }
+  };
+  es.onerror = () => { es.close(); btn.disabled = false; };
+});
+
+$('trailer-publish-check-btn').addEventListener('click', async () => {
+  const res = await fetch('/api/publish/preview');
+  const { statusPorcelain } = await res.json();
+  $('trailer-publish-preview').textContent = statusPorcelain?.trim()
+    ? statusPorcelain
+    : '(no uncommitted local changes — nothing would be discarded)';
+  $('trailer-publish-confirm-wrap').classList.remove('hidden');
+  $('trailer-publish-btn').classList.remove('hidden');
+});
+
+$('trailer-publish-confirm').addEventListener('change', (e) => {
+  $('trailer-publish-btn').disabled = !e.target.checked;
+});
+
+$('trailer-publish-btn').addEventListener('click', async () => {
+  const btn = $('trailer-publish-btn');
+  const log = $('trailer-publish-log');
+  const projectId = $('trailer-project').value;
+  btn.disabled = true;
+  log.textContent = '';
+  const res = await fetch('/api/publish-trailer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ confirm: true, projectId }),
+  });
+  if (!res.ok) {
+    log.textContent = 'Publish request rejected.';
+    return;
+  }
+  const { jobId } = await res.json();
+  const es = new EventSource(`/api/publish-trailer/stream?jobId=${jobId}`);
+  es.onmessage = (evt) => {
+    const data = JSON.parse(evt.data);
+    if (data.type === 'log') {
+      log.textContent += data.text;
+      log.scrollTop = log.scrollHeight;
+    } else if (data.type === 'finish') {
+      es.close();
+    }
+  };
+  es.onerror = () => es.close();
+});
+
 (async function init() {
   await loadReelConfig();
   await loadTracks();
   await loadRenderSettings();
   await loadOutputs();
+  await loadAgentReports();
+  renderTrailerProjectOptions();
+  await loadTrailerOutputs();
 })();

@@ -6,18 +6,24 @@
   "scripts": {
     "dev": "remotion studio src/index.jsx",
     "fetch-stats": "node scripts/fetch-live-stats.mjs",
+    "agent-edit": "node scripts/agent-edit.mjs",
     "select-score": "node scripts/select-score.mjs",
+    "agent-review": "node scripts/agent-review.mjs",
     "render": "remotion render src/index.jsx HighlightsReel out/highlights.mp4 --hardware-acceleration=if-possible"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@remotion/google-fonts": "^4.0.487",
     "@remotion/media-utils": "^4.0.487",
     "@remotion/motion-blur": "^4.0.487",
     "@remotion/noise": "^4.0.487",
+    "@remotion/three": "^4.0.487",
     "@remotion/transitions": "^4.0.487",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "remotion": "^4.0.487"
+    "remotion": "^4.0.487",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@remotion/cli": "^4.0.487",

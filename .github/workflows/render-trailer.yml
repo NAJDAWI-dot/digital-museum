@@ -13,13 +13,13 @@ on:
         type: string
 
 permissions:
-  contents: write
-  actions: write
+  contents: read
 
-# Shares the render-highlights group: every workflow that commits binaries
-# to main must be serialized against the others, or two runs race to push
-# conflicting binary blobs (the exact failure the reel pipeline hit before
-# adopting this group).
+# This job no longer commits or pushes anything (publishing moved to a
+# manual Control Station step — see the note at the end of the job below),
+# but still shares the render-highlights group: two heavy renders on the
+# same self-hosted machine shouldn't run concurrently and trample each
+# other's remotion/out/ files and GPU.
 concurrency:
   group: render-highlights
   cancel-in-progress: false
@@ -65,32 +65,16 @@ jobs:
             --props="{\"projectId\":\"${{ inputs.project_id }}\"}"
           node scripts/web-encode.mjs out/trailer.mp4 out/trailer-web.mp4
 
-      - name: Publish trailer
-        shell: 'C:\PROGRA~1\Git\usr\bin\bash.exe -e -o pipefail {0}'
-        run: |
-          set -eo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Archive trailer
+        uses: actions/upload-artifact@v4
+        with:
+          name: trailer-${{ inputs.project_id }}
+          path: remotion/out/trailer.mp4
+          retention-days: 90
 
-          git fetch origin main
-          git reset --hard origin/main
-
-          mkdir -p public/trailers
-          cp remotion/out/trailer-web.mp4 "public/trailers/${{ inputs.project_id }}.mp4"
-          git add "public/trailers/${{ inputs.project_id }}.mp4"
-          if ! git diff --cached --quiet; then
-            git commit -m "chore: render trailer for ${{ inputs.project_id }}"
-            git push origin HEAD:main
-            NEW_SHA=$(git rev-parse HEAD)
-
-            # Same GITHUB_TOKEN/anti-loop + ref-propagation dance as
-            # render-highlights.yml — see the comments there.
-            for i in $(seq 1 15); do
-              REMOTE_SHA=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)
-              if [ "$REMOTE_SHA" = "$NEW_SHA" ]; then break; fi
-              sleep 2
-            done
-            gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref main
-          fi
-        env:
-          GH_TOKEN: ${{ github.token }}
+      # This job intentionally stops here — it no longer auto-publishes.
+      # remotion/control-station now has a matching "Project Trailer"
+      # section (Render + Publish Trailer) — since the self-hosted runner
+      # is the same PC Control Station runs on, out/trailer-web.mp4 is
+      # already sitting there. Open Control Station, pick this project,
+      # preview, and hit Publish Trailer when ready.

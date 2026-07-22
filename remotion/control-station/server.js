@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
 import {
@@ -11,7 +11,7 @@ import {
   listTracks, listProjects,
 } from './lib/config.mjs';
 import { runSequence, jobs } from './lib/runScript.mjs';
-import { publish, previewDiscard } from './lib/gitPublish.mjs';
+import { publish, publishTrailer, previewDiscard } from './lib/gitPublish.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REMOTION_DIR = join(__dirname, '..');
@@ -74,13 +74,51 @@ app.post('/api/render', (req, res) => {
   if (settings.concurrency) renderFlags.push(`--concurrency=${settings.concurrency}`);
 
   const steps = [
+    // Materializes any freshly-added base64 screenshots to real files first —
+    // CI always runs this before rendering; the control station previously
+    // assumed it had already happened, which the "editing agent" step below
+    // can't rely on since it reads cover images straight off disk.
+    { cmd: 'node', args: ['scripts/extract-images.mjs'], cwd: SITE_DIR },
     { cmd: 'node', args: ['scripts/fetch-live-stats.mjs'], cwd: REMOTION_DIR },
+    // The editing agent runs BEFORE select-score so it can pin a track by
+    // writing reel-config.json — select-score.mjs picks that up through its
+    // existing pinned-track path with no changes needed there. See
+    // scripts/agent-edit.mjs for what it decides and how it fails safe.
+    { cmd: 'node', args: ['scripts/agent-edit.mjs'], cwd: REMOTION_DIR },
     { cmd: 'node', args: ['scripts/select-score.mjs'], cwd: REMOTION_DIR },
     { cmd: 'npx', args: ['remotion', 'render', 'src/index.jsx', 'HighlightsReel', 'out/highlights.mp4', ...renderFlags], cwd: REMOTION_DIR },
     { cmd: 'npx', args: ['remotion', 'render', 'src/index.jsx', 'HighlightsReelVertical', 'out/highlights-vertical.mp4', ...renderFlags], cwd: REMOTION_DIR },
     { cmd: 'npx', args: ['remotion', 'still', 'src/index.jsx', 'HighlightsReel', 'out/highlights-poster.jpg', '--frame=80'], cwd: REMOTION_DIR },
     { cmd: 'node', args: ['scripts/web-encode.mjs', 'out/highlights.mp4', 'out/highlights-web.mp4'], cwd: REMOTION_DIR },
     { cmd: 'node', args: ['scripts/web-encode.mjs', 'out/highlights-vertical.mp4', 'out/highlights-vertical-web.mp4'], cwd: REMOTION_DIR },
+    // QA pass on the rendered master — advisory only, shown in the UI
+    // alongside the preview, never gates Publish. See scripts/agent-review.mjs.
+    { cmd: 'node', args: ['scripts/agent-review.mjs'], cwd: REMOTION_DIR },
+  ];
+  const job = runSequence(steps);
+  res.json({ jobId: job.id });
+});
+
+// Project ids are always plain alphanumeric (generated as `p${Date.now()}`
+// — see src/data/projects.js) and this value flows into a spawned command
+// line (shell:true on Windows, per runScript.mjs) as part of a --props JSON
+// string, so it's validated here before it ever reaches spawn — the same
+// guard gitPublish.mjs's publishTrailer applies before it becomes a
+// filesystem path.
+const SAFE_PROJECT_ID = /^[A-Za-z0-9_-]+$/;
+
+// --- render trailer ---------------------------------------------------------
+app.post('/api/render-trailer', (req, res) => {
+  const projectId = req.body?.projectId;
+  if (!projectId || !SAFE_PROJECT_ID.test(projectId)) {
+    return res.status(400).json({ error: 'invalid projectId' });
+  }
+  const propsJson = JSON.stringify({ projectId });
+  const steps = [
+    { cmd: 'node', args: ['scripts/extract-images.mjs'], cwd: SITE_DIR },
+    { cmd: 'node', args: ['scripts/select-score.mjs'], cwd: REMOTION_DIR },
+    { cmd: 'npx', args: ['remotion', 'render', 'src/index.jsx', 'ProjectTrailer', 'out/trailer.mp4', `--props=${propsJson}`], cwd: REMOTION_DIR },
+    { cmd: 'node', args: ['scripts/web-encode.mjs', 'out/trailer.mp4', 'out/trailer-web.mp4'], cwd: REMOTION_DIR },
   ];
   const job = runSequence(steps);
   res.json({ jobId: job.id });
@@ -139,10 +177,50 @@ app.get('/api/publish/stream', (req, res) => {
   streamJob(job, req, res);
 });
 
+app.post('/api/publish-trailer', (req, res) => {
+  const { confirm, projectId } = req.body || {};
+  if (confirm !== true) {
+    return res.status(400).json({ error: 'confirm:true is required' });
+  }
+  if (!projectId || !SAFE_PROJECT_ID.test(projectId)) {
+    return res.status(400).json({ error: 'invalid projectId' });
+  }
+  const job = publishTrailer({ confirm: true, projectId });
+  res.json({ jobId: job.id });
+});
+
+app.get('/api/publish-trailer/stream', (req, res) => {
+  const job = jobs.get(req.query.jobId);
+  if (!job) return res.status(404).end();
+  streamJob(job, req, res);
+});
+
 // --- output files ----------------------------------------------------------
 app.get('/api/outputs', (req, res) => {
   const files = ['highlights-web.mp4', 'highlights-vertical-web.mp4', 'highlights-poster.jpg'];
   res.json(files.filter((f) => existsSync(join(OUT_DIR, f))).map((f) => ({ name: f, url: `/out/${f}` })));
+});
+
+app.get('/api/trailer-outputs', (req, res) => {
+  const files = ['trailer-web.mp4'];
+  res.json(files.filter((f) => existsSync(join(OUT_DIR, f))).map((f) => ({ name: f, url: `/out/${f}` })));
+});
+
+// --- editing agent reports ---------------------------------------------
+function readJsonReport(name) {
+  const path = join(OUT_DIR, name);
+  if (!existsSync(path)) return { status: 'none' };
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'));
+  } catch {
+    return { status: 'none' };
+  }
+}
+app.get('/api/agent-edit', (req, res) => {
+  res.json(readJsonReport('agent-edit.json'));
+});
+app.get('/api/agent-review', (req, res) => {
+  res.json(readJsonReport('agent-review.json'));
 });
 
 const PORT = process.env.PORT || 4500;
