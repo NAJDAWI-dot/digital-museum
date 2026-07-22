@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { existsSync, readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
+import { networkInterfaces } from 'node:os';
 
 import {
   readReelConfig, writeReelConfig,
@@ -224,8 +225,14 @@ app.get('/api/agent-review', (req, res) => {
 });
 
 const PORT = process.env.PORT || 4500;
-// Localhost only, deliberately — this tool has no auth and can trigger a
-// git push to main, so it must never be reachable from the network.
-app.listen(PORT, '127.0.0.1', () => {
+// Bound to all interfaces (reachable from the local network), by explicit
+// choice — this tool still has NO authentication and can trigger a git push
+// to main, so anyone on this network/Wi-Fi can render and publish. Only do
+// this on a network you trust every device on.
+app.listen(PORT, '0.0.0.0', () => {
+  const lanIp = Object.values(networkInterfaces())
+    .flat()
+    .find((i) => i.family === 'IPv4' && !i.internal)?.address;
   console.log(`Reel control station: http://localhost:${PORT}`);
+  if (lanIp) console.log(`  also reachable on your network at: http://${lanIp}:${PORT}`);
 });
