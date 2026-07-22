@@ -33,13 +33,19 @@ export default function MediaUploader({
   value, onChange, label, folder, accept, extensions, maxSizeMB = 50, hint,
 }) {
   const inputRef = useRef(null);
+  const uploadingRef = useRef(false);
   const [dragging, setDragging] = useState(false);
   const [status, setStatus] = useState('idle'); // idle | uploading | error
   const [error, setError] = useState('');
 
   const upload = async (file) => {
-    setError('');
+    // Guards against re-entry from any call site (click, drag-drop, or the
+    // hidden file input) — a ref (not state) so the check is synchronous
+    // and can't be raced by a second drop landing before React re-renders.
+    if (uploadingRef.current) return;
     if (!file) return;
+
+    setError('');
 
     const ext = `.${file.name.split('.').pop().toLowerCase()}`;
     if (extensions && !extensions.includes(ext)) {
@@ -54,6 +60,7 @@ export default function MediaUploader({
     const supabase = getSupabaseClient();
     if (!supabase) { setError('Supabase is not configured.'); return; }
 
+    uploadingRef.current = true;
     setStatus('uploading');
     try {
       const path = `${folder}/${Date.now()}${ext}`;
@@ -64,15 +71,18 @@ export default function MediaUploader({
 
       // Best-effort: replacing a file removes the old one so the bucket
       // doesn't accumulate orphans. Never blocks the new upload from landing.
+      // Safe to read `value` here (not stale) since the re-entry guard above
+      // means only one upload() can be in flight at a time.
       if (value?.includes('/storage/v1/object/public/')) {
         const oldPath = pathFromPublicUrl(value);
         if (oldPath) supabase.storage.from(BUCKET).remove([oldPath]).catch(() => {});
       }
 
       onChange(data.publicUrl);
-      setStatus('idle');
     } catch (e) {
       setError(e.message || 'Upload failed.');
+    } finally {
+      uploadingRef.current = false;
       setStatus('idle');
     }
   };

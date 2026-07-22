@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://najdawi-dot.github.io/digital-museum/sitemap.xml

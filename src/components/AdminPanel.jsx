@@ -51,6 +51,7 @@ function LoginForm({ onLogin }) {
         <p className="section-label" style={{ marginBottom: '2rem' }}>Editor Access</p>
         <h2 className="admin-login-title serif">Enter your<br /><em>password</em></h2>
         <form onSubmit={submit} className="admin-login-form">
+          <label htmlFor="admin-password" className="sr-only">Password</label>
           <input
             id="admin-password"
             type="password"
@@ -805,7 +806,8 @@ export default function AdminPanel() {
     testimonials, updateTestimonials,
     volunteering, updateVolunteering,
     githubToken, setGithubToken,
-    goatcounterApiToken, setGoatcounterApiToken
+    goatcounterApiToken, setGoatcounterApiToken,
+    syncError
   } = useMuseum();
 
   const [localEditing, setLocalEditing] = useState(null);
@@ -880,10 +882,12 @@ export default function AdminPanel() {
                     <button className={`admin-reset-btn mono ${activeView === 'settings' ? 'active' : ''}`} onClick={() => setActiveView('settings')}>
                       ⚙ Settings
                     </button>
-                    <input 
-                      type="password" 
-                      placeholder="GitHub PAT (for auto-sync)" 
-                      className="admin-input mono" 
+                    <label htmlFor="admin-github-pat" className="sr-only">GitHub Personal Access Token (for auto-sync)</label>
+                    <input
+                      id="admin-github-pat"
+                      type="password"
+                      placeholder="GitHub PAT (for auto-sync)"
+                      className="admin-input mono"
                       style={{ width: '220px', height: '28px', fontSize: '0.65rem', margin: 0, padding: '0 0.5rem', background: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.1)' }}
                       value={githubToken}
                       onChange={(e) => setGithubToken(e.target.value)}
@@ -928,6 +932,13 @@ export default function AdminPanel() {
                 Not publishing: edits are saved in this browser only. Paste your
                 GitHub PAT above to push them to the live site — unpublished
                 drafts are discarded after the next deploy.
+              </div>
+            )}
+
+            {isAdmin && githubToken && syncError && (
+              <div className="admin-sync-warning mono" role="alert">
+                Publish failed: {syncError} Your edit is still saved in this
+                browser — try again, or re-check your GitHub PAT above.
               </div>
             )}
 

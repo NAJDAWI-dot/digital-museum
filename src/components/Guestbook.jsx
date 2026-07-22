@@ -110,9 +110,22 @@ export default function Guestbook() {
         'postgres_changes',
         { event: '*', schema: 'public', table: TABLE, filter: 'approved=eq.true' },
         (payload) => {
+          // DELETE payloads carry `old`, not `new` — moderating an entry
+          // away (delete, or un-approve) must remove it live rather than
+          // crash trying to read `.id` off an undefined `new`.
+          if (payload.eventType === 'DELETE') {
+            const oldId = payload.old?.id;
+            if (oldId == null) return;
+            setEntries((prev) => prev.filter((e) => e.id !== oldId));
+            return;
+          }
+          const row = payload.new;
+          if (!row) return;
           setEntries((prev) => {
-            if (prev.some((e) => e.id === payload.new.id)) return prev;
-            return [payload.new, ...prev];
+            if (prev.some((e) => e.id === row.id)) {
+              return prev.map((e) => (e.id === row.id ? row : e));
+            }
+            return [row, ...prev];
           });
         }
       )
@@ -188,14 +201,18 @@ export default function Guestbook() {
                   </div>
                 ) : (
                   <form onSubmit={post}>
+                    <label htmlFor="guestbook-name" className="sr-only">{t('gb.nameLabel')}</label>
                     <input
+                      id="guestbook-name"
                       className="guestbook-name-input mono"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder={t('gb.namePlaceholder')}
                       maxLength={80}
                     />
+                    <label htmlFor="guestbook-message" className="sr-only">{t('gb.noteLabel')}</label>
                     <textarea
+                      id="guestbook-message"
                       className="guestbook-input mono"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}

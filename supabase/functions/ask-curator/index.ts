@@ -10,7 +10,8 @@
 //   npx supabase secrets set TURNSTILE_SECRET_KEY=0x...
 //   npx supabase functions deploy ask-curator --no-verify-jwt
 //
-// Run supabase/migrations/curator_rate_limit.sql once before deploying.
+// Run supabase/migrations/curator_rate_limit.sql and
+// curator_rate_limit_atomic.sql (in that order) once before deploying.
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -139,73 +140,118 @@ Deno.serve(async (req) => {
     'Content-Type': 'application/json',
   };
 
-  // Daily ceiling — protects against a traffic spike blowing past Gemini's
-  // free-tier rate limits, regardless of any single session's behavior.
-  const todayStart = new Date();
-  todayStart.setUTCHours(0, 0, 0, 0);
-  const dailyCountRes = await fetch(
-    `${supabaseUrl}/rest/v1/curator_requests?select=id&created_at=gte.${todayStart.toISOString()}`,
-    { headers: { ...sbHeaders, Prefer: 'count=exact', Range: '0-0' } }
-  );
-  const dailyCount = Number(dailyCountRes.headers.get('content-range')?.split('/')[1] || '0');
-  if (dailyCount >= DAILY_CEILING) {
+  // Atomically checks the daily ceiling and per-session sliding window and,
+  // if both pass, reserves this request's slot by inserting its row —
+  // check-and-insert happen inside one Postgres transaction under an
+  // advisory lock (see curator_rate_limit_atomic.sql), so concurrent
+  // requests from the same session (or a traffic spike) can't each read
+  // the same pre-request count and all pass, overshooting the limits. The
+  // reservation is made BEFORE the Gemini call and deleted below if that
+  // call fails, so the ledger still reflects real usage, not just attempts.
+  let reserveRes: Response;
+  try {
+    reserveRes = await fetch(`${supabaseUrl}/rest/v1/rpc/reserve_curator_request`, {
+      method: 'POST',
+      headers: sbHeaders,
+      body: JSON.stringify({
+        p_session_key: sessionKey,
+        p_daily_ceiling: DAILY_CEILING,
+        p_session_limit: PER_SESSION_LIMIT,
+        p_window_minutes: PER_SESSION_WINDOW_MINUTES,
+      }),
+    });
+  } catch {
+    return new Response(JSON.stringify({ error: 'Curator is temporarily unavailable — please try again shortly.' }), {
+      status: 503,
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    });
+  }
+  if (!reserveRes.ok) {
+    // Fail CLOSED: if the rate-limit check itself can't be evaluated, don't
+    // silently treat that as "no prior requests" and let the call through.
+    const detail = await reserveRes.text().catch(() => '');
+    return new Response(
+      JSON.stringify({ error: 'Curator is temporarily unavailable — please try again shortly.', detail: detail.slice(0, 300) }),
+      { status: 503, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+    );
+  }
+  const reservationId = Number(await reserveRes.json().catch(() => null));
+  if (!Number.isFinite(reservationId)) {
+    return new Response(JSON.stringify({ error: 'Curator is temporarily unavailable — please try again shortly.' }), {
+      status: 503,
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    });
+  }
+  if (reservationId === -1) {
     return new Response(JSON.stringify({ error: 'The curator is resting for today — please try again tomorrow.' }), {
       status: 429,
       headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
     });
   }
-
-  // Per-session sliding window.
-  const windowStart = new Date(Date.now() - PER_SESSION_WINDOW_MINUTES * 60_000);
-  const sessionCountRes = await fetch(
-    `${supabaseUrl}/rest/v1/curator_requests?select=id&session_key=eq.${encodeURIComponent(sessionKey)}&created_at=gte.${windowStart.toISOString()}`,
-    { headers: { ...sbHeaders, Prefer: 'count=exact', Range: '0-0' } }
-  );
-  const sessionCount = Number(sessionCountRes.headers.get('content-range')?.split('/')[1] || '0');
-  if (sessionCount >= PER_SESSION_LIMIT) {
+  if (reservationId === -2) {
     return new Response(JSON.stringify({ error: "The curator's taking a short break — try again in a few minutes." }), {
       status: 429,
       headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
     });
   }
 
+  // From here on, any failure must release the reservation so a rejected
+  // question doesn't count against the visitor's (or the site's) limit.
+  const releaseReservation = () =>
+    fetch(`${supabaseUrl}/rest/v1/curator_requests?id=eq.${reservationId}`, {
+      method: 'DELETE',
+      headers: sbHeaders,
+    }).catch(() => {});
+
   let project;
   try {
     project = await fetchProject(projectId);
   } catch (e) {
+    await releaseReservation();
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 502,
       headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
     });
   }
   if (!project) {
+    await releaseReservation();
     return new Response(JSON.stringify({ error: 'Unknown project' }), {
       status: 404,
       headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
     });
   }
 
-  const upstream = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
-    {
-      method: 'POST',
-      headers: {
-        'x-goog-api-key': geminiKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: buildSystemPrompt(project) }] },
-        contents: [{ role: 'user', parts: [{ text: question }] }],
-        // thinkingBudget: 0 — this is a short grounded-facts Q&A, not a
-        // reasoning task; disabling the model's default "thinking" keeps
-        // answers fast and avoids burning the token budget on internal
-        // deliberation instead of the visible answer.
-        generationConfig: { maxOutputTokens: MAX_TOKENS, thinkingConfig: { thinkingBudget: 0 } },
-      }),
-    }
-  );
+  let upstream: Response;
+  try {
+    upstream = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+      {
+        method: 'POST',
+        headers: {
+          'x-goog-api-key': geminiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: buildSystemPrompt(project) }] },
+          contents: [{ role: 'user', parts: [{ text: question }] }],
+          // thinkingBudget: 0 — this is a short grounded-facts Q&A, not a
+          // reasoning task; disabling the model's default "thinking" keeps
+          // answers fast and avoids burning the token budget on internal
+          // deliberation instead of the visible answer.
+          generationConfig: { maxOutputTokens: MAX_TOKENS, thinkingConfig: { thinkingBudget: 0 } },
+        }),
+      }
+    );
+  } catch {
+    await releaseReservation();
+    return new Response(JSON.stringify({ error: 'Curator request failed to reach the model — please try again.' }), {
+      status: 502,
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    });
+  }
 
   if (!upstream.ok) {
+    await releaseReservation();
     const detail = await upstream.text().catch(() => '');
     return new Response(
       JSON.stringify({ error: `Curator request failed (HTTP ${upstream.status})`, detail: detail.slice(0, 500) }),
@@ -213,17 +259,12 @@ Deno.serve(async (req) => {
     );
   }
 
-  const json = await upstream.json();
-  const parts = json.candidates?.[0]?.content?.parts || [];
+  const json = await upstream.json().catch(() => null);
+  const parts = json?.candidates?.[0]?.content?.parts || [];
   const answer = parts.map((p: { text?: string }) => p.text || '').join('').trim();
 
-  // Only logged on success, so the ledger tracks real spend, not rejections.
-  await fetch(`${supabaseUrl}/rest/v1/curator_requests`, {
-    method: 'POST',
-    headers: sbHeaders,
-    body: JSON.stringify({ session_key: sessionKey }),
-  }).catch(() => {});
-
+  // Reservation already recorded this request when the slot was reserved
+  // above — nothing further to insert on success.
   return new Response(JSON.stringify({ answer }), {
     headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
   });
