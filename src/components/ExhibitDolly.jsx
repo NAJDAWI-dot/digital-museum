@@ -13,6 +13,17 @@ const BAYS = [
   { z: -1260, x: 0, rotate: 0 },
 ];
 
+// Same corridor, compressed for narrow viewports — the desktop x-offsets
+// (±230px) would push a bay almost entirely off-canvas on a ~375px phone,
+// so this keeps the "walk past alternating bays" feel at a scale that
+// actually fits, rather than hiding the section outright.
+const BAYS_NARROW = [
+  { z: 0, x: 0, rotate: 0 },
+  { z: -280, x: -55, rotate: 16 },
+  { z: -560, x: 55, rotate: -16 },
+  { z: -840, x: 0, rotate: 0 },
+];
+
 // A dedicated scroll-through moment: the section is tall enough to hold a
 // long scroll (one screen per bay), and the viewport pins in place while a
 // single translateZ on the whole "world" moves the camera forward through
