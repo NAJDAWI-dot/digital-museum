@@ -2,26 +2,19 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset } from '../lib/assets';
+import ExhibitCarouselMobile from './ExhibitCarouselMobile';
 import './ExhibitDolly.css';
 
 // Where each bay sits in 3D space, alternating left/right down a corridor
 // so the camera dolly reads as a real walk rather than a straight tunnel.
+// Desktop only — mobile renders ExhibitCarouselMobile instead (sticky +
+// preserve-3d + continuously scroll-linked large 3D transforms is a known
+// bad combination on mobile browsers; confirmed broken on real devices).
 const BAYS = [
   { z: 0, x: 0, rotate: 0 },
   { z: -420, x: -230, rotate: 26 },
   { z: -840, x: 230, rotate: -26 },
   { z: -1260, x: 0, rotate: 0 },
-];
-
-// Same corridor, compressed for narrow viewports — the desktop x-offsets
-// (±230px) would push a bay almost entirely off-canvas on a ~375px phone,
-// so this keeps the "walk past alternating bays" feel at a scale that
-// actually fits, rather than hiding the section outright.
-const BAYS_NARROW = [
-  { z: 0, x: 0, rotate: 0 },
-  { z: -280, x: -55, rotate: 16 },
-  { z: -560, x: 55, rotate: -16 },
-  { z: -840, x: 0, rotate: 0 },
 ];
 
 // A dedicated scroll-through moment: the section is tall enough to hold a
@@ -33,6 +26,8 @@ export default function ExhibitDolly() {
   const bays = projects.slice(0, BAYS.length);
   const sectionRef = useRef(null);
 
+  // useScroll must run unconditionally (rules of hooks) even though its
+  // result is unused on the mobile path below.
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end end'],
@@ -42,17 +37,19 @@ export default function ExhibitDolly() {
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Same breakpoint the CSS reduced-motion/layout rules already use — below
-  // it the corridor runs the compressed BAYS_NARROW geometry instead of
-  // being hidden outright.
   const isNarrow =
     typeof window !== 'undefined' &&
     window.matchMedia('(max-width: 768px)').matches;
 
-  const bayGeometry = isNarrow ? BAYS_NARROW : BAYS;
-  const worldZ = useTransform(scrollYProgress, [0, 1], [0, reducedMotion ? 0 : isNarrow ? 900 : 1500]);
+  const worldZ = useTransform(scrollYProgress, [0, 1], [0, reducedMotion ? 0 : 1500]);
 
   if (bays.length === 0) return null;
+
+  // Mobile: a completely separate, non-scroll-linked component. Desktop
+  // path below this line is unchanged from before mobile support existed.
+  if (isNarrow) {
+    return <ExhibitCarouselMobile projects={bays} />;
+  }
 
   return (
     <section
@@ -63,7 +60,7 @@ export default function ExhibitDolly() {
       <div className="exhibit-dolly-viewport">
         <motion.div className="exhibit-dolly-world" style={{ translateZ: worldZ }}>
           {bays.map((project, i) => {
-            const b = bayGeometry[i % bayGeometry.length];
+            const b = BAYS[i % BAYS.length];
             return (
               <div
                 key={project.id || i}

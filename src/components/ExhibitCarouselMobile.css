@@ -1,0 +1,133 @@
+.exhibit-carousel-mobile {
+  position: relative;
+  padding: 4rem 0 3rem;
+  background: radial-gradient(ellipse 70% 60% at 50% 32%, rgba(201, 169, 110, 0.07), var(--ink) 72%);
+  overflow: hidden;
+}
+
+.ecm-viewport {
+  position: relative;
+  height: 62vh;
+  max-height: 480px;
+  /* Scoped to this single non-sticky viewport — the same "perspective on a
+     normal-flow element" pattern already proven fine in ProjectCard.jsx's
+     desktop tilt effect. No position: sticky, no shared preserve-3d parent. */
+  perspective: 900px;
+}
+
+.ecm-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(300px, 74vw);
+  height: min(320px, 50vh);
+  margin: calc(min(320px, 50vh) / -2) 0 0 calc(min(300px, 74vw) / -2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--ink-light);
+  box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.7);
+  touch-action: pan-y; /* let vertical page scroll pass through; only
+                           horizontal drag is captured by Framer Motion */
+  cursor: grab;
+}
+.ecm-card.is-neighbor {
+  touch-action: auto;
+  cursor: pointer;
+}
+.ecm-card.is-current:active {
+  cursor: grabbing;
+}
+
+.ecm-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(0.9) brightness(0.75);
+  pointer-events: none;
+}
+
+.ecm-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(13, 13, 13, 0.92) 100%);
+  pointer-events: none;
+}
+
+.ecm-cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  pointer-events: none;
+}
+.ecm-cap .mono {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.ecm-cap h3 {
+  margin: 0;
+  font-weight: 400;
+  font-size: 1.05rem;
+  color: var(--linen);
+  letter-spacing: -0.01em;
+}
+
+.ecm-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+.ecm-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 0;
+  transition: background 0.2s, transform 0.2s;
+}
+.ecm-dot.is-active {
+  background: var(--gold);
+  transform: scale(1.4);
+}
+
+.ecm-hint {
+  text-align: center;
+  margin-top: 0.9rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dust);
+  opacity: 0.7;
+}
+
+/* Plain static stack for prefers-reduced-motion — rendered by a distinct
+   JSX branch in ExhibitCarouselMobile.jsx (no draggable/motion cards). */
+.exhibit-carousel-mobile.ecm-static {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 3rem 0;
+}
+.ecm-static-card {
+  position: relative;
+  width: min(320px, 78vw);
+  height: min(280px, 42vh);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--ink-light);
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.6);
+}
