@@ -94,7 +94,16 @@
 }
 
 @media (max-width: 768px) {
-  .exhibit-dolly { display: none; } /* corridor 3D depth doesn't translate to a narrow viewport */
+  /* Same corridor, not hidden — ExhibitDolly.jsx swaps in BAYS_NARROW
+     (compressed x-offset/rotate/z) below this breakpoint so panels stay
+     on-canvas instead of pushed off-screen by the desktop ±230px offsets. */
+  .exhibit-dolly-panel {
+    width: min(280px, 78vw);
+    height: min(210px, 34vh);
+    margin: calc(min(210px, 34vh) / -2) 0 0 calc(min(280px, 78vw) / -2);
+  }
+  .exhibit-dolly-cap { padding: 1.1rem 1.25rem; }
+  .exhibit-dolly-cap h3 { font-size: 1.05rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

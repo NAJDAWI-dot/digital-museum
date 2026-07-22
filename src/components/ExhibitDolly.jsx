@@ -31,7 +31,15 @@ export default function ExhibitDolly() {
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const worldZ = useTransform(scrollYProgress, [0, 1], [0, reducedMotion ? 0 : 1500]);
+  // Same breakpoint the CSS reduced-motion/layout rules already use — below
+  // it the corridor runs the compressed BAYS_NARROW geometry instead of
+  // being hidden outright.
+  const isNarrow =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(max-width: 768px)').matches;
+
+  const bayGeometry = isNarrow ? BAYS_NARROW : BAYS;
+  const worldZ = useTransform(scrollYProgress, [0, 1], [0, reducedMotion ? 0 : isNarrow ? 900 : 1500]);
 
   if (bays.length === 0) return null;
 
@@ -44,7 +52,7 @@ export default function ExhibitDolly() {
       <div className="exhibit-dolly-viewport">
         <motion.div className="exhibit-dolly-world" style={{ translateZ: worldZ }}>
           {bays.map((project, i) => {
-            const b = BAYS[i % BAYS.length];
+            const b = bayGeometry[i % bayGeometry.length];
             return (
               <div
                 key={project.id || i}
