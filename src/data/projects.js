@@ -1498,7 +1498,8 @@ export const INITIAL_PROJECTS = [
         "start": 38.081,
         "end": 38.963
       }
-    ]
+    ],
+    "model": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/models/1785087515954.stl"
   },
   {
     "title": "Sudra سُدرة",
