@@ -11,13 +11,31 @@ const REDUCED = () =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function centerAndScale(object3D, THREE) {
+  // Scale first, then measure and center — centering at scale 1 and scaling
+  // afterward multiplies the (pre-scale) centering offset by the scale
+  // factor too, since scale is applied around the object's local origin,
+  // not its geometric center. That leaves the model way off-origin for any
+  // scale factor far from 1 (which is the common case: raw STL/3MF units
+  // rarely match the 2-unit target diameter here).
+  const rawBox = new THREE.Box3().setFromObject(object3D);
+  const rawSize = rawBox.getSize(new THREE.Vector3());
+  const maxDim = Math.max(rawSize.x, rawSize.y, rawSize.z) || 1;
+  object3D.scale.setScalar(2 / maxDim);
+
+  const scaledBox = new THREE.Box3().setFromObject(object3D);
+  object3D.position.sub(scaledBox.getCenter(new THREE.Vector3()));
+}
+
+// Frames the (already centered/normalized) object so it fills a consistent
+// portion of the view regardless of its actual proportions — rather than a
+// fixed camera distance, which looks "too far away" for slim/flat models.
+function frame(object3D, camera, THREE) {
   const box = new THREE.Box3().setFromObject(object3D);
-  const size = box.getSize(new THREE.Vector3());
-  const center = box.getCenter(new THREE.Vector3());
-  object3D.position.sub(center);
-  const maxDim = Math.max(size.x, size.y, size.z) || 1;
-  const scale = 2 / maxDim;
-  object3D.scale.setScalar(scale);
+  const sphere = box.getBoundingSphere(new THREE.Sphere());
+  const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
+  const distance = (sphere.radius / Math.sin(halfFov)) * 1.35;
+  camera.position.set(0, sphere.radius * 0.35, distance);
+  camera.lookAt(0, 0, 0);
 }
 
 export default function MeshViewer({ src, ext, label }) {
@@ -39,7 +57,6 @@ export default function MeshViewer({ src, ext, label }) {
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
-      camera.position.set(0, 0.6, 3.2);
 
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -64,6 +81,10 @@ export default function MeshViewer({ src, ext, label }) {
           const geometry = await new STLLoader().loadAsync(url);
           geometry.computeVertexNormals();
           mesh = new THREE.Mesh(geometry, material);
+          // STL carries no orientation metadata; most STLs (CAD/slicer
+          // exports) are authored Z-up, while three.js is Y-up — without
+          // this the model renders lying on its side / upside down.
+          mesh.rotation.x = -Math.PI / 2;
         } else {
           const { ThreeMFLoader } = await import('three/examples/jsm/loaders/3MFLoader.js');
           const object = await new ThreeMFLoader().loadAsync(url);
@@ -80,6 +101,7 @@ export default function MeshViewer({ src, ext, label }) {
 
       centerAndScale(mesh, THREE);
       scene.add(mesh);
+      frame(mesh, camera, THREE);
 
       controls = new OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
