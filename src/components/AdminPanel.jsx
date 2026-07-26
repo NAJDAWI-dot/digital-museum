@@ -317,12 +317,12 @@ function ProjectForm({ project, onSave, onCancel, voiceId }) {
               <div className="form-group">
                 <MediaUploader
                   label="3D Model"
-                  hint="the Maquette, .glb"
+                  hint="the Maquette, .glb, .stl, or .3mf"
                   value={form.model || ''}
                   onChange={v => set('model', v)}
                   folder="models"
-                  accept=".glb"
-                  extensions={['.glb']}
+                  accept=".glb,.stl,.3mf"
+                  extensions={['.glb', '.stl', '.3mf']}
                   maxSizeMB={50}
                 />
               </div>

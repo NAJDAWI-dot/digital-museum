@@ -1,29 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { resolveAsset } from '../lib/assets';
+import MeshViewer from './MeshViewer';
 import './ModelViewer.css';
 
-// The Maquette: an interactive 3D scale model of the project on its plinth,
-// rendered by <model-viewer> (a web component). The ~100KB library loads
-// only when a project that has a model is actually opened — projects
-// without one never pay for it. AR ("view in your space") comes free on
-// phones that support it.
+// The Maquette: an interactive 3D scale model of the project on its plinth.
+// glTF/GLB is rendered by <model-viewer> (a web component, ~100KB, loaded
+// only when a project that has a model is actually opened). STL and 3MF
+// carry geometry only (no <model-viewer> support), so those fall back to
+// MeshViewer, a plain three.js scene. AR ("view in your space") is only
+// available for glTF/GLB.
 
 const REDUCED = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export default function ModelViewer({ src, poster, label }) {
+  const clean = (src || '').split(/[?#]/)[0];
+  const ext = `.${clean.split('.').pop().toLowerCase()}`;
+  const isMesh = ext === '.stl' || ext === '.3mf';
+
   const [ready, setReady] = useState(() => Boolean(customElements.get('model-viewer')));
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    if (ready) return;
+    if (isMesh || ready) return;
     let cancelled = false;
     import('@google/model-viewer')
       .then(() => { if (!cancelled) setReady(true); })
       .catch(() => { if (!cancelled) setFailed(true); });
     return () => { cancelled = true; };
-  }, [ready]);
+  }, [isMesh, ready]);
+
+  if (isMesh) return <MeshViewer src={src} ext={ext} label={label} />;
 
   if (failed) return null; // the section simply doesn't render — never an error state for visitors
 
