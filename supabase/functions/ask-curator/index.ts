@@ -20,7 +20,13 @@ const CORS_HEADERS = {
 };
 
 const MAX_QUESTION_CHARS = 500;
-const MAX_TOKENS = 300;
+// Generous headroom, not the visible-answer length target: Gemini 3's
+// default thinking level is HIGH, and thinking tokens are drawn from this
+// same maxOutputTokens budget rather than a separate pool. At 300 the
+// hidden reasoning alone was consuming nearly the whole budget, leaving the
+// visible answer short and often cut off mid-sentence. The system prompt
+// below is still what actually constrains answers to 2-3 sentences.
+const MAX_TOKENS = 2048;
 const PER_SESSION_LIMIT = 8;
 const PER_SESSION_WINDOW_MINUTES = 10;
 const DAILY_CEILING = 500;
@@ -234,11 +240,16 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: buildSystemPrompt(project) }] },
           contents: [{ role: 'user', parts: [{ text: question }] }],
-          // thinkingBudget: 0 — this is a short grounded-facts Q&A, not a
-          // reasoning task; disabling the model's default "thinking" keeps
-          // answers fast and avoids burning the token budget on internal
-          // deliberation instead of the visible answer.
-          generationConfig: { maxOutputTokens: MAX_TOKENS, thinkingConfig: { thinkingBudget: 0 } },
+          // No thinkingConfig here on purpose: its shape isn't stable across
+          // model generations (Gemini 2.5 takes a numeric thinkingBudget,
+          // Gemini 3.x takes a thinkingLevel enum instead, and a 2.5-style
+          // thinkingBudget: 0 — "fully disable" — is rejected outright by
+          // 3.x models with a 400 INVALID_ARGUMENT, since 3.x can't fully
+          // disable thinking). MODEL below is the rolling "-latest" alias
+          // specifically so it never needs chasing model retirements; a
+          // hardcoded thinkingConfig would silently break every time that
+          // alias crosses a generation boundary, exactly as it just did.
+          generationConfig: { maxOutputTokens: MAX_TOKENS },
         }),
       }
     );
