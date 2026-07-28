@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Audio, staticFile, interpolate } from 'remotion';
+import { AbsoluteFill, Audio, staticFile, interpolate, Easing } from 'remotion';
 import { TransitionSeries, linearTiming, springTiming } from '@remotion/transitions';
 import { fade } from '@remotion/transitions/fade';
 import { slide } from '@remotion/transitions/slide';
@@ -29,40 +29,53 @@ import { EDL } from './edl.js';
 // the single most noticeable "default template" tell in the previous cut.
 // crossZoom is left on linearTiming since its own strength curve already
 // reads as an eased transition on its own.
-const TRANSITION_PRESENTATIONS = {
-  dissolve: (frames) => (
-    <TransitionSeries.Transition
-      presentation={fade()}
-      timing={springTiming({ config: { damping: 200, stiffness: 90 }, durationInFrames: frames })}
-    />
-  ),
-  slideUp: (frames) => (
-    <TransitionSeries.Transition
-      presentation={slide({ direction: 'from-bottom' })}
-      timing={springTiming({ config: { damping: 26, mass: 0.6 }, durationInFrames: frames })}
-    />
-  ),
-  wipe: (frames) => (
-    <TransitionSeries.Transition
-      presentation={wipe({ direction: 'from-right' })}
-      timing={springTiming({ config: { damping: 22, mass: 0.7 }, durationInFrames: frames })}
-    />
-  ),
-  crossZoom: (frames) => (
-    <TransitionSeries.Transition
-      presentation={crossZoom({ strength: 0.45 })}
-      timing={linearTiming({ durationInFrames: frames })}
-    />
-  ),
+const PRESENTATIONS = {
+  dissolve: () => fade(),
+  slideUp: () => slide({ direction: 'from-bottom' }),
+  wipe: () => wipe({ direction: 'from-right' }),
+  crossZoom: () => crossZoom({ strength: 0.45 }),
 };
+
+// Spring configs, used when the cut is not locked to the music. Spring timing
+// eases in and out like a real edit rather than holding constant velocity —
+// the single most noticeable "default template" tell in the original cut.
+const SPRING_CONFIGS = {
+  dissolve: { damping: 200, stiffness: 90 },
+  slideUp: { damping: 26, mass: 0.6 },
+  wipe: { damping: 22, mass: 0.7 },
+};
+
+/** Timing for one transition.
+ *
+ * When the EDL is beat-locked, the snapping placed each transition so that
+ * its MIDPOINT — the frame a viewer actually perceives the change on — lands
+ * on a bar line. That reasoning only holds for a timing function whose
+ * progress is linear in time. A spring is not half-way through at half its
+ * duration, so a spring dissolve would perceptibly change somewhere other
+ * than where the grid says, and the alignment would be a claim rather than a
+ * fact. Eased linear timing keeps the shape without moving the midpoint.
+ *
+ * crossZoom is always linear: its own strength curve already reads as eased. */
+function timingFor(type, frames, beatLocked) {
+  if (type === 'crossZoom' || beatLocked) {
+    return linearTiming({ durationInFrames: frames, easing: Easing.inOut(Easing.cubic) });
+  }
+  return springTiming({ config: SPRING_CONFIGS[type] ?? SPRING_CONFIGS.dissolve, durationInFrames: frames });
+}
 
 /** A missing/unknown transition is a hard cut: TransitionSeries renders two
  * adjacent Sequences with nothing between them as exactly that. */
-function transitionElement(spec, key) {
+function transitionElement(spec, key, beatLocked) {
   if (!spec) return null;
-  const make = TRANSITION_PRESENTATIONS[spec.type];
-  if (!make) return null;
-  return React.cloneElement(make(spec.durationInFrames), { key });
+  const presentation = PRESENTATIONS[spec.type];
+  if (!presentation) return null;
+  return (
+    <TransitionSeries.Transition
+      key={key}
+      presentation={presentation()}
+      timing={timingFor(spec.type, spec.durationInFrames, beatLocked)}
+    />
+  );
 }
 
 /** Which component renders each section, and what it needs from the data.
@@ -117,7 +130,7 @@ export default function HighlightsReel({ data }) {
           drops the nulls, so a section with no transitionIn is a hard cut. */}
       <TransitionSeries>
         {EDL.sections.flatMap((section, i) => [
-          transitionElement(section.transitionIn, `t${i}`),
+          transitionElement(section.transitionIn, `t${i}`, EDL.mode === 'beat-locked'),
           <TransitionSeries.Sequence key={`s${i}`} durationInFrames={section.durationInFrames}>
             {SECTION_COMPONENTS[section.component]?.(data) ?? null}
           </TransitionSeries.Sequence>,

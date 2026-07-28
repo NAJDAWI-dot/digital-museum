@@ -84,6 +84,24 @@ if (existsSync(AUDIO_PATH)) {
   notes.push('no theme.mp3 yet — skipping the audio-length check (run select-score first)');
 }
 
+// If the EDL claims to be beat-locked, hold it to that. A cut that has
+// quietly stopped landing on the grid still renders fine and still says
+// "beat-locked" in the logs, so this is the only thing that would notice.
+if (edl.mode === 'beat-locked') {
+  const errors = edl.snapErrorFrames ?? [];
+  const max = edl.maxSnapErrorFrames;
+  if (!errors.length) {
+    problems.push('mode is beat-locked but no snap errors were recorded');
+  } else if (max == null || max > 1) {
+    problems.push(
+      `mode is beat-locked but a cut sits ${max} frames off the nearest bar ` +
+      `(per-boundary: ${JSON.stringify(errors)})`
+    );
+  } else {
+    notes.push(`beat-locked: all ${errors.length} cuts land within ${max} frame(s) of a bar line`);
+  }
+}
+
 for (const n of notes) console.log(`[verify-edl] ${n}`);
 
 if (problems.length > 0) {

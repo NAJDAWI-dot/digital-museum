@@ -11,7 +11,7 @@
 // would have rendered anyway. Same philosophy as agent-edit.mjs.
 //
 // Usage: node scripts/build-edl.mjs
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { reelData } from '../src/data.js';
@@ -20,16 +20,33 @@ import renderSettings from '../render-settings.json' with { type: 'json' };
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const EDL_PATH = join(__dirname, '..', 'edl.json');
+const BEAT_MAP_PATH = join(__dirname, '..', 'beat-map.json');
+
+/** The beat map is optional by design. Without it the cut is still built,
+ * just not locked to anything — which is the same outcome as a track whose
+ * analysis came back unusable. */
+function loadBeatMap() {
+  if (!existsSync(BEAT_MAP_PATH)) return null;
+  try {
+    return JSON.parse(readFileSync(BEAT_MAP_PATH, 'utf8'));
+  } catch (err) {
+    console.warn(`[build-edl] ignoring unreadable beat-map.json: ${err.message}`);
+    return null;
+  }
+}
 
 function write(edl) {
   writeFileSync(EDL_PATH, JSON.stringify(edl, null, 2) + '\n');
 }
 
-/** A fresh seed per render, unless one is pinned. `--seed=12345` (or
- * REEL_SEED) replays a previous cut exactly — which is the point of seeding
- * rather than calling Math.random(): the number lands in edl.json, so any
- * render can be reproduced from the artifact it produced. */
-function resolveSeed() {
+/** One seed per render, shared with select-score.
+ *
+ * select-score runs first and records the seed it used in beat-map.json, so
+ * taking it from there means a single number reproduces the whole render —
+ * the track, the window, the section order and the transitions. Two
+ * independent seeds would make "replay this cut" only half true. An explicit
+ * --seed still wins, for deliberately re-cutting the same music. */
+function resolveSeed(beatMap) {
   const fromArg = process.argv.find(a => a.startsWith('--seed='))?.slice('--seed='.length);
   const raw = fromArg ?? process.env.REEL_SEED;
   if (raw != null && raw !== '') {
@@ -37,16 +54,18 @@ function resolveSeed() {
     if (Number.isFinite(parsed)) return Math.floor(parsed) >>> 0;
     console.warn(`[build-edl] ignoring unparseable seed "${raw}"`);
   }
+  if (Number.isFinite(beatMap?.seed)) return beatMap.seed >>> 0;
   return (Date.now() ^ (Math.random() * 0xffffffff)) >>> 0;
 }
 
 async function main() {
   const fps = renderSettings.fps ?? 60;
-  const seed = resolveSeed();
+  const beatMapEarly = loadBeatMap();
+  const seed = resolveSeed(beatMapEarly);
   // 'varied' rather than 'fixed': the section order, section lengths and
   // transitions are chosen per render from this seed. The fallback path
   // (no seed) still produces the original fixed cut.
-  const edl = buildFallbackEdl(reelData, { fps, mode: 'varied', seed });
+  const edl = buildFallbackEdl(reelData, { fps, mode: 'varied', seed, beatMap: beatMapEarly });
 
   // Validate what we just produced rather than trusting it. If the builder
   // itself is wrong, that is exactly the case where writing the file anyway
@@ -68,6 +87,14 @@ async function main() {
     `(${(edl.totalFrames / fps).toFixed(1)}s @ ${fps}fps), mode=${edl.mode}, seed=${edl.seed}`
   );
   console.log(`[build-edl] ${secs}`);
+  if (edl.music) {
+    const err = edl.maxSnapErrorFrames;
+    const tempo = Number.isFinite(edl.music.bpm) ? `@ ${edl.music.bpm.toFixed(2)}bpm ` : '';
+    console.log(
+      `[build-edl] music: ${edl.music.track} ${tempo}(quality=${edl.music.quality})` +
+      (err == null ? ', not beat-locked' : `, cuts land within ${err} frame(s) of a bar line`)
+    );
+  }
   console.log(`[build-edl] replay this cut with: npm run build-edl -- --seed=${edl.seed}`);
 }
 

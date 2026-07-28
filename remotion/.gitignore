@@ -1,2 +1,7 @@
 node_modules
 out
+
+# Per-render artifact: select-score.mjs writes it, build-edl.mjs reads it.
+# Unlike edl.json (which webpack imports at bundle time and so must exist in a
+# fresh clone) nothing needs this committed, and it would churn every render.
+beat-map.json

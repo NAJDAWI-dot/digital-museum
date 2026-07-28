@@ -1,9 +1,24 @@
 {
   "version": 1,
   "fps": 60,
-  "mode": "varied",
-  "seed": 2507062997,
-  "totalFrames": 3532,
+  "mode": "beat-locked",
+  "seed": 909,
+  "music": {
+    "track": "trailer-score-room-epic-cinematic-thriller-538890.mp3",
+    "bpm": 90,
+    "barSeconds": 2.666674,
+    "quality": "high",
+    "syncOffsetSeconds": 0.0054
+  },
+  "snapErrorFrames": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "maxSnapErrorFrames": 0,
+  "totalFrames": 3520,
   "contentHash": "b7e066f6-110",
   "audio": {
     "src": "audio/theme.mp3"
@@ -13,17 +28,17 @@
       "id": "title",
       "component": "TitleSlide",
       "startFrame": 0,
-      "durationInFrames": 180,
+      "durationInFrames": 169,
       "transitionIn": null
     },
     {
       "id": "montage",
       "component": "ProjectsMontage",
-      "startFrame": 166,
-      "durationInFrames": 2520,
+      "startFrame": 153,
+      "durationInFrames": 2416,
       "transitionIn": {
-        "type": "dissolve",
-        "durationInFrames": 14
+        "type": "crossZoom",
+        "durationInFrames": 16
       },
       "shots": [
         {
@@ -32,136 +47,136 @@
           "src": "images/x-e65b085b4214.jpg",
           "shotIndexInProject": 0,
           "startFrame": 0,
-          "durationInFrames": 210
+          "durationInFrames": 202
         },
         {
           "index": 1,
           "projectId": "p1783455970646",
           "src": "images/x-b6da9363bac3.jpg",
           "shotIndexInProject": 1,
-          "startFrame": 210,
-          "durationInFrames": 210
+          "startFrame": 202,
+          "durationInFrames": 202
         },
         {
           "index": 2,
           "projectId": "p1782929859694",
           "src": "images/p1782929859694-cover.jpg",
           "shotIndexInProject": 0,
-          "startFrame": 420,
-          "durationInFrames": 210
+          "startFrame": 404,
+          "durationInFrames": 202
         },
         {
           "index": 3,
           "projectId": "p1782929859694",
           "src": "images/p1782929859694-shot-1.jpg",
           "shotIndexInProject": 1,
-          "startFrame": 630,
-          "durationInFrames": 210
+          "startFrame": 606,
+          "durationInFrames": 202
         },
         {
           "index": 4,
           "projectId": "p1782930214093",
           "src": "images/p1782930214093-cover.jpg",
           "shotIndexInProject": 0,
-          "startFrame": 840,
-          "durationInFrames": 210
+          "startFrame": 808,
+          "durationInFrames": 201
         },
         {
           "index": 5,
           "projectId": "p1782930214093",
           "src": "images/p1782930214093-shot-1.jpg",
           "shotIndexInProject": 1,
-          "startFrame": 1050,
-          "durationInFrames": 210
+          "startFrame": 1009,
+          "durationInFrames": 201
         },
         {
           "index": 6,
           "projectId": "p1784452155058",
           "src": "images/x-0a36d9dec2ad.jpg",
           "shotIndexInProject": 0,
-          "startFrame": 1260,
-          "durationInFrames": 210
+          "startFrame": 1210,
+          "durationInFrames": 201
         },
         {
           "index": 7,
           "projectId": "p1784452155058",
           "src": "images/x-af9e2c2d00a7.jpg",
           "shotIndexInProject": 1,
-          "startFrame": 1470,
-          "durationInFrames": 210
+          "startFrame": 1411,
+          "durationInFrames": 201
         },
         {
           "index": 8,
           "projectId": "p1782929034421",
           "src": "images/p1782929034421-cover.jpg",
           "shotIndexInProject": 0,
-          "startFrame": 1680,
-          "durationInFrames": 210
+          "startFrame": 1612,
+          "durationInFrames": 201
         },
         {
           "index": 9,
           "projectId": "p1782929034421",
           "src": "images/p1782929034421-shot-1.jpg",
           "shotIndexInProject": 1,
-          "startFrame": 1890,
-          "durationInFrames": 210
+          "startFrame": 1813,
+          "durationInFrames": 201
         },
         {
           "index": 10,
           "projectId": "p1782928799984",
           "src": "images/p1782928799984-cover.jpg",
           "shotIndexInProject": 0,
-          "startFrame": 2100,
-          "durationInFrames": 210
+          "startFrame": 2014,
+          "durationInFrames": 201
         },
         {
           "index": 11,
           "projectId": "p1782928799984",
           "src": "images/p1782928799984-shot-1.jpg",
           "shotIndexInProject": 1,
-          "startFrame": 2310,
-          "durationInFrames": 210
+          "startFrame": 2215,
+          "durationInFrames": 201
         }
       ]
     },
     {
       "id": "stats",
       "component": "StatsSlide",
-      "startFrame": 2664,
-      "durationInFrames": 255,
+      "startFrame": 2553,
+      "durationInFrames": 337,
       "transitionIn": {
-        "type": "crossZoom",
-        "durationInFrames": 22
+        "type": "dissolve",
+        "durationInFrames": 16
       }
     },
     {
       "id": "timeline",
       "component": "TimelineMontage",
-      "startFrame": 2905,
-      "durationInFrames": 222,
+      "startFrame": 2871,
+      "durationInFrames": 336,
       "transitionIn": {
-        "type": "dissolve",
-        "durationInFrames": 14
+        "type": "slideUp",
+        "durationInFrames": 19
       }
     },
     {
       "id": "volunteering",
       "component": "VolunteeringSlide",
-      "startFrame": 3110,
-      "durationInFrames": 200,
+      "startFrame": 3192,
+      "durationInFrames": 179,
       "transitionIn": {
-        "type": "slideUp",
-        "durationInFrames": 17
+        "type": "dissolve",
+        "durationInFrames": 15
       }
     },
     {
       "id": "endCard",
       "component": "EndCard",
-      "startFrame": 3292,
-      "durationInFrames": 240,
+      "startFrame": 3350,
+      "durationInFrames": 170,
       "transitionIn": {
         "type": "crossZoom",
-        "durationInFrames": 18
+        "durationInFrames": 21
       }
     }
   ]

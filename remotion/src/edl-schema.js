@@ -16,6 +16,7 @@ import {
   PROJECTS_MONTAGE_SHOT_FRAMES,
 } from './reel-timing.js';
 import { varySections, restack, variedTransitionFrames } from './edl-variation.js';
+import { snapSectionsToGrid, snapReport } from './edl-snap.js';
 
 export const EDL_VERSION = 1;
 
@@ -46,13 +47,45 @@ export function hashContent(data) {
  * deliberately the *current* behaviour rather than a degraded version of it:
  * if analysis fails, or an EDL is stale or malformed, the reel that renders
  * is exactly the one that would have rendered anyway. */
-export function buildFallbackEdl(data, { fps = 60, mode = 'fallback-fixed', seed = null } = {}) {
-  const base = seed == null
+export function buildFallbackEdl(data, {
+  fps = 60,
+  mode = 'fallback-fixed',
+  seed = null,
+  beatMap = null,
+} = {}) {
+  let base = seed == null
     ? buildSectionList(data)
     : restack(varySections(buildSectionList(data), {
       seed,
       transitionFramesFor: variedTransitionFrames,
     }));
+
+  // Beat-locking, when the music analysis is good enough to support it.
+  //
+  // The governing asymmetry: a dissolve landing 200ms off reads as fine, a
+  // hard cut landing 200ms off reads as broken. So low confidence softens
+  // the edit rather than merely loosening the snap — see the level checks
+  // in edl-variation and the transition palette.
+  let snap = null;
+  const level = beatMap?.quality?.level;
+  if (beatMap && (level === 'high' || level === 'medium')) {
+    const naturalTotal = base.reduce(
+      (t, s) => t + s.frames - transitionFrames(s.transitionIn),
+      0,
+    );
+    const target = beatMap.reelSeconds
+      ? Math.round(beatMap.reelSeconds * fps)
+      : naturalTotal;
+    snap = snapSectionsToGrid(base, {
+      beatMap,
+      fps,
+      totalFrames: target,
+      // A phrase is only a stronger seam if we can reach it; on a medium
+      // grid keep boundaries closer to where taste put them.
+      maxDriftBars: level === 'high' ? 1 : 0.5,
+    });
+    if (snap.snapped) base = snap.sections;
+  }
 
   const sections = base.map(section => {
     const entry = {
@@ -63,16 +96,32 @@ export function buildFallbackEdl(data, { fps = 60, mode = 'fallback-fixed', seed
       transitionIn: section.transitionIn,
     };
     if (section.id === 'montage') {
-      entry.shots = buildMontageShots(data);
+      entry.shots = buildMontageShots(data, { totalFrames: section.frames });
     }
     return entry;
   });
 
+  const report = beatMap && snap?.snapped ? snapReport(base, beatMap, fps) : null;
+
   return {
     version: EDL_VERSION,
     fps,
-    mode,
+    mode: snap?.snapped ? 'beat-locked' : mode,
     seed,
+    music: beatMap
+      ? {
+        track: beatMap.source?.track ?? null,
+        bpm: beatMap.tempo?.bpm ?? null,
+        barSeconds: beatMap.tempo?.barSeconds ?? null,
+        quality: beatMap.quality?.level ?? 'none',
+        syncOffsetSeconds: beatMap.syncOffsetSeconds ?? 0,
+      }
+      : null,
+    // How far each perceived cut sits from its nearest bar line. Worth
+    // watching over time: if it creeps up, the edit has quietly stopped
+    // being locked to anything.
+    snapErrorFrames: report ? report.errors : null,
+    maxSnapErrorFrames: report ? report.max : null,
     // Derived from the sections actually emitted, not recomputed from the
     // data — with variation applied these differ, and the renderer must be
     // sized to what it will really play.
@@ -89,16 +138,35 @@ export function buildFallbackEdl(data, { fps = 60, mode = 'fallback-fixed', seed
 /** Montage shots at the fixed dwell time. Shot startFrames are montage-local
  * (frame 0 is the section's own frame 0), because that is what
  * useCurrentFrame() reports inside the Sequence. */
-export function buildMontageShots(data) {
+export function buildMontageShots(data, { totalFrames = null } = {}) {
   const shots = buildProjectShotList(data.showcaseProjects, data.photosPerProject);
-  return shots.map((shot, index) => ({
-    index,
-    projectId: shot.project?.id ?? null,
-    src: shot.src,
-    shotIndexInProject: shot.shotIndexInProject,
-    startFrame: index * PROJECTS_MONTAGE_SHOT_FRAMES,
-    durationInFrames: PROJECTS_MONTAGE_SHOT_FRAMES,
-  }));
+  if (shots.length === 0) return [];
+
+  // Shots must tile the section exactly — the montage's length is set by
+  // beat-snapping and by section jitter, not by the shot count, so an
+  // even split of the real duration is what fills it. Any remainder goes to
+  // the earliest shots a frame at a time, which is imperceptible and keeps
+  // the arithmetic exact rather than approximately right.
+  const span = totalFrames ?? shots.length * PROJECTS_MONTAGE_SHOT_FRAMES;
+  const base = Math.floor(span / shots.length);
+  let remainder = span - base * shots.length;
+
+  let cursor = 0;
+  return shots.map((shot, index) => {
+    const extra = remainder > 0 ? 1 : 0;
+    remainder -= extra;
+    const durationInFrames = base + extra;
+    const entry = {
+      index,
+      projectId: shot.project?.id ?? null,
+      src: shot.src,
+      shotIndexInProject: shot.shotIndexInProject,
+      startFrame: cursor,
+      durationInFrames,
+    };
+    cursor += durationInFrames;
+    return entry;
+  });
 }
 
 /** Structural validation. Returns the EDL if it is internally consistent and
