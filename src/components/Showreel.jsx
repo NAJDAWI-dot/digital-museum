@@ -52,16 +52,21 @@ export default function Showreel() {
           </h2>
 
           <Shine className="showreel-shine">
-            <div className="showreel-card" onClick={() => setReelOpen(true)} data-cursor>
+            <div className="showreel-card" data-cursor>
               <div
                 className="showreel-card-media"
                 style={{ backgroundImage: `url(${resolveAsset('highlights-poster.jpg')})` }}
               >
-                <div className="showreel-play-btn">
+                <button
+                  type="button"
+                  className="showreel-play-btn"
+                  aria-label={t('hero.highlights')}
+                  onClick={() => setReelOpen(true)}
+                >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--gold-light)">
                     <path d="M8 5v14l11-7z" />
                   </svg>
-                </div>
+                </button>
                 <div className="showreel-card-foot">
                   <span className="serif showreel-card-label">{t('hero.highlights')}</span>
                   {duration && <span className="mono showreel-card-duration">{duration}</span>}
