@@ -8,6 +8,7 @@
     "fetch-stats": "node scripts/fetch-live-stats.mjs",
     "agent-edit": "node scripts/agent-edit.mjs",
     "select-score": "node scripts/select-score.mjs",
+    "analyze-music": "node scripts/analyze-music.mjs",
     "build-edl": "node scripts/build-edl.mjs",
     "verify-edl": "node scripts/verify-edl.mjs",
     "agent-review": "node scripts/agent-review.mjs",
