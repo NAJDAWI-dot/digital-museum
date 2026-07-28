@@ -46,8 +46,20 @@ export function buildProjectShotList(projects, photosPerProject = 3) {
   return shots;
 }
 
-/** The ordered section list for a dataset, each entry carrying the length of
- * the transition that plays *into* it and its absolute start frame.
+/** The transition vocabulary. These are symbols, not presentations: the
+ * composition owns what each one actually looks like, so a transition can be
+ * retuned (or beat-locked) without regenerating anything downstream. `null`
+ * means a hard cut — TransitionSeries renders two adjacent Sequences with no
+ * Transition between them as exactly that, so a cut costs nothing. */
+export const TRANSITIONS = {
+  dissolve: { type: 'dissolve', durationInFrames: FADE_FRAMES },
+  slideUp: { type: 'slideUp', durationInFrames: SLIDE_FRAMES },
+  wipe: { type: 'wipe', durationInFrames: WIPE_FRAMES },
+  crossZoom: { type: 'crossZoom', durationInFrames: CROSSZOOM_FRAMES },
+};
+
+/** The ordered section list for a dataset, each entry carrying the transition
+ * that plays *into* it and its absolute start frame.
  *
  * startFrame follows TransitionSeries' own accounting: a transition overlaps
  * the two sequences it sits between, so each section starts at
@@ -59,29 +71,37 @@ export function buildSectionList(data) {
   const shots = buildProjectShotList(data.showcaseProjects, data.photosPerProject);
 
   const sections = [
-    { id: 'title', frames: TITLE_FRAMES, transitionIn: 0 },
-    { id: 'montage', frames: shots.length * PROJECTS_MONTAGE_SHOT_FRAMES, transitionIn: FADE_FRAMES },
-    { id: 'stats', frames: STATS_FRAMES, transitionIn: CROSSZOOM_FRAMES },
+    { id: 'title', component: 'TitleSlide', frames: TITLE_FRAMES, transitionIn: null },
+    { id: 'montage', component: 'ProjectsMontage', frames: shots.length * PROJECTS_MONTAGE_SHOT_FRAMES, transitionIn: TRANSITIONS.dissolve },
+    { id: 'stats', component: 'StatsSlide', frames: STATS_FRAMES, transitionIn: TRANSITIONS.crossZoom },
   ];
-  if (data.showTimeline) sections.push({ id: 'timeline', frames: TIMELINE_FRAMES, transitionIn: FADE_FRAMES });
-  if (data.showVolunteering) sections.push({ id: 'volunteering', frames: VOLUNTEERING_FRAMES, transitionIn: SLIDE_FRAMES });
-  if (data.showTestimonial) sections.push({ id: 'testimonial', frames: TESTIMONIAL_FRAMES, transitionIn: FADE_FRAMES });
-  sections.push({ id: 'guestbook', frames: GUESTBOOK_FRAMES, transitionIn: WIPE_FRAMES });
-  sections.push({ id: 'endCard', frames: END_CARD_FRAMES, transitionIn: FADE_FRAMES });
+  if (data.showTimeline) sections.push({ id: 'timeline', component: 'TimelineMontage', frames: TIMELINE_FRAMES, transitionIn: TRANSITIONS.dissolve });
+  if (data.showVolunteering) sections.push({ id: 'volunteering', component: 'VolunteeringSlide', frames: VOLUNTEERING_FRAMES, transitionIn: TRANSITIONS.slideUp });
+  if (data.showTestimonial) sections.push({ id: 'testimonial', component: 'TestimonialSlide', frames: TESTIMONIAL_FRAMES, transitionIn: TRANSITIONS.dissolve });
+  sections.push({ id: 'guestbook', component: 'GuestbookSlide', frames: GUESTBOOK_FRAMES, transitionIn: TRANSITIONS.wipe });
+  sections.push({ id: 'endCard', component: 'EndCard', frames: END_CARD_FRAMES, transitionIn: TRANSITIONS.dissolve });
 
   let cursor = 0;
   for (const section of sections) {
-    cursor -= section.transitionIn;
+    cursor -= transitionFrames(section.transitionIn);
     section.startFrame = cursor;
     cursor += section.frames;
   }
   return sections;
 }
 
+/** A hard cut (null) contributes no overlap. */
+export function transitionFrames(transition) {
+  return transition ? transition.durationInFrames : 0;
+}
+
 /** Total duration for a dataset — used by Root.jsx to size the Composition
  * before render, since frame count depends on how much content exists. */
 export function calculateTotalFrames(data) {
-  return buildSectionList(data).reduce((total, s) => total + s.frames - s.transitionIn, 0);
+  return buildSectionList(data).reduce(
+    (total, s) => total + s.frames - transitionFrames(s.transitionIn),
+    0,
+  );
 }
 
 /** Wall-clock length of the reel, for sizing the score against it. */

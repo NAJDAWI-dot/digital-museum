@@ -18,34 +18,82 @@ import TestimonialSlide from './slides/TestimonialSlide.jsx';
 import GuestbookSlide from './slides/GuestbookSlide.jsx';
 import EndCard from './slides/EndCard.jsx';
 
-import {
-  FADE_FRAMES,
-  SLIDE_FRAMES,
-  WIPE_FRAMES,
-  CROSSZOOM_FRAMES,
-  TITLE_FRAMES,
-  STATS_FRAMES,
-  TIMELINE_FRAMES,
-  VOLUNTEERING_FRAMES,
-  TESTIMONIAL_FRAMES,
-  GUESTBOOK_FRAMES,
-  END_CARD_FRAMES,
-} from './durations.js';
-import {
-  buildProjectShotList,
-  PROJECTS_MONTAGE_SHOT_FRAMES,
-  calculateTotalFrames,
-} from './reel-timing.js';
+import { EDL } from './edl.js';
 
+// What each transition symbol in the EDL actually looks like. The EDL names a
+// type and a length; everything about the appearance lives here, so a
+// transition can be retuned without regenerating a single EDL.
+//
 // Spring-based timing (rather than linear) so every cut eases in/out like a
 // real edit instead of holding constant velocity for its whole duration —
 // the single most noticeable "default template" tell in the previous cut.
 // crossZoom is left on linearTiming since its own strength curve already
 // reads as an eased transition on its own.
-const T_FADE = <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200, stiffness: 90 }, durationInFrames: FADE_FRAMES })} />;
-const T_SLIDE_UP = <TransitionSeries.Transition presentation={slide({ direction: 'from-bottom' })} timing={springTiming({ config: { damping: 26, mass: 0.6 }, durationInFrames: SLIDE_FRAMES })} />;
-const T_WIPE = <TransitionSeries.Transition presentation={wipe({ direction: 'from-right' })} timing={springTiming({ config: { damping: 22, mass: 0.7 }, durationInFrames: WIPE_FRAMES })} />;
-const T_CROSSZOOM = <TransitionSeries.Transition presentation={crossZoom({ strength: 0.45 })} timing={linearTiming({ durationInFrames: CROSSZOOM_FRAMES })} />;
+const TRANSITION_PRESENTATIONS = {
+  dissolve: (frames) => (
+    <TransitionSeries.Transition
+      presentation={fade()}
+      timing={springTiming({ config: { damping: 200, stiffness: 90 }, durationInFrames: frames })}
+    />
+  ),
+  slideUp: (frames) => (
+    <TransitionSeries.Transition
+      presentation={slide({ direction: 'from-bottom' })}
+      timing={springTiming({ config: { damping: 26, mass: 0.6 }, durationInFrames: frames })}
+    />
+  ),
+  wipe: (frames) => (
+    <TransitionSeries.Transition
+      presentation={wipe({ direction: 'from-right' })}
+      timing={springTiming({ config: { damping: 22, mass: 0.7 }, durationInFrames: frames })}
+    />
+  ),
+  crossZoom: (frames) => (
+    <TransitionSeries.Transition
+      presentation={crossZoom({ strength: 0.45 })}
+      timing={linearTiming({ durationInFrames: frames })}
+    />
+  ),
+};
+
+/** A missing/unknown transition is a hard cut: TransitionSeries renders two
+ * adjacent Sequences with nothing between them as exactly that. */
+function transitionElement(spec, key) {
+  if (!spec) return null;
+  const make = TRANSITION_PRESENTATIONS[spec.type];
+  if (!make) return null;
+  return React.cloneElement(make(spec.durationInFrames), { key });
+}
+
+/** Which component renders each section, and what it needs from the data.
+ * Adding a section to the EDL without adding it here renders nothing rather
+ * than crashing — a missing slide is recoverable, a thrown render is not. */
+const SECTION_COMPONENTS = {
+  TitleSlide: (data) => <TitleSlide siteName={data.siteName} projectCount={data.projectCount} />,
+  ProjectsMontage: (data) => (
+    <ProjectsMontage projects={data.showcaseProjects} photosPerProject={data.photosPerProject} />
+  ),
+  StatsSlide: (data) => (
+    <StatsSlide
+      projectCount={data.projectCount}
+      categoryCount={data.categoryCount}
+      timelineCount={data.timelineCount}
+    />
+  ),
+  TimelineMontage: (data) => <TimelineMontage timeline={data.timeline} />,
+  VolunteeringSlide: (data) => (
+    <VolunteeringSlide
+      photos={data.volunteeringPhotos}
+      count={data.volunteeringCount}
+      orgCount={data.volunteeringOrgCount}
+    />
+  ),
+  TestimonialSlide: (data) => <TestimonialSlide testimonial={data.featuredTestimonial} />,
+  GuestbookSlide: (data) => (
+    <GuestbookSlide count={data.guestbookCount} names={data.guestbookNames} quote={data.guestbookQuotes[0]} />
+  ),
+  EndCard: (data) => <EndCard ownerName={data.ownerName} totalLikes={data.totalLikes} />,
+};
 
 /** Fades the score in/out against the ACTUAL video length (which varies
  * with content), with a slow breathing tremolo throughout — done here
@@ -59,73 +107,21 @@ function scoreVolume(frame, totalFrames) {
 }
 
 export default function HighlightsReel({ data }) {
-  const totalFrames = calculateTotalFrames(data);
   const format = useFormat();
-  const projectShots = buildProjectShotList(data.showcaseProjects, data.photosPerProject);
 
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
-      <Audio src={staticFile('audio/theme.mp3')} volume={(f) => scoreVolume(f, totalFrames)} />
+      <Audio src={staticFile('audio/theme.mp3')} volume={(f) => scoreVolume(f, EDL.totalFrames)} />
 
+      {/* The cut comes from the EDL, not from this file. flattenChildren
+          drops the nulls, so a section with no transitionIn is a hard cut. */}
       <TransitionSeries>
-        <TransitionSeries.Sequence durationInFrames={TITLE_FRAMES}>
-          <TitleSlide siteName={data.siteName} projectCount={data.projectCount} />
-        </TransitionSeries.Sequence>
-
-        {T_FADE}
-
-        <TransitionSeries.Sequence durationInFrames={projectShots.length * PROJECTS_MONTAGE_SHOT_FRAMES}>
-          <ProjectsMontage projects={data.showcaseProjects} photosPerProject={data.photosPerProject} />
-        </TransitionSeries.Sequence>
-
-        {T_CROSSZOOM}
-
-        <TransitionSeries.Sequence durationInFrames={STATS_FRAMES}>
-          <StatsSlide projectCount={data.projectCount} categoryCount={data.categoryCount} timelineCount={data.timelineCount} />
-        </TransitionSeries.Sequence>
-
-        {data.showTimeline && (
-          <>
-            {T_FADE}
-            <TransitionSeries.Sequence durationInFrames={TIMELINE_FRAMES}>
-              <TimelineMontage timeline={data.timeline} />
-            </TransitionSeries.Sequence>
-          </>
-        )}
-
-        {data.showVolunteering && (
-          <>
-            {T_SLIDE_UP}
-            <TransitionSeries.Sequence durationInFrames={VOLUNTEERING_FRAMES}>
-              <VolunteeringSlide
-                photos={data.volunteeringPhotos}
-                count={data.volunteeringCount}
-                orgCount={data.volunteeringOrgCount}
-              />
-            </TransitionSeries.Sequence>
-          </>
-        )}
-
-        {data.showTestimonial && (
-          <>
-            {T_FADE}
-            <TransitionSeries.Sequence durationInFrames={TESTIMONIAL_FRAMES}>
-              <TestimonialSlide testimonial={data.featuredTestimonial} />
-            </TransitionSeries.Sequence>
-          </>
-        )}
-
-        {T_WIPE}
-
-        <TransitionSeries.Sequence durationInFrames={GUESTBOOK_FRAMES}>
-          <GuestbookSlide count={data.guestbookCount} names={data.guestbookNames} quote={data.guestbookQuotes[0]} />
-        </TransitionSeries.Sequence>
-
-        {T_FADE}
-
-        <TransitionSeries.Sequence durationInFrames={END_CARD_FRAMES}>
-          <EndCard ownerName={data.ownerName} totalLikes={data.totalLikes} />
-        </TransitionSeries.Sequence>
+        {EDL.sections.flatMap((section, i) => [
+          transitionElement(section.transitionIn, `t${i}`),
+          <TransitionSeries.Sequence key={`s${i}`} durationInFrames={section.durationInFrames}>
+            {SECTION_COMPONENTS[section.component]?.(data) ?? null}
+          </TransitionSeries.Sequence>,
+        ])}
       </TransitionSeries>
 
       <FilmGrain />

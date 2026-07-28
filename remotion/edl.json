@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "fps": 60,
+  "mode": "fixed",
+  "totalFrames": 3824,
+  "contentHash": "b7e066f6-110",
+  "audio": {
+    "src": "audio/theme.mp3"
+  },
+  "sections": [
+    {
+      "id": "title",
+      "component": "TitleSlide",
+      "startFrame": 0,
+      "durationInFrames": 180,
+      "transitionIn": null
+    },
+    {
+      "id": "montage",
+      "component": "ProjectsMontage",
+      "startFrame": 164,
+      "durationInFrames": 2520,
+      "transitionIn": {
+        "type": "dissolve",
+        "durationInFrames": 16
+      },
+      "shots": [
+        {
+          "index": 0,
+          "projectId": "p1783455970646",
+          "src": "images/x-e65b085b4214.jpg",
+          "shotIndexInProject": 0,
+          "startFrame": 0,
+          "durationInFrames": 210
+        },
+        {
+          "index": 1,
+          "projectId": "p1783455970646",
+          "src": "images/x-b6da9363bac3.jpg",
+          "shotIndexInProject": 1,
+          "startFrame": 210,
+          "durationInFrames": 210
+        },
+        {
+          "index": 2,
+          "projectId": "p1782929859694",
+          "src": "images/p1782929859694-cover.jpg",
+          "shotIndexInProject": 0,
+          "startFrame": 420,
+          "durationInFrames": 210
+        },
+        {
+          "index": 3,
+          "projectId": "p1782929859694",
+          "src": "images/p1782929859694-shot-1.jpg",
+          "shotIndexInProject": 1,
+          "startFrame": 630,
+          "durationInFrames": 210
+        },
+        {
+          "index": 4,
+          "projectId": "p1782930214093",
+          "src": "images/p1782930214093-cover.jpg",
+          "shotIndexInProject": 0,
+          "startFrame": 840,
+          "durationInFrames": 210
+        },
+        {
+          "index": 5,
+          "projectId": "p1782930214093",
+          "src": "images/p1782930214093-shot-1.jpg",
+          "shotIndexInProject": 1,
+          "startFrame": 1050,
+          "durationInFrames": 210
+        },
+        {
+          "index": 6,
+          "projectId": "p1784452155058",
+          "src": "images/x-0a36d9dec2ad.jpg",
+          "shotIndexInProject": 0,
+          "startFrame": 1260,
+          "durationInFrames": 210
+        },
+        {
+          "index": 7,
+          "projectId": "p1784452155058",
+          "src": "images/x-af9e2c2d00a7.jpg",
+          "shotIndexInProject": 1,
+          "startFrame": 1470,
+          "durationInFrames": 210
+        },
+        {
+          "index": 8,
+          "projectId": "p1782929034421",
+          "src": "images/p1782929034421-cover.jpg",
+          "shotIndexInProject": 0,
+          "startFrame": 1680,
+          "durationInFrames": 210
+        },
+        {
+          "index": 9,
+          "projectId": "p1782929034421",
+          "src": "images/p1782929034421-shot-1.jpg",
+          "shotIndexInProject": 1,
+          "startFrame": 1890,
+          "durationInFrames": 210
+        },
+        {
+          "index": 10,
+          "projectId": "p1782928799984",
+          "src": "images/p1782928799984-cover.jpg",
+          "shotIndexInProject": 0,
+          "startFrame": 2100,
+          "durationInFrames": 210
+        },
+        {
+          "index": 11,
+          "projectId": "p1782928799984",
+          "src": "images/p1782928799984-shot-1.jpg",
+          "shotIndexInProject": 1,
+          "startFrame": 2310,
+          "durationInFrames": 210
+        }
+      ]
+    },
+    {
+      "id": "stats",
+      "component": "StatsSlide",
+      "startFrame": 2664,
+      "durationInFrames": 240,
+      "transitionIn": {
+        "type": "crossZoom",
+        "durationInFrames": 20
+      }
+    },
+    {
+      "id": "timeline",
+      "component": "TimelineMontage",
+      "startFrame": 2888,
+      "durationInFrames": 240,
+      "transitionIn": {
+        "type": "dissolve",
+        "durationInFrames": 16
+      }
+    },
+    {
+      "id": "volunteering",
+      "component": "VolunteeringSlide",
+      "startFrame": 3110,
+      "durationInFrames": 210,
+      "transitionIn": {
+        "type": "slideUp",
+        "durationInFrames": 18
+      }
+    },
+    {
+      "id": "guestbook",
+      "component": "GuestbookSlide",
+      "startFrame": 3300,
+      "durationInFrames": 300,
+      "transitionIn": {
+        "type": "wipe",
+        "durationInFrames": 20
+      }
+    },
+    {
+      "id": "endCard",
+      "component": "EndCard",
+      "startFrame": 3584,
+      "durationInFrames": 240,
+      "transitionIn": {
+        "type": "dissolve",
+        "durationInFrames": 16
+      }
+    }
+  ]
+}

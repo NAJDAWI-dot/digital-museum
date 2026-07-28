@@ -87,6 +87,11 @@ app.post('/api/render', (req, res) => {
     // scripts/agent-edit.mjs for what it decides and how it fails safe.
     { cmd: 'node', args: ['scripts/agent-edit.mjs'], cwd: REMOTION_DIR },
     { cmd: 'node', args: ['scripts/select-score.mjs'], cwd: REMOTION_DIR },
+    // Decide the cut, then check it before spending a GPU render on it.
+    // verify-edl exits non-zero on a broken EDL, which stops the sequence
+    // here rather than after the render.
+    { cmd: 'node', args: ['scripts/build-edl.mjs'], cwd: REMOTION_DIR },
+    { cmd: 'node', args: ['scripts/verify-edl.mjs'], cwd: REMOTION_DIR },
     { cmd: 'npx', args: ['remotion', 'render', 'src/index.jsx', 'HighlightsReel', 'out/highlights.mp4', ...renderFlags], cwd: REMOTION_DIR },
     { cmd: 'npx', args: ['remotion', 'render', 'src/index.jsx', 'HighlightsReelVertical', 'out/highlights-vertical.mp4', ...renderFlags], cwd: REMOTION_DIR },
     { cmd: 'npx', args: ['remotion', 'still', 'src/index.jsx', 'HighlightsReel', 'out/highlights-poster.jpg', '--frame=80'], cwd: REMOTION_DIR },

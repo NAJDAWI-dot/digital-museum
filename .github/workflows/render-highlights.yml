@@ -102,6 +102,18 @@ jobs:
         working-directory: remotion
         run: npm run select-score
 
+      # Decide the cut (edl.json) from the reel data, then check it against
+      # the invariants that would otherwise surface as a crashed render or a
+      # silently wrong video — including that the reel doesn't outlast its
+      # own soundtrack. Cheap, and it runs before the expensive part.
+      - name: Build edit decision list
+        working-directory: remotion
+        run: npm run build-edl
+
+      - name: Verify edit decision list
+        working-directory: remotion
+        run: npm run verify-edl
+
       - name: Render (16:9 master)
         working-directory: remotion
         run: npm run render
