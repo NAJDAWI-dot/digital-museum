@@ -7,7 +7,6 @@ import CountUp from '../components/CountUp.jsx';
 import GoldRule from '../components/GoldRule.jsx';
 import TrackingIn from '../components/TrackingIn.jsx';
 import SlideDrift from '../components/SlideDrift.jsx';
-import { VOLUNTEERING_FRAMES } from '../durations.js';
 import { useFormat, fmt } from '../format.jsx';
 
 const MAX_PHOTOS = 9;
@@ -48,7 +47,7 @@ function Print({ photo, index, delay }) {
 
 export default function VolunteeringSlide({ photos, count, orgCount }) {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
   const format = useFormat();
   const headingProgress = spring({ frame, fps, config: { damping: 200, stiffness: 80 } });
   // 9:16 fits 2 columns of prints comfortably; 6 keeps the collage airy.
@@ -56,7 +55,7 @@ export default function VolunteeringSlide({ photos, count, orgCount }) {
 
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
-      <SlideDrift durationInFrames={VOLUNTEERING_FRAMES} direction="in" amount={0.025}>
+      <SlideDrift durationInFrames={durationInFrames} direction="in" amount={0.025}>
         <AbsoluteFill
           style={{
             background: `radial-gradient(1400px 900px at 50% 40%, ${COLORS.inkLight}, ${COLORS.ink})`,

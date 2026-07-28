@@ -8,12 +8,11 @@ import TrackingIn from '../components/TrackingIn.jsx';
 import AtmosphereParticles3D from '../components/AtmosphereParticles3D.jsx';
 import GoldEmblem3D from '../components/GoldEmblem3D.jsx';
 import useAudioPulse from '../hooks/useAudioPulse.js';
-import { END_CARD_FRAMES } from '../durations.js';
 import { useFormat, fmt } from '../format.jsx';
 
 export default function EndCard({ ownerName, totalLikes }) {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
   const format = useFormat();
   const pulse = useAudioPulse();
   const glowProgress = spring({ frame, fps, config: { damping: 200, stiffness: 40 }, durationInFrames: 180 });
@@ -21,7 +20,7 @@ export default function EndCard({ ownerName, totalLikes }) {
   const ctaProgress = spring({ frame: frame - 100, fps, config: { damping: 200, stiffness: 110 } });
   // The whole card sinks to black over the final second and a half — the
   // reel *ends*, it doesn't just stop.
-  const fadeOut = interpolate(frame, [END_CARD_FRAMES - 80, END_CARD_FRAMES - 8], [1, 0], {
+  const fadeOut = interpolate(frame, [durationInFrames - 80, durationInFrames - 8], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });

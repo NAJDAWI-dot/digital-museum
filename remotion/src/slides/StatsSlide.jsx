@@ -6,7 +6,6 @@ import CountUp from '../components/CountUp.jsx';
 import GoldRule from '../components/GoldRule.jsx';
 import TrackingIn from '../components/TrackingIn.jsx';
 import SlideDrift from '../components/SlideDrift.jsx';
-import { STATS_FRAMES } from '../durations.js';
 import { useFormat, fmt } from '../format.jsx';
 
 function StatBlock({ value, label, delay }) {
@@ -49,13 +48,13 @@ function StatBlock({ value, label, delay }) {
 
 export default function StatsSlide({ projectCount, categoryCount, timelineCount }) {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
   const format = useFormat();
   const headingProgress = spring({ frame, fps, config: { damping: 200, stiffness: 80 } });
 
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
-      <SlideDrift durationInFrames={STATS_FRAMES} direction="out">
+      <SlideDrift durationInFrames={durationInFrames} direction="out">
         <AbsoluteFill
           style={{
             background: `radial-gradient(1200px 800px at 50% 30%, ${COLORS.inkLight}, ${COLORS.ink})`,

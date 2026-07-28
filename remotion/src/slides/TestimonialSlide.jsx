@@ -5,12 +5,11 @@ import { FONT_SERIF, FONT_SANS } from '../fonts.js';
 import GoldRule from '../components/GoldRule.jsx';
 import RevealText from '../components/RevealText.jsx';
 import SlideDrift from '../components/SlideDrift.jsx';
-import { TESTIMONIAL_FRAMES } from '../durations.js';
 import { useFormat, fmt } from '../format.jsx';
 
 export default function TestimonialSlide({ testimonial }) {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
   const format = useFormat();
   // The big quote mark blooms in first — oversized, blurred, scaling down
   // into place — then the words of the quote follow one by one, so the
@@ -20,7 +19,7 @@ export default function TestimonialSlide({ testimonial }) {
 
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
-      <SlideDrift durationInFrames={TESTIMONIAL_FRAMES} direction="in" amount={0.025}>
+      <SlideDrift durationInFrames={durationInFrames} direction="in" amount={0.025}>
         <AbsoluteFill
           style={{
             background: `radial-gradient(1200px 800px at 50% 45%, ${COLORS.inkLight}, ${COLORS.ink})`,

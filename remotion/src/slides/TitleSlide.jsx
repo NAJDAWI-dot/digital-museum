@@ -9,7 +9,6 @@ import AtmosphereParticles3D from '../components/AtmosphereParticles3D.jsx';
 import GoldEmblem3D from '../components/GoldEmblem3D.jsx';
 import SlideDrift from '../components/SlideDrift.jsx';
 import useAudioPulse from '../hooks/useAudioPulse.js';
-import { TITLE_FRAMES } from '../durations.js';
 import { useFormat, fmt } from '../format.jsx';
 
 /** Opening choreography, beat by beat:
@@ -21,7 +20,7 @@ import { useFormat, fmt } from '../format.jsx';
  * throughout: slow push-in on the whole frame, motes breathing with the score */
 export default function TitleSlide({ siteName, projectCount }) {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
   const pulse = useAudioPulse();
   const format = useFormat();
 
@@ -30,7 +29,7 @@ export default function TitleSlide({ siteName, projectCount }) {
 
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
-      <SlideDrift durationInFrames={TITLE_FRAMES} direction="in">
+      <SlideDrift durationInFrames={durationInFrames} direction="in">
         <AbsoluteFill
           style={{
             background: `radial-gradient(1400px 900px at 50% 40%, ${COLORS.inkLight}, ${COLORS.ink})`,
