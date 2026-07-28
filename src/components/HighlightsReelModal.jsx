@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { award } from '../lib/achievements';
 import './HighlightsReelModal.css';
@@ -11,6 +12,7 @@ import './HighlightsReelModal.css';
  * navigation, which would reload the SPA and replay the entrance splash. */
 export default function HighlightsReelModal({ open, onClose }) {
   const [variant, setVariant] = useState('wide'); // 'wide' | 'vertical'
+  const { t } = useTranslation();
   const videoRef = React.useRef(null);
 
   // Reset to the cinematic cut ONLY when the modal opens. This must not
@@ -67,13 +69,16 @@ export default function HighlightsReelModal({ open, onClose }) {
               playsInline
               onEnded={() => award('film-buff')}
             />
-            <button
-              type="button"
-              className="reel-modal-vertical mono"
-              onClick={() => setVariant(isVertical ? 'wide' : 'vertical')}
-            >
-              {isVertical ? '🖥 Cinematic cut (16:9)' : '📱 Vertical cut (9:16)'}
-            </button>
+            <div className="reel-modal-controls">
+              <p className="mono reel-modal-disclosure">{t('highlights.disclosure')}</p>
+              <button
+                type="button"
+                className="reel-modal-vertical mono"
+                onClick={() => setVariant(isVertical ? 'wide' : 'vertical')}
+              >
+                {isVertical ? '🖥 Cinematic cut (16:9)' : '📱 Vertical cut (9:16)'}
+              </button>
+            </div>
             <button type="button" className="reel-modal-close" onClick={onClose} aria-label="Close">
               ×
             </button>
