@@ -9,33 +9,12 @@ import TrackingIn from '../components/TrackingIn.jsx';
 import RevealText from '../components/RevealText.jsx';
 import Scrim from '../components/Scrim.jsx';
 import { useFormat, fmt } from '../format.jsx';
+import { PROJECTS_MONTAGE_SHOT_FRAMES, buildProjectShotList } from '../reel-timing.js';
 
-const SHOT_FRAMES = 210; // 3.5s @ 60fps — one photo's dwell time (renamed
-// from PER_PROJECT_FRAMES: it's per-shot now, not per-project, since a
-// project can contribute more than one photo — see buildProjectShotList).
+const SHOT_FRAMES = PROJECTS_MONTAGE_SHOT_FRAMES;
 const SPACING = 6; // world units between plates along the corridor's Z axis
 const MAX_W = 3.5; // each plate's photo is *contained* within this box —
 const MAX_H = 2.15; // never cropped or stretched, whatever its native aspect.
-
-/** Flattens projects into a flat shot list — cover photo first, then up to
- * (photosPerProject - 1) screenshots — so the corridor can dolly through
- * every photo at an equal, fixed dwell time instead of just one cover shot
- * per project. photosPerProject=1 reproduces the original one-shot-per-
- * project behavior exactly. Exported so HighlightsReel.jsx's
- * calculateTotalFrames() can size the section off the same real shot count
- * this component actually renders — the two can never drift apart. */
-export function buildProjectShotList(projects, photosPerProject = 3) {
-  const cap = Math.max(1, Math.min(4, photosPerProject));
-  const shots = [];
-  projects.forEach((project, projectIndex) => {
-    const extras = (project.screenshots || []).slice(0, cap - 1);
-    const srcs = [project.coverImage, ...extras].filter(Boolean).slice(0, cap);
-    srcs.forEach((src, shotIndexInProject) => {
-      shots.push({ src, project, projectIndex, shotIndexInProject, shotsInProject: srcs.length });
-    });
-  });
-  return shots;
-}
 
 /** A single framed print: dark mat, thin gold bevel, and the full photo
  * sized to fit inside MAX_W x MAX_H at its own aspect ratio. Slowly zooms
@@ -231,5 +210,3 @@ export default function ProjectsMontage({ projects, photosPerProject = 3 }) {
     </AbsoluteFill>
   );
 }
-
-export const PROJECTS_MONTAGE_SHOT_FRAMES = SHOT_FRAMES;

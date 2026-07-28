@@ -5,9 +5,13 @@ import {
   INITIAL_TESTIMONIALS,
   INITIAL_VOLUNTEERING,
 } from '../../src/data/projects.js';
-import liveStats from './live-stats.json';
-import reelConfig from '../reel-config.json';
-import renderSettings from '../render-settings.json';
+// Import attributes are required by Node (ESM) and understood by webpack 5,
+// so this module stays importable BOTH by the Remotion bundle and by plain
+// Node scripts (select-score, verify-*) — which is what lets those scripts
+// reuse the real reel data instead of re-deriving it and drifting.
+import liveStats from './live-stats.json' with { type: 'json' };
+import reelConfig from '../reel-config.json' with { type: 'json' };
+import renderSettings from '../render-settings.json' with { type: 'json' };
 
 const projects = INITIAL_PROJECTS || [];
 const timeline = INITIAL_TIMELINE || [];

@@ -10,7 +10,7 @@ import { useFormat } from './format.jsx';
 import Letterbox from './components/Letterbox.jsx';
 import FilmGrain from './components/FilmGrain.jsx';
 import TitleSlide from './slides/TitleSlide.jsx';
-import ProjectsMontage, { buildProjectShotList, PROJECTS_MONTAGE_SHOT_FRAMES } from './slides/ProjectsMontage.jsx';
+import ProjectsMontage from './slides/ProjectsMontage.jsx';
 import StatsSlide from './slides/StatsSlide.jsx';
 import TimelineMontage from './slides/TimelineMontage.jsx';
 import VolunteeringSlide from './slides/VolunteeringSlide.jsx';
@@ -31,28 +31,11 @@ import {
   GUESTBOOK_FRAMES,
   END_CARD_FRAMES,
 } from './durations.js';
-
-/** Total duration for a given dataset — used by Root.jsx to size the
- * Composition before render, since frame count depends on how much content
- * actually exists (a fresh collection with no volunteering entries yet
- * shouldn't pad out an empty slide). Each section lists the duration of the
- * transition that plays right *before* it, mirroring the JSX below exactly
- * — Guestbook and EndCard always use the same transition regardless of
- * which optional sections precede them, so those two stay fixed even as
- * sections are added/removed above them. */
-export function calculateTotalFrames(data) {
-  const projectShots = buildProjectShotList(data.showcaseProjects, data.photosPerProject);
-  const sections = [{ frames: TITLE_FRAMES }];
-  sections.push({ frames: projectShots.length * PROJECTS_MONTAGE_SHOT_FRAMES, transitionIn: FADE_FRAMES });
-  sections.push({ frames: STATS_FRAMES, transitionIn: CROSSZOOM_FRAMES });
-  if (data.showTimeline) sections.push({ frames: TIMELINE_FRAMES, transitionIn: FADE_FRAMES });
-  if (data.showVolunteering) sections.push({ frames: VOLUNTEERING_FRAMES, transitionIn: SLIDE_FRAMES });
-  if (data.showTestimonial) sections.push({ frames: TESTIMONIAL_FRAMES, transitionIn: FADE_FRAMES });
-  sections.push({ frames: GUESTBOOK_FRAMES, transitionIn: WIPE_FRAMES });
-  sections.push({ frames: END_CARD_FRAMES, transitionIn: FADE_FRAMES });
-
-  return sections.reduce((total, s) => total + s.frames - (s.transitionIn ?? 0), 0);
-}
+import {
+  buildProjectShotList,
+  PROJECTS_MONTAGE_SHOT_FRAMES,
+  calculateTotalFrames,
+} from './reel-timing.js';
 
 // Spring-based timing (rather than linear) so every cut eases in/out like a
 // real edit instead of holding constant velocity for its whole duration —

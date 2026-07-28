@@ -1,6 +1,7 @@
 import React from 'react';
 import { Composition } from 'remotion';
-import HighlightsReel, { calculateTotalFrames } from './HighlightsReel.jsx';
+import HighlightsReel from './HighlightsReel.jsx';
+import { calculateTotalFrames } from './reel-timing.js';
 import ProjectTrailer, { TRAILER_FRAMES } from './ProjectTrailer.jsx';
 import { FormatProvider } from './format.jsx';
 import { reelData } from './data.js';

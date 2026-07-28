@@ -3,10 +3,17 @@
 // module (rather than HighlightsReel.jsx) so slides can read their own
 // section length for full-duration effects like SlideDrift without
 // importing the composition that imports them back.
-export const FADE_FRAMES = 40;
-export const SLIDE_FRAMES = 40;
-export const WIPE_FRAMES = 48;
-export const CROSSZOOM_FRAMES = 52;
+// Transitions. Previously 40-52 frames — 0.67s to 0.87s each, on every
+// single boundary in the reel, with no hard cuts anywhere. At that length a
+// transition stops reading as an edit and starts reading as the piece
+// dissolving into itself, which is most of why the cut felt like a template
+// rather than something someone assembled. Shortened to roughly a third of
+// a second: still soft enough to carry between unrelated sections, short
+// enough to land as a decision.
+export const FADE_FRAMES = 16;
+export const SLIDE_FRAMES = 18;
+export const WIPE_FRAMES = 20;
+export const CROSSZOOM_FRAMES = 20;
 
 export const TITLE_FRAMES = 180;
 export const STATS_FRAMES = 240;
