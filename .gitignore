@@ -27,6 +27,9 @@ public/audio/
 .env.*
 !.env.example
 
+# Superpowers brainstorming companion session data
+.superpowers/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
