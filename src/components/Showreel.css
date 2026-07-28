@@ -1,0 +1,110 @@
+.showreel-section {
+  padding: 4rem 0 6rem;
+}
+
+.showreel-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+  max-width: 720px;
+}
+
+.showreel-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300;
+  color: var(--linen);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.showreel-title em {
+  color: var(--gold-light);
+  font-style: italic;
+}
+
+.showreel-shine {
+  border-radius: 6px;
+  width: 100%;
+}
+
+.showreel-card {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: none;
+  border: 1px solid rgba(201, 169, 110, 0.2);
+  transition: transform 0.5s var(--ease-smooth), border-color 0.5s ease;
+}
+.showreel-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(201, 169, 110, 0.55);
+}
+
+.showreel-card-media {
+  aspect-ratio: 16 / 9;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--ink-light);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.showreel-card-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.6), transparent 45%);
+}
+
+.showreel-play-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 169, 110, 0.7);
+  background: rgba(13, 13, 13, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+.showreel-card:hover .showreel-play-btn {
+  transform: scale(1.08);
+  background: rgba(201, 169, 110, 0.15);
+}
+.showreel-play-btn svg { margin-left: 3px; }
+
+.showreel-card-foot {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  z-index: 1;
+}
+.showreel-card-label {
+  font-style: italic;
+  color: var(--linen);
+  font-size: 1.1rem;
+}
+.showreel-card-duration {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+}
+
+.showreel-disclosure {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .showreel-section { padding: 2rem 0 3rem; }
+  .showreel-play-btn { width: 52px; height: 52px; }
+}
