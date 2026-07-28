@@ -12,6 +12,7 @@ async function loadReelConfig() {
   $('sec-timeline').checked = config.sections?.timeline !== false;
   $('sec-volunteering').checked = config.sections?.volunteering !== false;
   $('sec-testimonial').checked = config.sections?.testimonial !== false;
+  $('sec-guestbook').checked = config.sections?.guestbook !== false;
 
   renderStarList();
   renderStarAddOptions();
@@ -72,6 +73,7 @@ async function saveReelConfig() {
         timeline: $('sec-timeline').checked,
         volunteering: $('sec-volunteering').checked,
         testimonial: $('sec-testimonial').checked,
+        guestbook: $('sec-guestbook').checked,
       },
     }),
   });

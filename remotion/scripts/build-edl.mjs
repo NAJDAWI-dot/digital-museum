@@ -25,12 +25,28 @@ function write(edl) {
   writeFileSync(EDL_PATH, JSON.stringify(edl, null, 2) + '\n');
 }
 
+/** A fresh seed per render, unless one is pinned. `--seed=12345` (or
+ * REEL_SEED) replays a previous cut exactly — which is the point of seeding
+ * rather than calling Math.random(): the number lands in edl.json, so any
+ * render can be reproduced from the artifact it produced. */
+function resolveSeed() {
+  const fromArg = process.argv.find(a => a.startsWith('--seed='))?.slice('--seed='.length);
+  const raw = fromArg ?? process.env.REEL_SEED;
+  if (raw != null && raw !== '') {
+    const parsed = Number(raw);
+    if (Number.isFinite(parsed)) return Math.floor(parsed) >>> 0;
+    console.warn(`[build-edl] ignoring unparseable seed "${raw}"`);
+  }
+  return (Date.now() ^ (Math.random() * 0xffffffff)) >>> 0;
+}
+
 async function main() {
   const fps = renderSettings.fps ?? 60;
-  // 'fixed' rather than 'fallback-fixed': the cut is the same today, but this
-  // one was built on purpose. The distinction matters when reading a render
-  // log to work out whether the intended edit actually made it in.
-  const edl = buildFallbackEdl(reelData, { fps, mode: 'fixed' });
+  const seed = resolveSeed();
+  // 'varied' rather than 'fixed': the section order, section lengths and
+  // transitions are chosen per render from this seed. The fallback path
+  // (no seed) still produces the original fixed cut.
+  const edl = buildFallbackEdl(reelData, { fps, mode: 'varied', seed });
 
   // Validate what we just produced rather than trusting it. If the builder
   // itself is wrong, that is exactly the case where writing the file anyway
@@ -44,12 +60,15 @@ async function main() {
   }
 
   write(edl);
-  const secs = edl.sections.map(s => s.id).join(' -> ');
+  const secs = edl.sections
+    .map(s => (s.transitionIn ? `-[${s.transitionIn.type}]-> ` : '') + s.id)
+    .join(' ');
   console.log(
     `[build-edl] ${edl.sections.length} sections, ${edl.totalFrames} frames ` +
-    `(${(edl.totalFrames / fps).toFixed(1)}s @ ${fps}fps), mode=${edl.mode}`
+    `(${(edl.totalFrames / fps).toFixed(1)}s @ ${fps}fps), mode=${edl.mode}, seed=${edl.seed}`
   );
   console.log(`[build-edl] ${secs}`);
+  console.log(`[build-edl] replay this cut with: npm run build-edl -- --seed=${edl.seed}`);
 }
 
 main().catch((err) => {

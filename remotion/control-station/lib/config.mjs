@@ -20,7 +20,7 @@ function readJson(path, fallback) {
 }
 
 export function readReelConfig() {
-  return readJson(REEL_CONFIG_PATH, { track: 'random', starProjects: null, sections: { timeline: true, volunteering: true, testimonial: true } });
+  return readJson(REEL_CONFIG_PATH, { track: 'random', starProjects: null, sections: { timeline: true, volunteering: true, testimonial: true, guestbook: true } });
 }
 
 export function writeReelConfig(next) {
@@ -32,6 +32,7 @@ export function writeReelConfig(next) {
       timeline: next.sections?.timeline ?? current.sections?.timeline ?? true,
       volunteering: next.sections?.volunteering ?? current.sections?.volunteering ?? true,
       testimonial: next.sections?.testimonial ?? current.sections?.testimonial ?? true,
+      guestbook: next.sections?.guestbook ?? current.sections?.guestbook ?? true,
     },
   };
   writeFileSync(REEL_CONFIG_PATH, JSON.stringify(merged, null, 2) + '\n');

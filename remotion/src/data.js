@@ -82,6 +82,12 @@ export const reelData = {
   showTimeline: sections.timeline !== false && timeline.length > 0,
   showVolunteering: sections.volunteering !== false && volunteering.length > 0,
   showTestimonial: sections.testimonial !== false && Boolean(featuredTestimonial),
+  // An empty guestbook has nothing to show but the number zero. The slide
+  // counts up to it, lays out a wall of name tags that isn't there, and
+  // holds a featured quote that doesn't exist — five seconds of a
+  // sixty-second reel announcing that nobody has signed. Same rule as the
+  // sections above: only appear when there's something to say.
+  showGuestbook: sections.guestbook !== false && (liveStats.guestbookCount || 0) > 0,
   guestbookCount: liveStats.guestbookCount || 0,
   guestbookNames: liveStats.guestbookNames || [],
   guestbookQuotes: liveStats.guestbookQuotes || [],

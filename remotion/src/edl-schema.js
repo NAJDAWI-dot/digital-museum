@@ -12,10 +12,10 @@
 import {
   buildSectionList,
   buildProjectShotList,
-  calculateTotalFrames,
   transitionFrames,
   PROJECTS_MONTAGE_SHOT_FRAMES,
 } from './reel-timing.js';
+import { varySections, restack, variedTransitionFrames } from './edl-variation.js';
 
 export const EDL_VERSION = 1;
 
@@ -46,8 +46,15 @@ export function hashContent(data) {
  * deliberately the *current* behaviour rather than a degraded version of it:
  * if analysis fails, or an EDL is stale or malformed, the reel that renders
  * is exactly the one that would have rendered anyway. */
-export function buildFallbackEdl(data, { fps = 60, mode = 'fallback-fixed' } = {}) {
-  const sections = buildSectionList(data).map(section => {
+export function buildFallbackEdl(data, { fps = 60, mode = 'fallback-fixed', seed = null } = {}) {
+  const base = seed == null
+    ? buildSectionList(data)
+    : restack(varySections(buildSectionList(data), {
+      seed,
+      transitionFramesFor: variedTransitionFrames,
+    }));
+
+  const sections = base.map(section => {
     const entry = {
       id: section.id,
       component: section.component,
@@ -65,7 +72,14 @@ export function buildFallbackEdl(data, { fps = 60, mode = 'fallback-fixed' } = {
     version: EDL_VERSION,
     fps,
     mode,
-    totalFrames: calculateTotalFrames(data),
+    seed,
+    // Derived from the sections actually emitted, not recomputed from the
+    // data — with variation applied these differ, and the renderer must be
+    // sized to what it will really play.
+    totalFrames: sections.reduce(
+      (total, s) => total + s.durationInFrames - transitionFrames(s.transitionIn),
+      0,
+    ),
     contentHash: hashContent(data),
     audio: { src: 'audio/theme.mp3' },
     sections,

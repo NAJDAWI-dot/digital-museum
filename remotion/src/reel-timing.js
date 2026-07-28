@@ -65,8 +65,9 @@ export const TRANSITIONS = {
  * the two sequences it sits between, so each section starts at
  * (sum of prior durations) - (sum of prior transitions). Optional sections
  * drop out entirely when there's no content to fill them — an empty
- * collection shouldn't pad out a blank slide. Guestbook and EndCard keep
- * fixed transitions regardless of which optional sections precede them. */
+ * collection shouldn't pad out a blank slide, and a section that renders
+ * nothing but the number zero is worse than no section at all. Only Title,
+ * the montage, Stats and the EndCard are unconditional. */
 export function buildSectionList(data) {
   const shots = buildProjectShotList(data.showcaseProjects, data.photosPerProject);
 
@@ -78,7 +79,7 @@ export function buildSectionList(data) {
   if (data.showTimeline) sections.push({ id: 'timeline', component: 'TimelineMontage', frames: TIMELINE_FRAMES, transitionIn: TRANSITIONS.dissolve });
   if (data.showVolunteering) sections.push({ id: 'volunteering', component: 'VolunteeringSlide', frames: VOLUNTEERING_FRAMES, transitionIn: TRANSITIONS.slideUp });
   if (data.showTestimonial) sections.push({ id: 'testimonial', component: 'TestimonialSlide', frames: TESTIMONIAL_FRAMES, transitionIn: TRANSITIONS.dissolve });
-  sections.push({ id: 'guestbook', component: 'GuestbookSlide', frames: GUESTBOOK_FRAMES, transitionIn: TRANSITIONS.wipe });
+  if (data.showGuestbook) sections.push({ id: 'guestbook', component: 'GuestbookSlide', frames: GUESTBOOK_FRAMES, transitionIn: TRANSITIONS.wipe });
   sections.push({ id: 'endCard', component: 'EndCard', frames: END_CARD_FRAMES, transitionIn: TRANSITIONS.dissolve });
 
   let cursor = 0;
