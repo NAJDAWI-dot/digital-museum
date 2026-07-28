@@ -18,6 +18,12 @@
     "scroll": "Scroll",
     "catalogue": "Catalogue — {{exhibits}} exhibits · {{disciplines}} disciplines · est. 2023"
   },
+  "highlights": {
+    "eyebrow": "Showreel",
+    "titleMain": "See the whole museum,",
+    "titleAccent": "in motion.",
+    "disclosure": "AI-curated reel · auto-updated every Tuesday"
+  },
   "featured": {
     "eyebrow": "Editor's Pick",
     "explore": "Explore"

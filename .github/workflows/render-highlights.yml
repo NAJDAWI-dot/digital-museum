@@ -1,21 +1,32 @@
 name: Render Highlights Reel
 
-# Triggered on demand only — either from the "Regenerate Highlights Reel"
-# button in the site's admin Settings tab (which calls the workflow_dispatch
-# API with the admin's PAT) or manually via `gh workflow run`. Deliberately
-# NOT triggered by content pushes: rendering on every live-editor edit was
-# retired in favor of explicit owner control.
+# Triggered on demand — either from the "Regenerate Highlights Reel" button
+# in the site's admin Settings tab (which calls the workflow_dispatch API
+# with the admin's PAT) or manually via `gh workflow run` — or on the
+# Tuesday schedule below, which auto-publishes unattended (see the
+# "Publish (scheduled runs only)" step). The on-demand paths still don't
+# auto-publish: rendering on every live-editor edit was retired in favor of
+# explicit owner control.
 on:
   workflow_dispatch:
+  # Tuesday 09:00 UTC = 12:00 Jordan time (GMT+3, no DST) — see the
+  # "Publish (scheduled runs only)" step below for why only this trigger
+  # auto-publishes.
+  schedule:
+    - cron: '0 9 * * 2'
 
 permissions:
-  contents: read
+  contents: write
+  actions: write   # needed to dispatch deploy.yml explicitly — see below
 
-# This job no longer commits or pushes anything (see the note at the end of
-# the job below — publishing moved to a manual Control Station step), but
-# two renders still shouldn't run concurrently on the same self-hosted
-# machine: they'd trample each other's remotion/out/ files and GPU. Only one
-# render at a time; later triggers wait rather than run concurrently.
+# Scheduled (Tuesday) runs commit, push, and dispatch deploy.yml via the
+# "Publish (scheduled runs only)" step at the end of the job. On-demand
+# (workflow_dispatch) runs still don't commit or push anything — that stays
+# a manual Control Station step (see the note at the end of the job below).
+# Either way, two renders still shouldn't run concurrently on the same
+# self-hosted machine: they'd trample each other's remotion/out/ files and
+# GPU. Only one render at a time; later triggers wait rather than run
+# concurrently.
 concurrency:
   group: render-highlights
   cancel-in-progress: false
@@ -132,13 +143,51 @@ jobs:
             remotion/out/highlights-vertical.mp4
           retention-days: 90
 
-      # This job intentionally stops here — it no longer auto-publishes.
-      # The editing agent above now makes real creative calls (project
-      # selection/order, section toggles, music) worth a human glance
-      # before they go live, so publishing is a separate, explicit step
-      # done from the Control Station (remotion/control-station) on this
-      # same machine — the self-hosted runner IS the owner's own PC, so
-      # the rendered files in remotion/out/ (plus agent-edit.json and
-      # agent-review.json) are already sitting where Control Station reads
-      # them. Open it, review the editor's decisions and QA verdict, watch
-      # the preview, and hit Publish when ready.
+      # Only the unattended Tuesday run publishes automatically — there's
+      # no owner present to glance at the editing agent's picks (project
+      # selection/order, music) the way the on-demand flow's Control
+      # Station review does. workflow_dispatch runs (the admin's
+      # "Regenerate" button, or a manual `gh workflow run`) still stop
+      # after the QA review/artifact-upload steps above and don't publish.
+      # Sequence mirrors remotion/control-station/lib/gitPublish.mjs's
+      # publish() exactly, including tolerating a stale/failed ref-catchup
+      # poll rather than aborting before the deploy dispatch.
+      - name: Publish (scheduled runs only)
+        if: github.event_name == 'schedule'
+        shell: 'C:\PROGRA~1\Git\usr\bin\bash.exe -e -o pipefail {0}'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git lfs install
+          git fetch origin main
+          git reset --hard origin/main
+          cp remotion/out/highlights-web.mp4 public/highlights.mp4
+          cp remotion/out/highlights-vertical-web.mp4 public/highlights-vertical.mp4
+          cp remotion/out/highlights-poster.jpg public/highlights-poster.jpg
+          git add public/highlights.mp4 public/highlights-vertical.mp4 public/highlights-poster.jpg
+          if git diff --cached --quiet; then
+            echo "No changes to publish (output identical to what's already live)."
+            exit 0
+          fi
+          git commit -m "chore: regenerate highlights reel (scheduled)"
+          git push origin HEAD:main
+          NEW_SHA=$(git rev-parse HEAD)
+          for i in $(seq 1 15); do
+            REMOTE_SHA=$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha || true)
+            if [ "$REMOTE_SHA" = "$NEW_SHA" ]; then break; fi
+            sleep 2
+          done
+          gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref main
+
+      # Only workflow_dispatch runs intentionally stop here without
+      # publishing. The editing agent above makes real creative calls
+      # (project selection/order, section toggles, music) worth a human
+      # glance before they go live on demand, so for those runs publishing
+      # is a separate, explicit step done from the Control Station
+      # (remotion/control-station) on this same machine — the self-hosted
+      # runner IS the owner's own PC, so the rendered files in
+      # remotion/out/ (plus agent-edit.json and agent-review.json) are
+      # already sitting where Control Station reads them. Open it, review
+      # the editor's decisions and QA verdict, watch the preview, and hit
+      # Publish when ready. Scheduled (Tuesday) runs skip this manual
+      # review entirely and publish automatically via the step above.
