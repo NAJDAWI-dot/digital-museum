@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useMuseum } from '../context/MuseumContext';
 import { startTour } from './GuidedTour';
-import HighlightsReelModal from './HighlightsReelModal';
 import BrassPlaque from './BrassPlaque';
 import SplittingText from './anim/SplittingText';
 import Magnetic from './anim/Magnetic';
@@ -36,7 +35,6 @@ export default function Hero({ revealed = true }) {
   // the script's shaping, so Arabic gets the plain (still mask-risen) line.
   const isAr = i18n.language === 'ar';
   const particlesRef = useRef(null);
-  const [reelOpen, setReelOpen] = useState(false);
 
   const exhibitCount = String(projects.length).padStart(2, '0');
   const disciplineCount = new Set(projects.map(p => p.category)).size;
@@ -176,16 +174,9 @@ export default function Hero({ revealed = true }) {
                 {t('hero.tour')}
               </button>
             </Magnetic>
-            <Magnetic strength={0.18}>
-              <button type="button" className="hero-tour-link mono" onClick={() => setReelOpen(true)}>
-                {t('hero.highlights')}
-              </button>
-            </Magnetic>
           </motion.div>
         </div>
       </motion.div>
-
-      <HighlightsReelModal open={reelOpen} onClose={() => setReelOpen(false)} />
 
       {/* Catalogue line — real counts, placard voice */}
       <motion.div

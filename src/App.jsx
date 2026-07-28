@@ -5,6 +5,7 @@ import Cursor from './components/Cursor';
 import Preloader from './components/Preloader';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import Showreel from './components/Showreel';
 import FeaturedBanner from './components/FeaturedBanner';
 import NowBlock from './components/NowBlock';
 import Gallery from './components/Gallery';
@@ -117,6 +118,7 @@ function MuseumApp() {
         <Navbar revealed={revealed} />
         <main>
           <Hero revealed={revealed} />
+          <Showreel />
           <NowBlock />
           <FeaturedBanner />
           <ExhibitDolly />
