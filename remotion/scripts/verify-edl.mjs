@@ -84,6 +84,25 @@ if (existsSync(AUDIO_PATH)) {
   notes.push('no theme.mp3 yet — skipping the audio-length check (run select-score first)');
 }
 
+// crossZoom between two WebGL sections exceeds the renderer's per-frame
+// timeout — it scale-transforms both full-resolution canvases every frame.
+// The failure arrives partway through a render that has already been running
+// for many minutes, so it is worth a second of checking here.
+const GPU_HEAVY = new Set(['title', 'montage', 'endCard']);
+edl.sections.forEach((section, i) => {
+  const prev = edl.sections[i - 1];
+  if (
+    section.transitionIn?.type === 'crossZoom' &&
+    GPU_HEAVY.has(section.id) &&
+    GPU_HEAVY.has(prev?.id)
+  ) {
+    problems.push(
+      `section[${i}] "${section.id}": crossZoom from "${prev.id}" — both render WebGL, ` +
+      `which blows the 30s per-frame render timeout. Use a dissolve here.`
+    );
+  }
+});
+
 // If the EDL claims to be beat-locked, hold it to that. A cut that has
 // quietly stopped landing on the grid still renders fine and still says
 // "beat-locked" in the logs, so this is the only thing that would notice.

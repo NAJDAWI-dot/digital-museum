@@ -47,6 +47,20 @@ const TRANSITION_PALETTE = {
   endCard: ['dissolve', 'crossZoom'],
 };
 
+/** Sections that render a live WebGL scene: the title and end card carry the
+ * particle field and the gold emblem, the montage carries the corridor.
+ *
+ * This matters for one specific reason. crossZoom scale-transforms BOTH
+ * outgoing and incoming layers every frame, which forces the compositor to
+ * rasterise two full-resolution WebGL canvases repeatedly. Between a 3D
+ * section and a DOM one that is fine — and it is the only place the original
+ * cut ever used it, montage into stats. Between two 3D sections it is not:
+ * measured over the same 41 frames at the same transition length, crossZoom
+ * took 112 seconds against a dissolve's 34, and blew the renderer's 30-second
+ * per-frame timeout outright. The render fails; it does not merely slow down.
+ */
+const GPU_HEAVY_SECTIONS = new Set(['title', 'montage', 'endCard']);
+
 /** The optional middle sections, in the order they may be permuted. These
  * three are peers — career, service, and what other people said — so their
  * order is a pacing choice rather than a narrative one. The fixed spine
@@ -78,7 +92,16 @@ export function varySections(sections, { seed, transitionFramesFor, pacing = nul
       return varied;
     }
 
-    const palette = TRANSITION_PALETTE[section.id] ?? ['dissolve'];
+    const previousSection = result[index - 1];
+    const bothHeavy =
+      GPU_HEAVY_SECTIONS.has(section.id) && GPU_HEAVY_SECTIONS.has(previousSection?.id);
+
+    let palette = TRANSITION_PALETTE[section.id] ?? ['dissolve'];
+    if (bothHeavy) {
+      const affordable = palette.filter(t => t !== 'crossZoom');
+      palette = affordable.length ? affordable : ['dissolve'];
+    }
+
     // Avoid using the same transition twice running: repetition is exactly
     // what made the fixed cut feel mechanical.
     const type = rng.pickAvoiding(palette, previousType) ?? 'dissolve';
