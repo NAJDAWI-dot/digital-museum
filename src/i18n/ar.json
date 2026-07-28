@@ -18,6 +18,12 @@
     "scroll": "مرر للأسفل",
     "catalogue": "الفهرس — {{exhibits}} معروضات · {{disciplines}} تخصصات · تأسس 2023"
   },
+  "highlights": {
+    "eyebrow": "أبرز اللحظات",
+    "titleMain": "شاهد المتحف كاملاً،",
+    "titleAccent": "في حركة.",
+    "disclosure": "شريط منسّق بالذكاء الاصطناعي · يُحدَّث تلقائيًا كل ثلاثاء"
+  },
   "featured": {
     "eyebrow": "اختيار المحرر",
     "explore": "استكشف"
