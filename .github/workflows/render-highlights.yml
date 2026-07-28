@@ -7,6 +7,11 @@ name: Render Highlights Reel
 # retired in favor of explicit owner control.
 on:
   workflow_dispatch:
+  # Tuesday 09:00 UTC = 12:00 Jordan time (GMT+3, no DST) — see the
+  # "Publish (scheduled runs only)" step below for why only this trigger
+  # auto-publishes.
+  schedule:
+    - cron: '0 9 * * 2'
 
 permissions:
   contents: read
@@ -131,6 +136,41 @@ jobs:
             remotion/out/highlights.mp4
             remotion/out/highlights-vertical.mp4
           retention-days: 90
+
+      # Only the unattended Tuesday run publishes automatically — there's
+      # no owner present to glance at the editing agent's picks (project
+      # selection/order, music) the way the on-demand flow's Control
+      # Station review does. workflow_dispatch runs (the admin's
+      # "Regenerate" button, or a manual `gh workflow run`) stop here,
+      # same as before this step was added. Sequence mirrors
+      # remotion/control-station/lib/gitPublish.mjs's publish() exactly.
+      - name: Publish (scheduled runs only)
+        if: github.event_name == 'schedule'
+        working-directory: .
+        shell: 'C:\PROGRA~1\Git\usr\bin\bash.exe -e -o pipefail {0}'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git lfs install
+          git fetch origin main
+          git reset --hard origin/main
+          cp remotion/out/highlights-web.mp4 public/highlights.mp4
+          cp remotion/out/highlights-vertical-web.mp4 public/highlights-vertical.mp4
+          cp remotion/out/highlights-poster.jpg public/highlights-poster.jpg
+          git add public/highlights.mp4 public/highlights-vertical.mp4 public/highlights-poster.jpg
+          if git diff --cached --quiet; then
+            echo "No changes to publish (output identical to what's already live)."
+            exit 0
+          fi
+          git commit -m "chore: regenerate highlights reel (scheduled)"
+          git push origin HEAD:main
+          NEW_SHA=$(git rev-parse HEAD)
+          for i in $(seq 1 15); do
+            REMOTE_SHA=$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)
+            if [ "$REMOTE_SHA" = "$NEW_SHA" ]; then break; fi
+            sleep 2
+          done
+          gh workflow run deploy.yml --ref main
 
       # This job intentionally stops here — it no longer auto-publishes.
       # The editing agent above now makes real creative calls (project
