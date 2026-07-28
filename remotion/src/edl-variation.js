@@ -15,6 +15,7 @@
 // variety worth having is *which* soft transition and *how long* it holds.
 import { TRANSITIONS } from './reel-timing.js';
 import { createRng } from './rng.js';
+import { energyProfile } from './pacing-plan.js';
 
 /** Sections whose length can flex without breaking their own choreography.
  *
@@ -54,9 +55,13 @@ const PERMUTABLE = ['timeline', 'volunteering', 'testimonial'];
 
 /** Applies variation to a section list in place of the fixed defaults.
  * Returns a new list; the input is not modified. */
-export function varySections(sections, { seed, transitionFramesFor }) {
+export function varySections(sections, { seed, transitionFramesFor, pacing = null }) {
   const rng = createRng(seed);
-  const result = reorderOptionalSections(sections, rng);
+  // The agent's ordering wins where it expressed one; otherwise shuffle.
+  const result = pacing?.sectionOrder
+    ? applySectionOrder(sections, pacing.sectionOrder)
+    : reorderOptionalSections(sections, rng);
+  const profile = pacing ? energyProfile(pacing.energy) : null;
 
   let previousType = null;
   return result.map((section, index) => {
@@ -83,7 +88,7 @@ export function varySections(sections, { seed, transitionFramesFor }) {
     varied.transitionIn = {
       type: base.type,
       durationInFrames: transitionFramesFor
-        ? transitionFramesFor(base, rng)
+        ? transitionFramesFor(base, rng, { scale: profile?.transitionScale ?? 1 })
         : base.durationInFrames,
     };
     return varied;
@@ -118,7 +123,22 @@ export function restack(sections) {
 /** A transition's length, varied a little around its default. Clamped so it
  * can never exceed either neighbouring section — TransitionSeries throws on
  * that, and verify-edl checks it, but it should never get that far. */
-export function variedTransitionFrames(base, rng, { min = 10, max = 26 } = {}) {
-  const jittered = Math.round(base.durationInFrames * (1 + rng.range(-0.25, 0.25)));
+export function variedTransitionFrames(base, rng, { min = 8, max = 30, scale = 1 } = {}) {
+  const jittered = Math.round(base.durationInFrames * scale * (1 + rng.range(-0.25, 0.25)));
   return Math.max(min, Math.min(max, jittered));
+}
+
+/** Reorders the optional middle block to the agent's stated preference,
+ * leaving the fixed spine (title, montage, stats ... endCard) alone. */
+function applySectionOrder(sections, order) {
+  const present = sections.filter(s => PERMUTABLE.includes(s.id));
+  if (present.length < 2) return sections.slice();
+  const ranked = order
+    .map(id => present.find(s => s.id === id))
+    .filter(Boolean);
+  // Anything the agent did not mention keeps its relative position at the end.
+  const rest = present.filter(s => !ranked.includes(s));
+  const sequence = [...ranked, ...rest];
+  let cursor = 0;
+  return sections.map(s => (PERMUTABLE.includes(s.id) ? sequence[cursor++] : s));
 }

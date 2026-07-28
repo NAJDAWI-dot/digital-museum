@@ -19,6 +19,7 @@ import { varySections, restack, variedTransitionFrames } from './edl-variation.j
 import { snapSectionsToGrid, snapReport } from './edl-snap.js';
 import { planMontage } from './montage-rhythm.js';
 import { createRng } from './rng.js';
+import { validatePacingPlan } from './pacing-plan.js';
 
 export const EDL_VERSION = 1;
 
@@ -54,12 +55,19 @@ export function buildFallbackEdl(data, {
   mode = 'fallback-fixed',
   seed = null,
   beatMap = null,
+  pacingPlan = null,
 } = {}) {
+  // A missing or malformed plan validates down to the defaults, so the cut is
+  // never blocked on the agent having run.
+  const pacing = validatePacingPlan(pacingPlan, {
+    projectIds: (data.showcaseProjects || []).map(p => p.id),
+  });
   let base = seed == null
     ? buildSectionList(data)
     : restack(varySections(buildSectionList(data), {
       seed,
       transitionFramesFor: variedTransitionFrames,
+      pacing,
     }));
 
   // Beat-locking, when the music analysis is good enough to support it.
@@ -104,6 +112,7 @@ export function buildFallbackEdl(data, {
         fps,
         startFrame: section.startFrame,
         rng: seed == null ? null : createRng((seed ^ 0x9e3779b9) >>> 0),
+        pacing,
       });
     }
     return entry;
@@ -116,6 +125,13 @@ export function buildFallbackEdl(data, {
     fps,
     mode: snap?.snapped ? 'beat-locked' : mode,
     seed,
+    pacing: {
+      energy: pacing.energy,
+      rhythm: pacing.montage.rhythm,
+      moveStyle: pacing.montage.moveStyle,
+      heroProjectId: pacing.montage.heroProjectId,
+      punchIns: pacing.montage.punchIns,
+    },
     music: beatMap
       ? {
         track: beatMap.source?.track ?? null,
@@ -161,6 +177,7 @@ export function buildMontageShots(data, {
   fps = 60,
   startFrame = 0,
   rng = null,
+  pacing = null,
 } = {}) {
   const shots = buildProjectShotList(data.showcaseProjects, data.photosPerProject);
   if (shots.length === 0) return [];
@@ -175,6 +192,7 @@ export function buildMontageShots(data, {
     startFrame,
     durationInFrames: span,
     rng,
+    pacing,
   });
 
   return planned.map(entry => ({

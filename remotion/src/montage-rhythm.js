@@ -11,6 +11,7 @@
 // vocabulary is 2 to 8 beats, chosen against the music's energy: busier
 // passages get shorter shots, quiet ones get room to breathe.
 
+import { energyProfile, moveStyleWeights } from './pacing-plan.js';
 /** Shot lengths worth using, in beats. Deliberately includes 3 and 6 — an
  * edit built only from powers of two lands on the same subdivisions forever
  * and starts to feel like a metronome. */
@@ -64,8 +65,14 @@ export function planMontage(shots, {
   startFrame,
   durationInFrames,
   rng,
-  punchIns = true,
+  pacing = null,
 }) {
+  const profile = energyProfile(pacing?.energy);
+  const punchIns = pacing?.montage?.punchIns ?? true;
+  const weights = moveStyleWeights(pacing?.montage?.moveStyle);
+  const rhythm = pacing?.montage?.rhythm ?? 'steady';
+  const heroId = pacing?.montage?.heroProjectId ?? null;
+  const heroShare = pacing?.montage?.heroShare ?? 0;
   if (shots.length === 0) return [];
 
   const beats = beatsWithin(beatMap, fps, startFrame, startFrame + durationInFrames)
@@ -90,7 +97,16 @@ export function planMontage(shots, {
     // Busier music, shorter shots. The scaling is gentle: energy moves the
     // target by about a third either way rather than swinging between
     // extremes, so the montage still has a recognisable pulse.
-    const target = fair * (1.25 - energy * 0.5);
+    // Energy sets the baseline hold; rhythm shapes it across the montage;
+    // a hero project simply gets more of it.
+    const progress = index / Math.max(1, shots.length - 1);
+    const rhythmScale =
+      rhythm === 'accelerate' ? 1.35 - progress * 0.7
+        : rhythm === 'wave' ? 1 + 0.3 * Math.cos(progress * Math.PI * 2)
+          : 1;
+    const isHero = heroId && shot.project?.id === heroId;
+    const heroScale = isHero ? 1 + heroShare * 2 : 1;
+    const target = fair * (1.25 - energy * 0.5) * profile.shotScale * rhythmScale * heroScale;
     const options = BEAT_OPTIONS.filter(b => b <= Math.max(2, remainingBeats - (remainingShots - 1) * 2));
     const pool = options.length ? options : [2];
     let chosen = pool.reduce((best, b) => (Math.abs(b - target) < Math.abs(best - target) ? b : best), pool[0]);
@@ -121,13 +137,46 @@ export function planMontage(shots, {
   const expanded = [];
   for (const entry of plan) {
     const splittable = punchIns && entry.beats >= 6;
-    if (splittable && (rng ? rng.chance(0.45) : false)) {
+    if (splittable && (rng ? rng.chance(profile.punchInChance) : false)) {
       expanded.push({ ...entry, beats: entry.beats - 2 });
       expanded.push({ ...entry, beats: 2, isPunchIn: true });
     } else {
       expanded.push(entry);
     }
   }
+
+  // Spend whatever beats are left over on more looks rather than on longer
+  // holds.
+  //
+  // There is one shot per photograph to begin with, so asking for shorter
+  // shots does not by itself produce more of them — it just leaves beats
+  // unallocated, which the reconcile step below would quietly absorb by
+  // stretching. That made "explosive" pacing come out with FEWER shots than
+  // "assertive", the opposite of what it asks for. Splitting again until the
+  // budget is used is what actually turns shorter shots into a faster cut.
+  if (punchIns) {
+    // A punch-in needs something to punch in FROM. Past roughly half the
+    // shots they stop reading as emphasis and start reading as the only idea
+    // the edit has.
+    const maxPunchIns = Math.max(1, Math.floor(shots.length * 0.9));
+    let allocated = expanded.reduce((t, e) => t + e.beats, 0);
+    let guard = expanded.length * 2;
+    while (
+      allocated < beats.length - 1 &&
+      expanded.filter(e => e.isPunchIn).length < maxPunchIns &&
+      guard-- > 0
+    ) {
+      const candidate = expanded
+        .map((e, i) => ({ e, i }))
+        .filter(({ e }) => e.beats >= 4 && !e.isPunchIn)
+        .sort((a, b) => b.e.beats - a.e.beats)[0];
+      if (!candidate) break;
+      candidate.e.beats -= 2;
+      expanded.splice(candidate.i + 1, 0, { ...candidate.e, beats: 2, isPunchIn: true });
+      allocated = expanded.reduce((t, e) => t + e.beats, 0) + 2;
+    }
+  }
+
   expanded.forEach((entry, i) => { entry.index = i; });
 
   // Convert beat counts into frame boundaries on the actual grid, so every
@@ -171,7 +220,7 @@ export function planMontage(shots, {
     cursor += s.durationInFrames;
   }
 
-  return assignMoves(out, { rng, punchIns, beatLocked: true });
+  return assignMoves(out, { rng, punchIns, beatLocked: true, weights });
 }
 
 /** The previous behaviour: equal dwell, continuous glide, no cuts. */
@@ -205,12 +254,17 @@ function planEvenly(shots, durationInFrames) {
  * Hard cuts only happen *within* a project's own run of photos. Cutting
  * between two different projects would drop the viewer somewhere new with no
  * warning; gliding there keeps the corridor legible as one room. */
-function assignMoves(plan, { rng, punchIns, beatLocked }) {
+function assignMoves(plan, { rng, punchIns, beatLocked, weights = null }) {
   return plan.map((entry, i) => {
     const prev = plan[i - 1];
     const sameProject = prev && prev.shot.project === entry.shot.project;
     const band = entry.energy > 0.66 ? 'high' : entry.energy > 0.33 ? 'mid' : 'low';
-    const options = MOVES_BY_ENERGY[band];
+    // The move style weights how often each move comes up; the energy band
+    // still decides which are appropriate here at all.
+    const allowed = MOVES_BY_ENERGY[band];
+    const options = weights
+      ? allowed.flatMap(m => Array.from({ length: Math.max(1, weights[m] ?? 1) }, () => m))
+      : allowed;
 
     let move = rng ? rng.pick(options) : options[0];
     // Two identical moves running reads as one long move, which defeats the

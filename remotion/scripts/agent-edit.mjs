@@ -27,6 +27,7 @@ import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import * as museumData from '../../src/data/projects.js';
+import { validatePacingPlan } from '../src/pacing-plan.js';
 import {
   readReelConfig, writeReelConfig,
   writeRenderSettings, readRenderSettings,
@@ -42,6 +43,7 @@ const PUBLIC_DIR = join(SITE_DIR, 'public');
 const OUT_DIR = join(REMOTION_DIR, 'out');
 const SCRATCH_DIR = join(OUT_DIR, 'agent-images');
 const OUT_PATH = join(OUT_DIR, 'agent-edit.json');
+const PACING_PLAN_PATH = join(REMOTION_DIR, 'pacing-plan.json');
 const LIVE_STATS_PATH = join(REMOTION_DIR, 'src', 'live-stats.json');
 
 const MAX_COVER_IMAGES = 12;
@@ -168,6 +170,13 @@ Your job is to make the same editorial calls a human director would make through
 2. Whether to include the Timeline, Volunteering, and Testimonial sections — only include a section if the underlying content is actually substantive; do not include an empty or thin section just because it's available.
 3. How many photos per project to show in the montage (1-4) — more photos means more screen time per project but a longer reel; fewer is snappier.
 4. Which music track best fits the overall mood of this creator's work, chosen only from the real filenames listed below.
+5. How the reel is PACED. The cut is built against the music's bar grid, so describe intent, not timings — never give frame numbers or durations, they are computed for you:
+   - energy: "restrained" (longer holds, softer transitions), "assertive", or "explosive" (short shots, hard cuts).
+   - sectionOrder: the order of the optional middle sections. These three are peers, so this is a pacing choice rather than a narrative one.
+   - montage.rhythm: "steady", "accelerate" (shots shorten toward the end), or "wave" (two builds).
+   - montage.heroProjectId: the one project that should carry the reel, if any, and heroShare (0.1-0.4) for how much of the montage it takes.
+   - montage.moveStyle: "contemplative", "balanced", or "kinetic" — how much the camera moves.
+   - montage.punchIns: whether to cut back in tight on a photograph for a second look.
 
 You can only choose from the real material given below — never invent projects, testimonials, or content that isn't listed.
 
@@ -191,7 +200,16 @@ Respond with ONLY a single JSON object — no markdown code fences, no other tex
   "sections": { "timeline": true, "volunteering": true, "testimonial": true },
   "photosPerProject": 2,
   "track": "<exact filename from the list above, or \\"random\\">",
-  "rationale": { "overall": "...", "projectOrder": "...", "sections": "...", "music": "..." }
+  "energy": "assertive",
+  "sectionOrder": ["timeline", "volunteering", "testimonial"],
+  "montage": {
+    "rhythm": "steady",
+    "heroProjectId": "<a real project id, or null>",
+    "heroShare": 0.2,
+    "moveStyle": "balanced",
+    "punchIns": true
+  },
+  "rationale": { "overall": "...", "projectOrder": "...", "sections": "...", "music": "...", "pacing": "..." }
 }`;
 
   let resultText;
@@ -224,6 +242,12 @@ Respond with ONLY a single JSON object — no markdown code fences, no other tex
   });
   const newRenderSettings = writeRenderSettings({ photosPerProject: validPhotosPerProject });
 
+  // Pacing is validated field by field and written separately, so a model
+  // that gets the content right and the pacing wrong still contributes the
+  // content — and vice versa.
+  const pacingPlan = validatePacingPlan(decision, { projectIds: [...realIds] });
+  writeFileSync(PACING_PLAN_PATH, JSON.stringify(pacingPlan, null, 2) + '\n');
+
   writeReport({
     status: 'applied',
     engine: 'claude-code-cli',
@@ -232,6 +256,13 @@ Respond with ONLY a single JSON object — no markdown code fences, no other tex
       sections: newReelConfig.sections,
       track: newReelConfig.track,
       photosPerProject: newRenderSettings.photosPerProject,
+      pacing: {
+        energy: pacingPlan.energy,
+        rhythm: pacingPlan.montage.rhythm,
+        moveStyle: pacingPlan.montage.moveStyle,
+        heroProjectId: pacingPlan.montage.heroProjectId,
+        punchIns: pacingPlan.montage.punchIns,
+      },
     },
     rationale: decision.rationale || null,
     projectsConsidered: projectBriefs.length,

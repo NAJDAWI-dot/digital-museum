@@ -171,7 +171,11 @@ function renderAgentEditReport(report) {
     const titles = (d.starProjects || []).map((id) => projectTitle(id));
     const lines = [
       `Star projects (order): ${titles.length ? titles.join(' -> ') : '(default: featured-first, newest-first)'}`,
-      `Sections: timeline=${d.sections?.timeline}, volunteering=${d.sections?.volunteering}, testimonial=${d.sections?.testimonial}`,
+      `Sections: timeline=${d.sections?.timeline}, volunteering=${d.sections?.volunteering}, testimonial=${d.sections?.testimonial}, guestbook=${d.sections?.guestbook}`,
+      d.pacing
+        ? `Pacing: ${d.pacing.energy} · ${d.pacing.rhythm} · ${d.pacing.moveStyle}` +
+          `${d.pacing.punchIns ? ' · punch-ins' : ''}${d.pacing.heroProjectId ? ' · hero set' : ''}`
+        : '',
       `Photos per project: ${d.photosPerProject}`,
       `Track: ${d.track}`,
       '',

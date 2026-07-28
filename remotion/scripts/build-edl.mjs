@@ -21,16 +21,17 @@ import renderSettings from '../render-settings.json' with { type: 'json' };
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const EDL_PATH = join(__dirname, '..', 'edl.json');
 const BEAT_MAP_PATH = join(__dirname, '..', 'beat-map.json');
+const PACING_PLAN_PATH = join(__dirname, '..', 'pacing-plan.json');
 
-/** The beat map is optional by design. Without it the cut is still built,
- * just not locked to anything — which is the same outcome as a track whose
- * analysis came back unusable. */
-function loadBeatMap() {
-  if (!existsSync(BEAT_MAP_PATH)) return null;
+/** Both the beat map and the pacing plan are optional by design: without
+ * them the cut is still built, just not locked to the music and using default
+ * pacing. Same outcome as a track whose analysis came back unusable. */
+function loadJson(path, label) {
+  if (!existsSync(path)) return null;
   try {
-    return JSON.parse(readFileSync(BEAT_MAP_PATH, 'utf8'));
+    return JSON.parse(readFileSync(path, 'utf8'));
   } catch (err) {
-    console.warn(`[build-edl] ignoring unreadable beat-map.json: ${err.message}`);
+    console.warn(`[build-edl] ignoring unreadable ${label}: ${err.message}`);
     return null;
   }
 }
@@ -60,12 +61,17 @@ function resolveSeed(beatMap) {
 
 async function main() {
   const fps = renderSettings.fps ?? 60;
-  const beatMapEarly = loadBeatMap();
+  const beatMapEarly = loadJson(BEAT_MAP_PATH, 'beat-map.json');
   const seed = resolveSeed(beatMapEarly);
   // 'varied' rather than 'fixed': the section order, section lengths and
   // transitions are chosen per render from this seed. The fallback path
   // (no seed) still produces the original fixed cut.
-  const edl = buildFallbackEdl(reelData, { fps, mode: 'varied', seed, beatMap: beatMapEarly });
+  // The agent's pacing plan is optional: without it validatePacingPlan
+  // returns the defaults, so the cut is never blocked on the agent running.
+  const pacingPlan = loadJson(PACING_PLAN_PATH, 'pacing-plan.json');
+  const edl = buildFallbackEdl(reelData, {
+    fps, mode: 'varied', seed, beatMap: beatMapEarly, pacingPlan,
+  });
 
   // Validate what we just produced rather than trusting it. If the builder
   // itself is wrong, that is exactly the case where writing the file anyway
@@ -93,6 +99,14 @@ async function main() {
     console.log(
       `[build-edl] music: ${edl.music.track} ${tempo}(quality=${edl.music.quality})` +
       (err == null ? ', not beat-locked' : `, cuts land within ${err} frame(s) of a bar line`)
+    );
+  }
+  if (edl.pacing) {
+    console.log(
+      `[build-edl] pacing: ${edl.pacing.energy}/${edl.pacing.rhythm}/${edl.pacing.moveStyle}` +
+      `, punchIns=${edl.pacing.punchIns}` +
+      (edl.pacing.heroProjectId ? `, hero=${edl.pacing.heroProjectId}` : '') +
+      (pacingPlan ? '' : ' (defaults — agent-edit has not run)')
     );
   }
   console.log(`[build-edl] replay this cut with: npm run build-edl -- --seed=${edl.seed}`);
