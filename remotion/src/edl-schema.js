@@ -17,6 +17,8 @@ import {
 } from './reel-timing.js';
 import { varySections, restack, variedTransitionFrames } from './edl-variation.js';
 import { snapSectionsToGrid, snapReport } from './edl-snap.js';
+import { planMontage } from './montage-rhythm.js';
+import { createRng } from './rng.js';
 
 export const EDL_VERSION = 1;
 
@@ -96,7 +98,13 @@ export function buildFallbackEdl(data, {
       transitionIn: section.transitionIn,
     };
     if (section.id === 'montage') {
-      entry.shots = buildMontageShots(data, { totalFrames: section.frames });
+      entry.shots = buildMontageShots(data, {
+        totalFrames: section.frames,
+        beatMap,
+        fps,
+        startFrame: section.startFrame,
+        rng: seed == null ? null : createRng((seed ^ 0x9e3779b9) >>> 0),
+      });
     }
     return entry;
   });
@@ -115,6 +123,15 @@ export function buildFallbackEdl(data, {
         barSeconds: beatMap.tempo?.barSeconds ?? null,
         quality: beatMap.quality?.level ?? 'none',
         syncOffsetSeconds: beatMap.syncOffsetSeconds ?? 0,
+        // Beat positions in frames, so the composition can see the grid the
+        // cut was built against without loading the beat map (which is a
+        // per-render artifact the bundle never sees). ~110 integers.
+        beatFrames: (beatMap.grid?.beats ?? []).map(
+          t => Math.round((t + (beatMap.syncOffsetSeconds ?? 0)) * fps),
+        ),
+        downbeatFrames: (beatMap.grid?.downbeatIndices ?? []).map(
+          i => Math.round(((beatMap.grid.beats[i] ?? 0) + (beatMap.syncOffsetSeconds ?? 0)) * fps),
+        ),
       }
       : null,
     // How far each perceived cut sits from its nearest bar line. Worth
@@ -138,35 +155,42 @@ export function buildFallbackEdl(data, {
 /** Montage shots at the fixed dwell time. Shot startFrames are montage-local
  * (frame 0 is the section's own frame 0), because that is what
  * useCurrentFrame() reports inside the Sequence. */
-export function buildMontageShots(data, { totalFrames = null } = {}) {
+export function buildMontageShots(data, {
+  totalFrames = null,
+  beatMap = null,
+  fps = 60,
+  startFrame = 0,
+  rng = null,
+} = {}) {
   const shots = buildProjectShotList(data.showcaseProjects, data.photosPerProject);
   if (shots.length === 0) return [];
 
   // Shots must tile the section exactly — the montage's length is set by
-  // beat-snapping and by section jitter, not by the shot count, so an
-  // even split of the real duration is what fills it. Any remainder goes to
-  // the earliest shots a frame at a time, which is imperceptible and keeps
-  // the arithmetic exact rather than approximately right.
+  // beat-snapping and section jitter, not by the shot count.
   const span = totalFrames ?? shots.length * PROJECTS_MONTAGE_SHOT_FRAMES;
-  const base = Math.floor(span / shots.length);
-  let remainder = span - base * shots.length;
 
-  let cursor = 0;
-  return shots.map((shot, index) => {
-    const extra = remainder > 0 ? 1 : 0;
-    remainder -= extra;
-    const durationInFrames = base + extra;
-    const entry = {
-      index,
-      projectId: shot.project?.id ?? null,
-      src: shot.src,
-      shotIndexInProject: shot.shotIndexInProject,
-      startFrame: cursor,
-      durationInFrames,
-    };
-    cursor += durationInFrames;
-    return entry;
+  const planned = planMontage(shots, {
+    beatMap,
+    fps,
+    startFrame,
+    durationInFrames: span,
+    rng,
   });
+
+  return planned.map(entry => ({
+    index: entry.index,
+    projectId: entry.shot.project?.id ?? null,
+    src: entry.shot.src,
+    shotIndexInProject: entry.shot.shotIndexInProject,
+    plateIndex: entry.plateIndex,
+    startFrame: entry.startFrame,
+    durationInFrames: entry.durationInFrames,
+    beats: entry.beats ?? null,
+    move: entry.move,
+    cutIn: entry.cutIn,
+    framing: entry.framing,
+    isPunchIn: entry.isPunchIn,
+  }));
 }
 
 /** Structural validation. Returns the EDL if it is internally consistent and

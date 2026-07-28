@@ -83,8 +83,12 @@ function transitionElement(spec, key, beatLocked) {
  * than crashing — a missing slide is recoverable, a thrown render is not. */
 const SECTION_COMPONENTS = {
   TitleSlide: (data) => <TitleSlide siteName={data.siteName} projectCount={data.projectCount} />,
-  ProjectsMontage: (data) => (
-    <ProjectsMontage projects={data.showcaseProjects} photosPerProject={data.photosPerProject} />
+  ProjectsMontage: (data, section) => (
+    <ProjectsMontage
+      projects={data.showcaseProjects}
+      photosPerProject={data.photosPerProject}
+      shots={section?.shots ?? null}
+    />
   ),
   StatsSlide: (data) => (
     <StatsSlide
@@ -132,7 +136,7 @@ export default function HighlightsReel({ data }) {
         {EDL.sections.flatMap((section, i) => [
           transitionElement(section.transitionIn, `t${i}`, EDL.mode === 'beat-locked'),
           <TransitionSeries.Sequence key={`s${i}`} durationInFrames={section.durationInFrames}>
-            {SECTION_COMPONENTS[section.component]?.(data) ?? null}
+            {SECTION_COMPONENTS[section.component]?.(data, section) ?? null}
           </TransitionSeries.Sequence>,
         ])}
       </TransitionSeries>

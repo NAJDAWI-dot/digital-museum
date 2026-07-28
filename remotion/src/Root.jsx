@@ -1,9 +1,10 @@
 import React from 'react';
 import { Composition } from 'remotion';
 import HighlightsReel from './HighlightsReel.jsx';
-import { calculateTotalFrames } from './reel-timing.js';
+import { EDL } from './edl.js';
 import ProjectTrailer, { TRAILER_FRAMES } from './ProjectTrailer.jsx';
 import { FormatProvider } from './format.jsx';
+import BeatDebug from './BeatDebug.jsx';
 import { reelData } from './data.js';
 import { FPS, WIDTH, HEIGHT } from './theme.js';
 import Preview3DParticles, { PREVIEW_3D_PARTICLES_FRAMES } from './previews/Preview3DParticles.jsx';
@@ -25,7 +26,7 @@ export default function RemotionRoot() {
       <Composition
         id="HighlightsReel"
         component={HighlightsReel}
-        durationInFrames={calculateTotalFrames(reelData)}
+        durationInFrames={EDL.totalFrames}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
@@ -37,11 +38,23 @@ export default function RemotionRoot() {
       <Composition
         id="HighlightsReelVertical"
         component={HighlightsReelVertical}
-        durationInFrames={calculateTotalFrames(reelData)}
+        durationInFrames={EDL.totalFrames}
         fps={FPS}
         width={HEIGHT}
         height={WIDTH}
         defaultProps={{ data: reelData }}
+      />
+
+      {/* The reel with its own edit drawn over it: beat ruler, downbeat
+          flashes, and a readout of the current section and shot. For checking
+          that cuts land where the EDL claims. Never part of the real reel. */}
+      <Composition
+        id="BeatDebug"
+        component={BeatDebug}
+        durationInFrames={EDL.totalFrames}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
       />
 
       {/* 15-second single-exhibit teaser, dispatched per project from the

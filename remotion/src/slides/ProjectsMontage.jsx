@@ -11,18 +11,24 @@ import Scrim from '../components/Scrim.jsx';
 import { useFormat, fmt } from '../format.jsx';
 import { PROJECTS_MONTAGE_SHOT_FRAMES, buildProjectShotList } from '../reel-timing.js';
 
-const SHOT_FRAMES = PROJECTS_MONTAGE_SHOT_FRAMES;
 const SPACING = 6; // world units between plates along the corridor's Z axis
 const MAX_W = 3.5; // each plate's photo is *contained* within this box —
 const MAX_H = 2.15; // never cropped or stretched, whatever its native aspect.
 
 /** A single framed print: dark mat, thin gold bevel, and the full photo
- * sized to fit inside MAX_W x MAX_H at its own aspect ratio. Slowly zooms
- * in (Ken-Burns-style) while it's the shot the dolly is currently settled
- * on, easing back out as the camera moves off toward the next one — a sine
- * bump peaking at the midpoint of this plate's own SHOT_FRAMES window, zero
- * at both edges so it never fights the dolly's own settle/release motion. */
-function Plate({ src, z, x = 0, frame, shotStartFrame }) {
+ * sized to fit inside MAX_W x MAX_H at its own aspect ratio.
+ *
+ * Timing is not this component's business any more — the camera owns the
+ * rhythm now, and a plate that also animated on its own schedule would fight
+ * it. It just renders at whatever scale it is handed.
+ *
+ * Plates are never unmounted, only hidden. useTexture suspends while it
+ * loads, and a texture suspending part-way through a render is a frame-
+ * capture hazard; worse, you cannot hard-cut TO a plate whose texture has not
+ * arrived. Hiding the distant ones keeps every texture resident while still
+ * skipping the draw calls — which is also a real saving, since all twelve to
+ * twenty-four plates used to draw on every single frame. */
+function Plate({ src, z, x = 0, zoom = 1, visible = true }) {
   const resolved = resolveAsset(src);
   const texture = useTexture(resolved);
   const img = texture.image;
@@ -35,12 +41,8 @@ function Plate({ src, z, x = 0, frame, shotStartFrame }) {
     w = MAX_H * aspect;
   }
 
-  const localT = Math.max(0, Math.min(1, (frame - shotStartFrame) / SHOT_FRAMES));
-  const bump = Math.sin(Math.PI * localT); // 0 at both edges, 1 at the midpoint
-  const zoom = 1 + 0.07 * bump;
-
   return (
-    <group position={[x, 0, z]} scale={zoom}>
+    <group position={[x, 0, z]} scale={zoom} visible={visible}>
       <mesh position={[0, 0, -0.05]}>
         <planeGeometry args={[MAX_W + 0.5, MAX_H + 0.5]} />
         <meshBasicMaterial color={COLORS.inkLight} />
@@ -57,28 +59,102 @@ function Plate({ src, z, x = 0, frame, shotStartFrame }) {
   );
 }
 
-/** Dollies the whole rig forward through the corridor over the section's
- * full duration — plates sit at local z = -i*SPACING (each further back
- * than the last), and the group offset grows POSITIVE over time to bring
- * each one in turn up to the camera near z=0.
+const GLIDE_FRACTION = 0.55; // how much of a soft shot is spent arriving
+const PUSH_UNITS = 0.55;
+const TIGHT_UNITS = 1.15; // a punch-in sits this much closer
+const LATERAL_UNITS = 0.28;
+const PLATE_X = 0.7; // prints hang alternately left and right of the walkway
+
+const smoothstep = (t) => t * t * (3 - 2 * t);
+const clamp01 = (v) => Math.max(0, Math.min(1, v));
+
+/** Where the camera is, for a given frame.
  *
- * Eased PER SEGMENT (smoothstep from shot i to shot i+1, each exactly
- * SHOT_FRAMES long), not globally — a global ease-in/out across the WHOLE
- * corridor badly distorts pacing once there are many shots (the ease-in
- * phase alone can still be mid-transition well past where several shots'
- * worth of frames have already elapsed), desyncing the visible plate from
- * shotIndex/captions. Smoothstep's zero-derivative at both ends of each
- * segment means dollyZ(k*SHOT_FRAMES) === k*SPACING exactly for every
- * integer k — so it stays in exact lockstep with the caption logic —
- * while reading as a "settle in front of each print, then glide to the
- * next" walk instead of a constant, mechanical crawl. */
-function Corridor({ frame, shots }) {
-  const maxUnit = Math.max(0, shots.length - 1);
-  const rawUnit = Math.min(frame / SHOT_FRAMES, maxUnit);
-  const segment = Math.min(maxUnit, Math.floor(rawUnit));
-  const frac = rawUnit - segment;
-  const smoothFrac = frac * frac * (3 - 2 * frac); // smoothstep
-  const dollyZ = (segment + smoothFrac) * SPACING;
+ * The corridor is a place: plates keep fixed positions along Z, and the
+ * camera walks through them. That was true before as well, but the walk was a
+ * single continuous function of frame, which is precisely what made cutting
+ * impossible — the dolly had to reach exactly k*SPACING on schedule for the
+ * captions
+ * to stay in sync, so the camera could never be anywhere unexpected.
+ *
+ * Now the pose is a function of (which shot, how far into it). A soft shot
+ * glides from the previous plate; a hard shot is simply *at* its plate on its
+ * first frame, which is the cut. The world does not rearrange — the camera
+ * jumps — so the room stays legible even when the edit does not.
+ */
+function cameraForFrame(shots, frame) {
+  if (!shots.length) return { x: 0, z: 0, plateIndex: 0, shotIndex: 0 };
+
+  let index = shots.findIndex(s => frame < s.startFrame + s.durationInFrames);
+  if (index === -1) index = shots.length - 1;
+
+  const shot = shots[index];
+  const prev = shots[index - 1];
+  const local = frame - shot.startFrame;
+  const t = clamp01(local / Math.max(1, shot.durationInFrames));
+
+  const station = (shot.plateIndex ?? index) * SPACING;
+  let z = station;
+
+  // A soft arrival glides in from wherever the camera was; a hard one is
+  // already there.
+  if (shot.cutIn !== 'hard' && prev) {
+    const from = (prev.plateIndex ?? index - 1) * SPACING;
+    z = from + (station - from) * smoothstep(clamp01(local / (shot.durationInFrames * GLIDE_FRACTION)));
+  }
+
+  // Moves are expressed as symbols in the EDL; the geometry lives here, so
+  // any of this can be retuned without rebuilding a single edit.
+  const eased = smoothstep(t);
+  const plateIndex = shot.plateIndex ?? index;
+
+  // Prints hang alternately either side of the walkway, so a plate is never
+  // centred by default — that off-centre framing is the look. But the further
+  // in the camera moves, the more that offset throws the subject out of
+  // frame, so moving in has to re-centre as it goes. `recenter` is how much
+  // of the plate's own offset this shot cancels.
+  const plateX = plateIndex % 2 === 0 ? -PLATE_X : PLATE_X;
+  let x = 0;
+  let recenter = 0;
+
+  switch (shot.move) {
+    case 'push':
+      z += PUSH_UNITS * eased;
+      recenter = 0.45 * eased;
+      break;
+    case 'pull':
+      z += PUSH_UNITS * (1 - eased);
+      recenter = 0.45 * (1 - eased);
+      break;
+    case 'lateral':
+      // Drift across the print, toward the middle of frame rather than
+      // further off it — adding to the plate's own offset just walks the
+      // subject out of shot.
+      x = -Math.sign(plateX) * LATERAL_UNITS * (eased - 0.5) * 2;
+      break;
+    case 'hold':
+      break;
+    case 'dolly':
+    default:
+      z += 0.18 * eased;
+      break;
+  }
+
+  // A punch-in is the same photograph, closer — and framed on it, which is
+  // the whole point of pushing in.
+  if (shot.framing === 'tight') {
+    z += TIGHT_UNITS;
+    recenter = 1;
+  }
+
+  x += -plateX * recenter;
+
+  return { x, z, plateIndex, shotIndex: index };
+}
+
+/** Walks the rig through the corridor according to the shot list. */
+function Corridor({ frame, plates, shots }) {
+  const { x, z, plateIndex } = cameraForFrame(shots, frame);
 
   // Rate constants halved for 60fps (2x the frames per real second vs. the
   // 30fps they were originally tuned at) so the bob/sway speed is unchanged.
@@ -86,57 +162,98 @@ function Corridor({ frame, shots }) {
   const swayX = Math.sin(frame * 0.0125) * 0.08;
 
   return (
-    <group position={[swayX, bobY, dollyZ]}>
-      {shots.map((shot, i) => {
-        const offsetX = i % 2 === 0 ? -0.7 : 0.7;
-        return (
-          <Plate
-            key={`${shot.project.id || shot.projectIndex}-${shot.shotIndexInProject}`}
-            src={shot.src}
-            z={-i * SPACING}
-            x={offsetX}
-            frame={frame}
-            shotStartFrame={i * SHOT_FRAMES}
-          />
-        );
-      })}
+    <group position={[swayX + x, bobY, z]}>
+      {plates.map((plate, i) => (
+        <Plate
+          key={plate.key}
+          src={plate.src}
+          z={-i * SPACING}
+          x={i % 2 === 0 ? -PLATE_X : PLATE_X}
+          zoom={i === plateIndex ? 1.03 : 1}
+          visible={Math.abs(i - plateIndex) <= 2}
+        />
+      ))}
     </group>
   );
 }
 
 /** Cycles through the collection's showcase projects via a real 3D dolly
  * through a corridor of framed prints — camera walks forward through the
- * gallery over the section's whole duration, one photo reached roughly
- * every SHOT_FRAMES, up to `photosPerProject` photos per project (cover +
- * screenshots). Captions crossfade per-*project* on top (holding steady
- * across a project's own interior photo cuts), same TrackingIn/RevealText
- * choreography the reel uses everywhere else. */
-export default function ProjectsMontage({ projects, photosPerProject = 3 }) {
+ * gallery according to the EDL's shot list — variable shot lengths, camera
+ * moves, hard cuts within a project's own photos, and punch-ins. Captions
+ * crossfade per-*project* on top, holding steady across a project's interior
+ * cuts, same TrackingIn/RevealText choreography the reel uses elsewhere. */
+export default function ProjectsMontage({ projects, photosPerProject = 3, shots: edlShots = null }) {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
   const format = useFormat();
 
-  const shots = useMemo(() => buildProjectShotList(projects, photosPerProject), [projects, photosPerProject]);
-  const shotIndex = Math.min(shots.length - 1, Math.floor(frame / SHOT_FRAMES));
-  const shot = shots[shotIndex];
-  const project = shot?.project;
-  const projectStartShot = shot ? shotIndex - shot.shotIndexInProject : 0;
-  const projectEndShot = shot ? projectStartShot + shot.shotsInProject - 1 : 0;
-  const projectIndex = shot?.projectIndex ?? 0;
+  const photoShots = useMemo(
+    () => buildProjectShotList(projects, photosPerProject),
+    [projects, photosPerProject],
+  );
 
-  // Captions used to start 12-20 frames AFTER the project's plate had
-  // already fully arrived, plus the spring's own rise time on top — a
-  // visible, cumulative lag between "new photo is up" and "text is
-  // readable". Now keyed a little BEFORE the project boundary instead of
-  // after it, so the caption is already animating in as the dolly settles
-  // onto the new plate and both land together instead of the text visibly
-  // trailing the photo.
-  const projectStartFrame = projectStartShot * SHOT_FRAMES - 10;
+  // One plate per photograph, not per shot: a punch-in revisits a plate the
+  // camera has already been to.
+  const plates = useMemo(
+    () => photoShots.map((s, i) => ({
+      key: `${s.project?.id ?? s.projectIndex}-${s.shotIndexInProject}-${i}`,
+      src: s.src,
+      project: s.project,
+      projectIndex: s.projectIndex,
+    })),
+    [photoShots],
+  );
+
+  // Without an EDL (a fresh clone, or a render whose EDL was rejected) fall
+  // back to the even split this section always used.
+  const shots = useMemo(() => {
+    if (edlShots?.length) return edlShots;
+    const per = Math.max(1, Math.floor((photoShots.length ? PROJECTS_MONTAGE_SHOT_FRAMES : 0)));
+    return photoShots.map((s, i) => ({
+      plateIndex: i,
+      startFrame: i * per,
+      durationInFrames: per,
+      move: 'dolly',
+      cutIn: 'soft',
+      framing: 'wide',
+    }));
+  }, [edlShots, photoShots]);
+
+  const { plateIndex } = cameraForFrame(shots, frame);
+  const plate = plates[Math.min(plateIndex, plates.length - 1)];
+  const project = plate?.project;
+  const projectIndex = plate?.projectIndex ?? 0;
+
+  // Caption timing follows the shot list rather than a fixed grid. A caption
+  // belongs to a *project*, so it holds across that project's own interior
+  // cuts — including punch-ins — and only re-animates when the project
+  // changes. Re-animating on every cut is what would make a hard cut read as
+  // a glitch rather than an edit.
+  const { projectStartFrame, projectEndFrame } = useMemo(() => {
+    const owner = (s) => plates[Math.min(s.plateIndex ?? 0, plates.length - 1)]?.project;
+    const current = project;
+    let start = 0;
+    let end = shots.length ? shots[shots.length - 1].startFrame + shots[shots.length - 1].durationInFrames : 0;
+    for (const s of shots) {
+      if (owner(s) === current) { start = s.startFrame; break; }
+    }
+    for (let i = shots.length - 1; i >= 0; i--) {
+      if (owner(shots[i]) === current) {
+        end = shots[i].startFrame + shots[i].durationInFrames;
+        break;
+      }
+    }
+    // Keyed slightly BEFORE the boundary so the caption is already animating
+    // in as the camera settles, rather than visibly trailing the photo.
+    return { projectStartFrame: start - 10, projectEndFrame: end };
+  }, [shots, plates, project]);
+
   const captionProgress = spring({ frame: frame - projectStartFrame, fps, config: { damping: 30, stiffness: 100, mass: 0.9 } });
   const counterProgress = spring({ frame: frame - projectStartFrame, fps, config: { damping: 200, stiffness: 110 } });
   const captionOut = interpolate(
     frame,
-    [(projectEndShot + 1) * SHOT_FRAMES - 40, (projectEndShot + 1) * SHOT_FRAMES - 12],
+    [projectEndFrame - 40, projectEndFrame - 12],
     [1, 0],
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
   );
@@ -148,7 +265,7 @@ export default function ProjectsMontage({ projects, photosPerProject = 3 }) {
       <ThreeCanvas width={width} height={height} camera={{ position: [0, 0, 2], fov: 55 }}>
         <ambientLight intensity={0.8} />
         <fog attach="fog" args={[COLORS.ink, 4, 14]} />
-        <Corridor frame={frame} shots={shots} />
+        <Corridor frame={frame} plates={plates} shots={shots} />
       </ThreeCanvas>
 
       {/* Protects the caption's legibility against whatever 3D content
