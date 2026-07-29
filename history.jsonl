@@ -135,3 +135,4 @@
 {"ts":"2026-07-28T20:46:50Z","site":"ok","db":"ok","counters":"ok","runner":"ok","ttfb":0.034648}
 {"ts":"2026-07-28T22:39:26Z","site":"ok","db":"ok","counters":"ok","runner":"ok","ttfb":0.132046}
 {"ts":"2026-07-29T01:04:52Z","site":"ok","db":"ok","counters":"ok","runner":"ok","ttfb":0.041769}
+{"ts":"2026-07-29T04:51:57Z","site":"ok","db":"ok","counters":"ok","runner":"down","ttfb":0.031862}
