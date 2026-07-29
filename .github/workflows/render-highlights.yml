@@ -35,11 +35,16 @@ jobs:
   render:
     # Rendered on the owner's own PC (i9-14900HX / RTX 4070 / 32GB) via a
     # self-hosted runner instead of GitHub's 2-vCPU, GPU-less ubuntu-latest
-    # — the Render step is the bottleneck (real per-frame motion blur,
-    # lossless PNG intermediates, CRF 14) and this hardware is dramatically
-    # faster at it without giving up any of those quality settings. Only
-    # this job moved; deploy.yml stays on ubuntu-latest since the site
-    # deploy shouldn't depend on this specific PC being powered on.
+    # — the Render step is the bottleneck and this hardware is dramatically
+    # faster at it. Only this job moved; deploy.yml stays on ubuntu-latest
+    # since the site deploy shouldn't depend on this specific PC being on.
+    #
+    # Note the GPU earns its place at the web-encode step (ffmpeg-static has
+    # h264_nvenc) rather than the render: Remotion's bundled ffmpeg has no
+    # NVENC, and encoding is under 1% of this job's wall-clock anyway. The
+    # render itself is Chromium drawing WebGL frames, which no encoder
+    # setting touches. Quality/format knobs live in render-settings.json;
+    # no --hardware-acceleration flag here, so that file stays authoritative.
     runs-on: [self-hosted, windows, museum-render]
     steps:
       - name: Checkout
@@ -124,7 +129,7 @@ jobs:
 
       - name: Render (9:16 vertical master)
         working-directory: remotion
-        run: npx remotion render src/index.jsx HighlightsReelVertical out/highlights-vertical.mp4 --hardware-acceleration=if-possible
+        run: npx remotion render src/index.jsx HighlightsReelVertical out/highlights-vertical.mp4
 
       # A settled frame from the title slide — the site modal's poster, so
       # the (preload=none) player shows the reel's cover instead of black.

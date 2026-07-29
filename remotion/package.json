@@ -12,7 +12,7 @@
     "build-edl": "node scripts/build-edl.mjs",
     "verify-edl": "node scripts/verify-edl.mjs",
     "agent-review": "node scripts/agent-review.mjs",
-    "render": "remotion render src/index.jsx HighlightsReel out/highlights.mp4 --hardware-acceleration=if-possible"
+    "render": "remotion render src/index.jsx HighlightsReel out/highlights.mp4"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
