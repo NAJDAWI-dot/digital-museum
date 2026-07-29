@@ -82,7 +82,11 @@ export function publish({ confirm }) {
       }
 
       job.push('\nCommitting...\n');
-      await run('git', ['commit', '-m', 'chore: regenerate highlights reel (local)'], { job });
+      // Unchecked, a failed commit is invisible: the push that follows has
+      // nothing to send, exits 0 ("Everything up-to-date"), and the job
+      // reports "Publish complete" over a reel that never left this machine.
+      const commit = await run('git', ['commit', '-m', 'chore: regenerate highlights reel (local)'], { job });
+      if (commit.code !== 0) throw new Error('git commit failed');
 
       job.push('\nPushing to origin/main...\n');
       const push = await run('git', ['push', 'origin', 'HEAD:main'], { job });
@@ -178,7 +182,8 @@ export function publishTrailer({ confirm, projectId }) {
       }
 
       job.push('\nCommitting...\n');
-      await run('git', ['commit', '-m', `chore: render trailer for ${projectId} (local)`], { job });
+      const commit = await run('git', ['commit', '-m', `chore: render trailer for ${projectId} (local)`], { job });
+      if (commit.code !== 0) throw new Error('git commit failed');
 
       job.push('\nPushing to origin/main...\n');
       const push = await run('git', ['push', 'origin', 'HEAD:main'], { job });
