@@ -1,9 +1,16 @@
 {
-  "track": "random",
-  "starProjects": null,
+  "track": "tunetank-inspiring-cinematic-music-409347.mp3",
+  "starProjects": [
+    "p1783455970646",
+    "p1782930214093",
+    "p1782929859694",
+    "p1784452155058",
+    "p1782928799984"
+  ],
   "sections": {
     "timeline": true,
     "volunteering": true,
-    "testimonial": true
+    "testimonial": false,
+    "guestbook": true
   }
 }

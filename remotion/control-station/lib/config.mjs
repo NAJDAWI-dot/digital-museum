@@ -43,7 +43,7 @@ export function readRenderSettings() {
   return readJson(RENDER_SETTINGS_PATH, {
     fps: 60, width: 1920, height: 1080,
     masterCrf: 14, webCrf: 22, webPreset: 'slow',
-    audioBitrateKbps: 128, imageFormat: 'png', photosPerProject: 3,
+    audioBitrateKbps: 128, imageFormat: 'png', jpegQuality: 100, photosPerProject: 3,
     hardwareAcceleration: 'disable', webEncoder: 'libx264', concurrency: null,
     masterBitrate: '40M', maxShowcaseProjects: null,
   });
@@ -73,9 +73,18 @@ export function writeRenderSettings(next) {
     webPreset: ['ultrafast', 'fast', 'medium', 'slow', 'veryslow'].includes(next.webPreset) ? next.webPreset : current.webPreset,
     audioBitrateKbps: clamp(next.audioBitrateKbps, 64, 320, current.audioBitrateKbps),
     imageFormat: ['png', 'jpeg'].includes(next.imageFormat) ? next.imageFormat : current.imageFormat,
+    // Only meaningful when imageFormat is 'jpeg'. Listed here because this
+    // function rebuilds a fixed shape — anything missing from it is silently
+    // dropped on every save, which is how jpegQuality disappeared once.
+    jpegQuality: clamp(next.jpegQuality, 1, 100, current.jpegQuality ?? 100),
     photosPerProject: clamp(next.photosPerProject, 1, 4, current.photosPerProject),
-    hardwareAcceleration: ['disable', 'if-possible', 'required'].includes(next.hardwareAcceleration)
-      ? next.hardwareAcceleration : current.hardwareAcceleration,
+    // 'required' is deliberately not offered. Remotion's bundled ffmpeg has
+    // no h264_nvenc, so requiring hardware encoding aborts the render
+    // outright — and on the unattended Tuesday run that means no reel at
+    // all. 'if-possible' gets the same behaviour without the cliff.
+    hardwareAcceleration: ['disable', 'if-possible'].includes(next.hardwareAcceleration)
+      ? next.hardwareAcceleration
+      : (['disable', 'if-possible'].includes(current.hardwareAcceleration) ? current.hardwareAcceleration : 'disable'),
     webEncoder: ['libx264', 'h264_nvenc'].includes(next.webEncoder) ? next.webEncoder : current.webEncoder,
     masterBitrate: isBitrateString(next.masterBitrate) ? next.masterBitrate : current.masterBitrate,
     // null/0/blank = let Remotion pick its own default concurrency; a

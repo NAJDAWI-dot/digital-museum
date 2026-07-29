@@ -56,7 +56,19 @@ Config.setVideoImageFormat(renderSettings.imageFormat ?? 'png');
 // not take it. Ignored entirely when imageFormat is 'png'.
 Config.setJpegQuality(renderSettings.jpegQuality ?? 90);
 
-const hardwareAcceleration = renderSettings.hardwareAcceleration ?? 'disable';
+// "required" aborts the render on this machine, because Remotion's bundled
+// ffmpeg has no h264_nvenc. That is a hard failure, not a slow path, and on
+// the unattended Tuesday run it means no reel at all. The Control Station no
+// longer offers it, but a hand-edited file still can, so downgrade it here
+// too rather than let a settings value brick a 45-minute render.
+let hardwareAcceleration = renderSettings.hardwareAcceleration ?? 'disable';
+if (hardwareAcceleration === 'required') {
+  console.warn(
+    '[remotion.config] hardwareAcceleration "required" would abort this render — ' +
+    'Remotion\'s bundled ffmpeg has no h264_nvenc. Falling back to "if-possible".'
+  );
+  hardwareAcceleration = 'if-possible';
+}
 Config.setHardwareAcceleration(hardwareAcceleration);
 
 // @remotion/renderer hard-rejects `crf` whenever hardware acceleration is

@@ -7,11 +7,11 @@
   "webPreset": "fast",
   "audioBitrateKbps": 128,
   "imageFormat": "png",
+  "jpegQuality": 100,
   "photosPerProject": 2,
   "hardwareAcceleration": "disable",
   "webEncoder": "h264_nvenc",
   "masterBitrate": "40M",
   "concurrency": null,
-  "maxShowcaseProjects": null,
-  "jpegQuality": 100
+  "maxShowcaseProjects": null
 }
