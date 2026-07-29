@@ -5,9 +5,13 @@ import {
   INITIAL_TESTIMONIALS,
   INITIAL_VOLUNTEERING,
 } from '../../src/data/projects.js';
-import liveStats from './live-stats.json';
-import reelConfig from '../reel-config.json';
-import renderSettings from '../render-settings.json';
+// Import attributes are required by Node (ESM) and understood by webpack 5,
+// so this module stays importable BOTH by the Remotion bundle and by plain
+// Node scripts (select-score, verify-*) — which is what lets those scripts
+// reuse the real reel data instead of re-deriving it and drifting.
+import liveStats from './live-stats.json' with { type: 'json' };
+import reelConfig from '../reel-config.json' with { type: 'json' };
+import renderSettings from '../render-settings.json' with { type: 'json' };
 
 const projects = INITIAL_PROJECTS || [];
 const timeline = INITIAL_TIMELINE || [];
@@ -78,6 +82,12 @@ export const reelData = {
   showTimeline: sections.timeline !== false && timeline.length > 0,
   showVolunteering: sections.volunteering !== false && volunteering.length > 0,
   showTestimonial: sections.testimonial !== false && Boolean(featuredTestimonial),
+  // An empty guestbook has nothing to show but the number zero. The slide
+  // counts up to it, lays out a wall of name tags that isn't there, and
+  // holds a featured quote that doesn't exist — five seconds of a
+  // sixty-second reel announcing that nobody has signed. Same rule as the
+  // sections above: only appear when there's something to say.
+  showGuestbook: sections.guestbook !== false && (liveStats.guestbookCount || 0) > 0,
   guestbookCount: liveStats.guestbookCount || 0,
   guestbookNames: liveStats.guestbookNames || [],
   guestbookQuotes: liveStats.guestbookQuotes || [],

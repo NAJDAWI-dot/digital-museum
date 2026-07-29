@@ -35,11 +35,16 @@ jobs:
   render:
     # Rendered on the owner's own PC (i9-14900HX / RTX 4070 / 32GB) via a
     # self-hosted runner instead of GitHub's 2-vCPU, GPU-less ubuntu-latest
-    # — the Render step is the bottleneck (real per-frame motion blur,
-    # lossless PNG intermediates, CRF 14) and this hardware is dramatically
-    # faster at it without giving up any of those quality settings. Only
-    # this job moved; deploy.yml stays on ubuntu-latest since the site
-    # deploy shouldn't depend on this specific PC being powered on.
+    # — the Render step is the bottleneck and this hardware is dramatically
+    # faster at it. Only this job moved; deploy.yml stays on ubuntu-latest
+    # since the site deploy shouldn't depend on this specific PC being on.
+    #
+    # Note the GPU earns its place at the web-encode step (ffmpeg-static has
+    # h264_nvenc) rather than the render: Remotion's bundled ffmpeg has no
+    # NVENC, and encoding is under 1% of this job's wall-clock anyway. The
+    # render itself is Chromium drawing WebGL frames, which no encoder
+    # setting touches. Quality/format knobs live in render-settings.json;
+    # no --hardware-acceleration flag here, so that file stays authoritative.
     runs-on: [self-hosted, windows, museum-render]
     steps:
       - name: Checkout
@@ -94,13 +99,29 @@ jobs:
         working-directory: remotion
         run: npm run agent-edit
 
-      # Picks a random track (and a random ~100s window within it) from
-      # music/cinematic/ on every run, so the reel gets a different piece
-      # of music each time it regenerates — see scripts/select-score.mjs.
-      # (Unless the editing agent above already pinned one.)
+      # Picks a track from music/cinematic/ and the window of it the reel is
+      # cut against: long enough for the reel, starting on a downbeat, and
+      # scored on its musical arc rather than chosen at random. Also emits
+      # beat-map.json, which is what lets the next step lock the cut to the
+      # bar grid. Reads the committed analyses in music/analysis/ — it never
+      # analyses audio here, so a render can't be derailed by beat detection
+      # going wrong unattended. See scripts/select-score.mjs.
+      # (The editing agent above may already have pinned a track.)
       - name: Select score
         working-directory: remotion
         run: npm run select-score
+
+      # Decide the cut (edl.json) from the reel data, then check it against
+      # the invariants that would otherwise surface as a crashed render or a
+      # silently wrong video — including that the reel doesn't outlast its
+      # own soundtrack. Cheap, and it runs before the expensive part.
+      - name: Build edit decision list
+        working-directory: remotion
+        run: npm run build-edl
+
+      - name: Verify edit decision list
+        working-directory: remotion
+        run: npm run verify-edl
 
       - name: Render (16:9 master)
         working-directory: remotion
@@ -108,7 +129,7 @@ jobs:
 
       - name: Render (9:16 vertical master)
         working-directory: remotion
-        run: npx remotion render src/index.jsx HighlightsReelVertical out/highlights-vertical.mp4 --hardware-acceleration=if-possible
+        run: npx remotion render src/index.jsx HighlightsReelVertical out/highlights-vertical.mp4
 
       # A settled frame from the title slide — the site modal's poster, so
       # the (preload=none) player shows the reel's cover instead of black.

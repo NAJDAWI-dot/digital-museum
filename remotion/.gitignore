@@ -1,2 +1,11 @@
 node_modules
 out
+
+# Per-render artifact: select-score.mjs writes it, build-edl.mjs reads it.
+# Unlike edl.json (which webpack imports at bundle time and so must exist in a
+# fresh clone) nothing needs this committed, and it would churn every render.
+beat-map.json
+
+# Agent-generated per render (agent-edit.mjs writes it, build-edl.mjs reads it).
+# Optional by design: absent, the cut uses default pacing.
+pacing-plan.json

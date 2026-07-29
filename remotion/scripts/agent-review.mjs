@@ -12,14 +12,13 @@
 // never fail the render if the CLI is unavailable. On any error it writes
 // {status: "skipped"} and exits 0.
 //
-// Section-boundary math below duplicates (rather than imports) the frame
-// arithmetic in remotion/src/HighlightsReel.jsx's calculateTotalFrames and
-// remotion/src/slides/ProjectsMontage.jsx's buildProjectShotList, because
-// those are JSX modules meant to run through Remotion's bundler, not plain
-// Node — this script only needs approximate mid-slide timestamps to sample,
-// not frame-perfect accuracy, so a manually-kept-in-sync duplicate is an
-// acceptable tradeoff. If you change durations.js or the montage shot-list
-// logic, update the constants below to match.
+// Where to sample comes from edl.json — the same cut the renderer used —
+// so the frames handed to the reviewer are the frames that were rendered.
+// This script used to keep its own copy of every duration constant plus a
+// re-implementation of the showcase-selection and shot-count logic, kept in
+// sync by hand. That copy could only ever be wrong quietly: the reviewer
+// would sample mid-transition, or from the wrong slide entirely, and still
+// return a confident verdict about it.
 //
 // Usage: node scripts/agent-review.mjs
 // Requires: the `claude` CLI on PATH and already logged in — same as
@@ -32,8 +31,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import ffmpegPath from 'ffmpeg-static';
-import { INITIAL_PROJECTS, INITIAL_TIMELINE, INITIAL_TESTIMONIALS } from '../../src/data/projects.js';
-import { readReelConfig, readRenderSettings } from '../control-station/lib/config.mjs';
+import { readRenderSettings } from '../control-station/lib/config.mjs';
 
 const execFileAsync = promisify(execFile);
 
@@ -46,12 +44,11 @@ const OUT_PATH = join(OUT_DIR, 'agent-review.json');
 
 const CLI_TIMEOUT_MS = 180_000;
 
-// Mirrors remotion/src/durations.js — see the note above about why this is
-// a duplicate, not an import.
-const FADE_FRAMES = 40, SLIDE_FRAMES = 40, WIPE_FRAMES = 48, CROSSZOOM_FRAMES = 52;
-const TITLE_FRAMES = 180, STATS_FRAMES = 240, TIMELINE_FRAMES = 240,
-  VOLUNTEERING_FRAMES = 210, TESTIMONIAL_FRAMES = 240, GUESTBOOK_FRAMES = 300, END_CARD_FRAMES = 240;
-const SHOT_FRAMES = 210; // mirrors ProjectsMontage.jsx's SHOT_FRAMES
+const EDL_PATH = join(__dirname, '..', 'edl.json');
+
+// The montage is most of the runtime and the most likely place for a broken
+// image, so it gets several samples where every other section gets one.
+const MONTAGE_SAMPLES = 4;
 
 function writeReport(report) {
   mkdirSync(OUT_DIR, { recursive: true });
@@ -86,69 +83,34 @@ async function runClaudeHeadless(prompt, addDirs) {
   return typeof outer.result === 'string' ? outer.result : JSON.stringify(outer.result);
 }
 
-// Mirrors data.js's showcase-project selection (starProjects pin, else
-// featured-first) so sampling matches what was actually rendered.
-function computeShowcaseProjects(reelConfig, renderSettings) {
-  const starIds = Array.isArray(reelConfig.starProjects) && reelConfig.starProjects.length > 0
-    ? reelConfig.starProjects
-    : null;
-  const featured = INITIAL_PROJECTS.find(p => p.featured) || INITIAL_PROJECTS[0] || null;
-  const full = starIds
-    ? starIds.map(id => INITIAL_PROJECTS.find(p => p.id === id)).filter(Boolean)
-    : [featured, ...INITIAL_PROJECTS.filter(p => p !== featured)].filter(Boolean);
-  return renderSettings.maxShowcaseProjects ? full.slice(0, renderSettings.maxShowcaseProjects) : full;
-}
-
-// Mirrors ProjectsMontage.jsx's buildProjectShotList shot COUNT (not the
-// actual shot data, which this script doesn't need).
-function countMontageShots(showcaseProjects, photosPerProject) {
-  const cap = Math.max(1, Math.min(4, photosPerProject));
-  return showcaseProjects.reduce((total, p) => {
-    const extras = Math.min((p.screenshots || []).length, cap - 1);
-    const shots = Math.min(cap, (p.coverImage ? 1 : 0) + extras);
-    return total + Math.max(shots, 0);
-  }, 0);
-}
-
 async function main() {
   if (!existsSync(MASTER_PATH)) return skip(`rendered master not found at ${MASTER_PATH}`);
 
-  const reelConfig = readReelConfig();
-  const renderSettings = readRenderSettings();
-  const fps = renderSettings.fps || 60;
+  let edl;
+  try {
+    edl = JSON.parse(readFileSync(EDL_PATH, 'utf8'));
+  } catch (err) {
+    return skip(`could not read edl.json (${err.message}) — nothing to sample against`);
+  }
+  if (!Array.isArray(edl.sections) || edl.sections.length === 0) {
+    return skip('edl.json has no sections');
+  }
 
-  const showcaseProjects = computeShowcaseProjects(reelConfig, renderSettings);
-  const montageShotCount = Math.max(1, countMontageShots(showcaseProjects, renderSettings.photosPerProject));
-  const showTimeline = reelConfig.sections?.timeline !== false && INITIAL_TIMELINE.length > 0;
-  const showVolunteering = reelConfig.sections?.volunteering !== false;
-  const featuredTestimonial = INITIAL_TESTIMONIALS.find(t => t.quote) || null;
-  const showTestimonial = reelConfig.sections?.testimonial !== false && Boolean(featuredTestimonial);
+  const fps = edl.fps || readRenderSettings().fps || 60;
 
-  const sections = [{ name: 'title', frames: TITLE_FRAMES }];
-  sections.push({ name: 'projects-montage', frames: montageShotCount * SHOT_FRAMES, transitionIn: FADE_FRAMES, sampleMultiple: Math.min(4, montageShotCount) });
-  sections.push({ name: 'stats', frames: STATS_FRAMES, transitionIn: CROSSZOOM_FRAMES });
-  if (showTimeline) sections.push({ name: 'timeline', frames: TIMELINE_FRAMES, transitionIn: FADE_FRAMES });
-  if (showVolunteering) sections.push({ name: 'volunteering', frames: VOLUNTEERING_FRAMES, transitionIn: SLIDE_FRAMES });
-  if (showTestimonial) sections.push({ name: 'testimonial', frames: TESTIMONIAL_FRAMES, transitionIn: FADE_FRAMES });
-  sections.push({ name: 'guestbook', frames: GUESTBOOK_FRAMES, transitionIn: WIPE_FRAMES });
-  sections.push({ name: 'end-card', frames: END_CARD_FRAMES, transitionIn: FADE_FRAMES });
-
-  // Same cumulative math as HighlightsReel.jsx's calculateTotalFrames: a
-  // transitioned section's OWN sequence starts `transitionIn` frames before
-  // the running total, since the transition overlaps the tail of the prior
-  // sequence with the head of this one.
+  // Sample from the middle of each section, away from the transitions at its
+  // edges, so the reviewer judges settled frames rather than motion.
   const samplePoints = [];
-  let cumulative = 0;
-  for (const s of sections) {
-    const transitionIn = s.transitionIn || 0;
-    const sectionStart = cumulative - transitionIn;
-    const n = s.sampleMultiple || 1;
+  for (const section of edl.sections) {
+    const n = section.id === 'montage' ? Math.min(MONTAGE_SAMPLES, section.shots?.length || 1) : 1;
     for (let i = 0; i < n; i++) {
       const fraction = (i + 0.5) / n;
-      const frame = sectionStart + s.frames * fraction;
-      samplePoints.push({ label: n > 1 ? `${s.name}-${i + 1}` : s.name, timestamp: Math.max(0, frame / fps) });
+      const frame = section.startFrame + section.durationInFrames * fraction;
+      samplePoints.push({
+        label: n > 1 ? `${section.id}-${i + 1}` : section.id,
+        timestamp: Math.max(0, frame / fps),
+      });
     }
-    cumulative += s.frames - transitionIn;
   }
 
   mkdirSync(FRAMES_DIR, { recursive: true });

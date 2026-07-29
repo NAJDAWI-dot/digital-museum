@@ -6,7 +6,6 @@ import GoldRule from '../components/GoldRule.jsx';
 import TrackingIn from '../components/TrackingIn.jsx';
 import RevealText from '../components/RevealText.jsx';
 import SlideDrift from '../components/SlideDrift.jsx';
-import { TIMELINE_FRAMES } from '../durations.js';
 import { useFormat, fmt } from '../format.jsx';
 
 const ROW_HEIGHT = 92; // milestone row + margin, for sizing the drawn spine
@@ -57,7 +56,7 @@ function Milestone({ entry, index }) {
 
 export default function TimelineMontage({ timeline }) {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
   const format = useFormat();
   const headingProgress = spring({ frame, fps, config: { damping: 200, stiffness: 80 } });
   const entries = timeline.slice(0, 4);
@@ -66,7 +65,7 @@ export default function TimelineMontage({ timeline }) {
 
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
-      <SlideDrift durationInFrames={TIMELINE_FRAMES} direction="in" amount={0.025}>
+      <SlideDrift durationInFrames={durationInFrames} direction="in" amount={0.025}>
         <AbsoluteFill
           style={{
             display: 'flex',

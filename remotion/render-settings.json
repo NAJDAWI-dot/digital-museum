@@ -6,11 +6,12 @@
   "webCrf": 22,
   "webPreset": "fast",
   "audioBitrateKbps": 128,
-  "imageFormat": "jpeg",
+  "imageFormat": "png",
   "photosPerProject": 2,
-  "hardwareAcceleration": "required",
+  "hardwareAcceleration": "disable",
   "webEncoder": "h264_nvenc",
   "masterBitrate": "40M",
   "concurrency": null,
-  "maxShowcaseProjects": null
+  "maxShowcaseProjects": null,
+  "jpegQuality": 100
 }
