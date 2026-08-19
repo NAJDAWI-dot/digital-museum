@@ -2165,7 +2165,8 @@ export const INITIAL_PROJECTS = [
         "start": 31.08,
         "end": 32.368
       }
-    ]
+    ],
+    "model": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/models/1787117699372.glb"
   },
   {
     "title": "ANS | Artificial Nervous System",
