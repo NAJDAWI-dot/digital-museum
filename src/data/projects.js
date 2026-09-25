@@ -35,7 +35,7 @@ export const INITIAL_PROJECTS = [
     "accentColor": "#c9a96e",
     "link": "https://najdawi-dot.github.io/vaccine-delivery-box-manual/",
     "repo": "#",
-    "featured": true,
+    "featured": false,
     "status": "Live",
     "coverImage": "images/x-e65b085b4214.jpg",
     "screenshots": [
