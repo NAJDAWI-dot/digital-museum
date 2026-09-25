@@ -24,9 +24,170 @@ export const INITIAL_PROJECTS = [
     ],
     "collaborators": [],
     "instructor": null,
-    "audio": "",
-    "narrationScript": "",
-    "audioTimestamps": []
+    "audio": "https://tqmbdnodqcheivrzdhkc.supabase.co/storage/v1/object/public/project-media/audio-guide/p1790362723639-1790372612893.mp3",
+    "narrationScript": "A custom-built sumo robot engineered for national competition, combining a hand-designed PCB, a spring-loaded push mechanism, and a 7-sensor array (5x JS40 + 2x ML2) for real-time opponent tracking and ring-edge avoidance.",
+    "audioTimestamps": [
+      {
+        "word": "A",
+        "start": 0,
+        "end": 0.093
+      },
+      {
+        "word": "custom-built",
+        "start": 0.209,
+        "end": 0.824
+      },
+      {
+        "word": "sumo",
+        "start": 0.894,
+        "end": 1.231
+      },
+      {
+        "word": "robot",
+        "start": 1.312,
+        "end": 1.741
+      },
+      {
+        "word": "engineered",
+        "start": 1.811,
+        "end": 2.276
+      },
+      {
+        "word": "for",
+        "start": 2.31,
+        "end": 2.415
+      },
+      {
+        "word": "national",
+        "start": 2.485,
+        "end": 2.856
+      },
+      {
+        "word": "competition,",
+        "start": 2.914,
+        "end": 3.646
+      },
+      {
+        "word": "combining",
+        "start": 3.889,
+        "end": 4.365
+      },
+      {
+        "word": "a",
+        "start": 4.423,
+        "end": 4.447
+      },
+      {
+        "word": "hand-designed",
+        "start": 4.528,
+        "end": 5.097
+      },
+      {
+        "word": "PCB,",
+        "start": 5.143,
+        "end": 5.805
+      },
+      {
+        "word": "a",
+        "start": 5.875,
+        "end": 5.944
+      },
+      {
+        "word": "spring-loaded",
+        "start": 6.014,
+        "end": 6.629
+      },
+      {
+        "word": "push",
+        "start": 6.676,
+        "end": 6.885
+      },
+      {
+        "word": "mechanism,",
+        "start": 6.931,
+        "end": 7.512
+      },
+      {
+        "word": "and",
+        "start": 7.686,
+        "end": 7.825
+      },
+      {
+        "word": "a",
+        "start": 7.872,
+        "end": 7.895
+      },
+      {
+        "word": "7-sensor",
+        "start": 7.976,
+        "end": 8.638
+      },
+      {
+        "word": "array",
+        "start": 8.696,
+        "end": 9.009
+      },
+      {
+        "word": "(5x",
+        "start": 9.183,
+        "end": 9.95
+      },
+      {
+        "word": "JS40",
+        "start": 10.019,
+        "end": 10.67
+      },
+      {
+        "word": "+",
+        "start": 10.82,
+        "end": 10.995
+      },
+      {
+        "word": "2x",
+        "start": 11.204,
+        "end": 11.459
+      },
+      {
+        "word": "ML2)",
+        "start": 11.54,
+        "end": 12.33
+      },
+      {
+        "word": "for",
+        "start": 12.504,
+        "end": 12.655
+      },
+      {
+        "word": "real-time",
+        "start": 12.725,
+        "end": 13.259
+      },
+      {
+        "word": "opponent",
+        "start": 13.293,
+        "end": 13.665
+      },
+      {
+        "word": "tracking",
+        "start": 13.7,
+        "end": 14.129
+      },
+      {
+        "word": "and",
+        "start": 14.199,
+        "end": 14.327
+      },
+      {
+        "word": "ring-edge",
+        "start": 14.42,
+        "end": 15.035
+      },
+      {
+        "word": "avoidance.",
+        "start": 15.081,
+        "end": 15.975
+      }
+    ]
   },
   {
     "title": "Enhanced Reliability Vaccine Delivery Box",
