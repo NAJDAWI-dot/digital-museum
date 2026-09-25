@@ -2670,9 +2670,9 @@ export const SITE_SETTINGS = {
     "linkedin": "https://linkedin.com/in/hashemnajdawi"
   },
   "nowBuilding": {
-    "title": "New Sumo Robot - Sumo 2026",
-    "description": "Building A new sumo robot with a new design and a new idea, will be competing in HTU SUMO 2026.",
-    "updatedAt": "2026-07-27T22:39:08.304Z"
+    "title": "",
+    "description": "",
+    "updatedAt": "2026-09-25T21:46:08.363Z"
   },
   "goatcounterSiteCode": "najdawi",
   "elevenlabsVoiceId": "SAz9YHcvj6GT2YYXdXww"
