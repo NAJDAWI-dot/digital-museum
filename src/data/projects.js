@@ -2672,7 +2672,7 @@ export const SITE_SETTINGS = {
   "nowBuilding": {
     "title": "",
     "description": "",
-    "updatedAt": "2026-09-25T21:46:08.363Z"
+    "updatedAt": ""
   },
   "goatcounterSiteCode": "najdawi",
   "elevenlabsVoiceId": "SAz9YHcvj6GT2YYXdXww"
