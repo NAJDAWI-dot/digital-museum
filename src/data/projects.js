@@ -13,7 +13,7 @@ export const INITIAL_PROJECTS = [
     "accentColor": "#c9a96e",
     "link": "#",
     "repo": "#",
-    "featured": false,
+    "featured": true,
     "status": "Live",
     "coverImage": "",
     "screenshots": [],
