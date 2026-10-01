@@ -1,10 +1,10 @@
 {
-  "checkedAt": "2026-10-01T15:38:23Z",
+  "checkedAt": "2026-10-01T21:18:16Z",
   "site": "ok",
   "db": "ok",
   "counters": "down",
   "runner": "down",
-  "siteTtfb": 0.034553,
+  "siteTtfb": 0.035895,
   "links": "ok",
   "vr": "drift",
   "backupAt": "2026-10-01T10:16:00Z"
