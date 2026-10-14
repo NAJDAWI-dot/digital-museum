@@ -6,26 +6,47 @@
     "editorAccess": "دخول المحرر",
     "arrow": "←",
     "lightMode": "الوضع الفاتح",
-    "darkMode": "الوضع الداكن"
+    "darkMode": "الوضع الداكن",
+    "story": "قصتي",
+    "contact": "تواصل",
+    "label": "القائمة الرئيسية",
+    "edit": "تعديل",
+    "menu": "القائمة"
   },
   "hero": {
-    "eyebrow": "متحف {{name}} الصغير · منذ {{year}}",
-    "line1": "أهلًا، أنا {{name}}",
-    "line2": "وهذا",
-    "line3": "متحفي الصغير",
-    "desc": "طالبة هندسة ميكاترونكس أحب بناء الروبوتات، والعبث بالدوائر، وصنع أشياء تتحرك. تفضّلوا وتجوّلوا! ♡",
-    "enter": "استكشف مشاريعي",
-    "tour": "جولة صغيرة ✨",
-    "scroll": "مرر للأسفل",
-    "catalogue": "{{exhibits}} مشاريع · {{disciplines}} تصنيفات · صُنع بحب منذ {{year}}"
+    "desc": "أحب بناء الروبوتات، والعبث بالدوائر، وتصميم أشياء تتحرك. هذا متحفي الصغير لكل ما صنعته حتى الآن. تفضّلوا وتجوّلوا!",
+    "enter": "شاهد مشاريعي",
+    "tour": "جولة سريعة",
+    "hello": "أهلًا وسهلًا!",
+    "im": "أنا",
+    "sayHi": "قل مرحبًا ♡",
+    "interests": "أشياء أحبها",
+    "pass": "بطاقة المتحف",
+    "editPhoto": "تغيير الصورة",
+    "statProjects": "مشاريع",
+    "statCategories": "تصنيفات",
+    "statSince": "منذ"
   },
   "featured": {
-    "eyebrow": "مشروعي المفضّل ♡",
-    "explore": "افتحه"
+    "eyebrow": "مشروعي المفضّل",
+    "explore": "افتح المشروع",
+    "badge": "المفضّل",
+    "why": "لماذا أحبه",
+    "openLabel": "افتح {{title}}"
   },
   "now": {
     "eyebrow": "أعمل حاليًا على",
-    "updated": "حُدّث {{when}}"
+    "today": "حُدّث اليوم",
+    "yesterday": "حُدّث أمس",
+    "daysAgo_zero": "حُدّث قبل {{count}} يوم",
+    "daysAgo_one": "حُدّث قبل يوم",
+    "daysAgo_two": "حُدّث قبل يومين",
+    "daysAgo_few": "حُدّث قبل {{count}} أيام",
+    "daysAgo_many": "حُدّث قبل {{count}} يومًا",
+    "daysAgo_other": "حُدّث قبل {{count}} يوم",
+    "progress": "التقدّم",
+    "done": "أنجزت {{percent}}%",
+    "emptyOwner": "لا شيء هنا بعد — اضغط تعديل لتخبر الزوار بما تعملين عليه."
   },
   "gallery": {
     "title1": "أشياء",
@@ -43,18 +64,23 @@
   },
   "timeline": {
     "title": "قصتي حتى الآن",
-    "subtitle": "أين كنت وإلى أين أمضي"
+    "subtitle": "اسحب على الطريق — من الأقدم إلى الأحدث",
+    "prev": "الأقدم",
+    "next": "الأحدث",
+    "here": "📍 أنا هنا الآن"
   },
   "vol": {
     "title": "العطاء",
     "subtitle": "تطوّع ونشاطات مجتمعية أحبها",
-    "entries_one": "مُدخل واحد",
-    "entries_two": "مُدخلان",
-    "entries_few": "مُدخلات",
-    "entries_many": "مُدخلاً",
-    "entries_other": "مُدخل",
     "showFewer": "عرض أقل ↑",
-    "showMore": "عرض {{count}} أكثر ↓"
+    "showMore": "عرض {{count}} أكثر ↓",
+    "count_zero": "{{count}} تجارب",
+    "count_one": "تجربة واحدة",
+    "count_two": "تجربتان",
+    "count_few": "{{count}} تجارب",
+    "count_many": "{{count}} تجربة",
+    "count_other": "{{count}} تجربة",
+    "photoLabel": "{{name}} — صورة {{n}} من {{total}}"
   },
   "testimonials": {
     "eyebrow": "كلمات لطيفة",
@@ -161,5 +187,10 @@
     "photos_few": "{{count}} صور",
     "photos_many": "{{count}} صورة",
     "photos_other": "{{count}} صورة"
+  },
+  "parade": {
+    "label": "كل مشاريعي في عرض متحرك",
+    "title": "عرض صغير لمشاريعي",
+    "hint": "مرّر للإيقاف · اضغط على مشروع لفتحه"
   }
 }

@@ -14,13 +14,20 @@ Kitty pops in now and then to say hi.
 
 | | |
 | --- | --- |
-| **Light & dark mode** | Follows the visitor's system setting; the ☾ / ☀︎ button switches and remembers. Every colour is a theme token, so both modes stay readable. |
-| **Project showcase** | Polaroid cards with washi tape, search box, emoji category chips with counts, and a "showing X of Y" line. Cards open into a full write-up with photos, a lightbox, collaborators and a supervisor credit. Visitors can ♡ a project. |
-| **Hero** | "Hi, I'm Tasneem" greeting with floating hearts and sparkles. |
-| **Sections** | Currently Working On, My Favourite (featured project), project corridor, My Story So Far (timeline), Giving Back (volunteering), Kind Words (testimonials), contact, guestbook. Empty sections hide themselves. |
-| **Hello Kitty** | Peeks in from the top, bottom, left or right edge every 20–45 s. Hover to keep her there, click for a "hi!". Turned off for visitors who prefer reduced motion. |
+| **Fast & smooth** | Native scrolling, a ~100 KB (gzipped) first download, and heavier parts (project popup, editor, guestbook) loaded only when needed. |
+| **Splash** | A heart draws itself and fills with pink, then the page opens through a circle. About 1.3 s, once per visit, skipped for reduced motion. |
+| **Light & dark mode** | Follows the visitor's system setting; the ☾ / ☀︎ button switches and remembers. Every colour is a theme token. |
+| **Top of the page** | Floating pill navbar, a "Hi, I'm Tasneem" greeting with her favourite categories, and a "museum pass" ID card with her photo and stats. |
+| **Currently working on** | A pinned sticky note with an emoji and a progress bar. |
+| **My favourite** | A fanned pile of the project's photos with a rosette, next to "why I love it". |
+| **Project parade** | A strip of mini polaroids that glides past by itself and pauses on hover. |
+| **Project showcase** | Polaroid cards with search and emoji category chips. Cards open into the full story, photos and teammates. Visitors can ♡ a project. |
+| **My story so far** | A horizontal road of milestones (swipe, drag or arrows), oldest to newest, with "📍 I'm here now". |
+| **Giving back** | Cards with photo strips, year badges and roles. |
+| **Cursor** | A pink arrow that becomes a heart over anything clickable, with a little sparkle trail. Pure CSS, so it never lags. |
+| **Hello Kitty** | Peeks in from the edges every 20–45 s. Hover to keep her, click for a "hi!". |
 | **Bilingual** | English / العربية, with right-to-left layout. |
-| **Editor** | Private panel (*Editor Access*) to manage everything, upload images and moderate the guestbook. Saves are committed to GitHub and deployed automatically. |
+| **Editor** | 🔑 in the navbar. A login card, then a drawer with a sidebar of sections, a one-page project form with a live preview, ↑ ↓ reordering, a sticky Save bar, "Saved!" messages, and a 🚀 Publishing page that tests the GitHub connection. While logged in, ✎ Edit buttons appear on every section and an editing bar floats at the bottom. |
 
 ## Configuration
 
@@ -61,7 +68,7 @@ Then add the Actions **variable** `VITE_CURATOR_ENABLED` = `true` and redeploy.
 npm install
 npm run dev            # live dev server at http://localhost:5173/tasneem-museum/
 npm run build          # production build in dist/
-npm run build:preview  # double-clickable test copy in preview/index.html
+npm run build:preview  # double-clickable test copy in preview/ (with a demo editor)
 npm run lint
 ```
 

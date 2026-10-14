@@ -22,25 +22,48 @@ tasneem-museum-package/
 
 ### What to try
 
-- [ ] The intro animation with her name, then the "Hi, I'm Tasneem" hero
-- [ ] The **☾ / ☀︎** button in the top bar: switch between light and dark
-      mode, then refresh. It remembers your choice.
-- [ ] **My Work:** type in the search box ("robot", "Arduino"), click the
-      category chips, then **Clear**
-- [ ] Hover a polaroid card (it straightens up), click it to open the
-      project, click a photo for the lightbox, press <kbd>Esc</kbd> to close
-- [ ] Wait about 10 seconds for **Hello Kitty** to pop in from an edge.
-      Hover to keep her there, click her for a "hi! ♡". She comes back every
-      20–45 seconds from a different side.
-- [ ] **Take a little tour ✨** in the hero
-- [ ] **ع** in the top bar switches to Arabic (right-to-left)
-- [ ] Shrink the window or open it on your phone (☰ menu, swipeable chips)
+- [ ] **Splash:** a heart draws itself, fills pink, then the page opens
+      through a circle. It shows once per visit; open a new tab to see it again.
+- [ ] **Top of the page:** the floating pill menu, the "I'm Tasneem" greeting,
+      and her **museum pass** card with floating stickers
+- [ ] **Cursor:** a pink arrow that turns into a heart over buttons and links,
+      with a little sparkle trail
+- [ ] **☾ / ☀︎** in the menu switches light and dark mode, and remembers it
+- [ ] **Currently working on:** the pinned sticky note with a progress bar
+- [ ] **My favourite:** hover the photo pile and it fans out
+- [ ] **Project parade:** the strip of mini polaroids glides by itself.
+      Hover to pause it, then click one.
+- [ ] **Things I've made:** search ("robot", "Arduino"), the category chips,
+      and **Clear**. Click a card to open the full project.
+- [ ] **My story so far:** goes sideways. Use the arrows, drag it with
+      the mouse, or swipe on a phone.
+- [ ] **Giving back:** the new cards
+- [ ] **Hello Kitty** pops in from an edge after a few seconds. Hover to keep
+      her there, click her for a "hi! ♡".
+- [ ] **ع** switches to Arabic (right-to-left)
+- [ ] Your phone or a narrow window
+
+### Try the new editor (demo)
+
+The test copy has a **demo editor**, so you can try editing without any
+accounts:
+
+1. Click the **🔑 key** in the menu and type **any** password.
+2. You'll get a floating editing bar at the bottom and **✎ Edit** buttons on
+   the sections. Click one to jump straight to it.
+3. Try **🖼️ Projects** (click a tile, change something, **Save changes**),
+   **📌 Working on** (emoji and progress slider), and **⏳ My story** (↑ ↓ to
+   reorder).
+
+Demo changes stay in your browser only and are never published. The real
+site has no demo mode: there, only her real password works.
 
 ### What won't work in the test copy (that's expected)
 
-- **Editor login** and **guestbook** need her Supabase account (START-HERE,
-  Part 2). The guestbook shows "not configured yet".
+- **Guestbook** needs her Supabase account (START-HERE, Part 2), so it shows
+  "not configured yet".
 - **♡ counts** stay at 0, because counters only save on the live site.
+- **🚀 Publishing** is switched off in the demo.
 
 ### Testing the full thing (optional, needs Node.js)
 
@@ -105,11 +128,17 @@ never need her password. Don't use your own GitHub token in her Editor.
 ## 4. What's in her site
 
 - Light and dark mode, both checked for readable text
-- New project showcase: polaroid cards, search, emoji category filters
-- Casual, first-person wording in English and Arabic
-- Hello Kitty popping in from all four edges
-- Editor for projects, photos, timeline, volunteering, testimonials,
-  "currently working on", and guestbook moderation
+- A quick heart splash, a floating pill menu, and a greeting with her
+  "museum pass" card
+- A sticky-note "currently working on" with a progress bar
+- "My favourite" as a fanned photo pile, plus a gliding project parade
+- Polaroid project showcase with search and emoji category filters
+- "My story so far" as a horizontal road, and new "Giving back" cards
+- A heart cursor with a sparkle trail, and Hello Kitty from all four edges
+- An easier editor: a login card, ✎ Edit buttons on every section, one-page
+  project editing with a live preview, and a guided 🚀 Publishing setup
+- Lighter and smoother: the first download is about half the size, and
+  there's no smooth-scroll library, particle canvas or heavy blur effects
 
 Removed, as you asked for her version: the recap video render, 3D models,
 narrator, analytics, the archives, and the collectables.

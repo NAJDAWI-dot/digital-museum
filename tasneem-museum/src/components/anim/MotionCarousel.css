@@ -27,7 +27,7 @@
   border: none;
   border-radius: 50%;
   background: var(--ink-mid);
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
   transition: background 0.3s var(--ease-smooth), transform 0.3s var(--ease-smooth);
 }
 

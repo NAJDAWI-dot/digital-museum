@@ -19,11 +19,7 @@ const prefersReduced = () =>
 function scrollToStop(id) {
   const el = document.getElementById(id);
   if (!el) return;
-  if (window.__lenis && !prefersReduced()) {
-    window.__lenis.scrollTo(el, { offset: -70, duration: 1.2 });
-  } else {
-    el.scrollIntoView({ behavior: prefersReduced() ? 'auto' : 'smooth', block: 'start' });
-  }
+  el.scrollIntoView({ behavior: prefersReduced() ? 'auto' : 'smooth', block: 'start' });
 }
 
 export default function GuidedTour() {

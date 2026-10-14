@@ -22,6 +22,13 @@ export const SITE = {
   // Two letters for the favicon monogram.
   initials: 'TM',
 
+  // Shown on the hero's "museum pass" card.
+  role: 'Mechatronics Engineering Student',
+  roleAr: 'طالبة هندسة ميكاترونكس',
+  school: 'The Hashemite University',
+  schoolShort: 'HU',
+  schoolAr: 'الجامعة الهاشمية',
+
   // One line used for search results and link previews.
   tagline: 'Mechatronics engineering student at Hashemite University — robots, gadgets, and everything I build along the way.',
 

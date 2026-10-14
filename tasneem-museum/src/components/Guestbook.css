@@ -55,7 +55,7 @@
   color: var(--dust);
   font-size: 0.7rem;
   text-decoration: underline;
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
   padding: 0;
 }
 
@@ -114,7 +114,7 @@
   background: color-mix(in srgb, var(--gold) 8%, transparent);
   color: var(--gold);
   font-size: 0.75rem;
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
   transition: background 0.2s ease, color 0.2s ease;
 }
 

@@ -1,66 +1,75 @@
-import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMuseum } from '../context/MuseumContext';
-import TypingText from './anim/TypingText';
+import EditHere from './EditHere';
 import './NowBlock.css';
 
-/** Formats an ISO date string as a short relative label ("today", "3d ago", "Jan 4"). */
-function formatUpdated(isoString) {
-  if (!isoString) return '';
-  const then = new Date(isoString);
+/** "3 days ago"-style label for when the note was last updated. */
+function useUpdatedLabel(iso) {
+  const { t, i18n } = useTranslation();
+  if (!iso) return '';
+  const then = new Date(iso);
   if (isNaN(then.getTime())) return '';
-
-  const diffMs = Date.now() - then.getTime();
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffDays <= 0) return 'today';
-  if (diffDays === 1) return 'yesterday';
-  if (diffDays < 7) return `${diffDays}d ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
-
-  return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const days = Math.floor((Date.now() - then.getTime()) / 86_400_000);
+  if (days <= 0) return t('now.today');
+  if (days === 1) return t('now.yesterday');
+  if (days < 30) return t('now.daysAgo', { count: days });
+  return then.toLocaleDateString(i18n.language === 'ar' ? 'ar' : 'en-GB', { day: 'numeric', month: 'short' });
 }
 
+/** Currently working on — a sticky note pinned under the hero, with an
+ * optional progress bar. Hidden when there's no title. */
 export default function NowBlock() {
-  const { settings } = useMuseum();
+  const { settings, isAdmin } = useMuseum();
   const { t } = useTranslation();
-  const nowBuilding = settings?.nowBuilding;
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-60px' });
+  const now = settings?.nowBuilding;
+  const updated = useUpdatedLabel(now?.updatedAt);
 
-  if (!nowBuilding?.title) return null;
+  if (!now?.title && !isAdmin) return null;
 
-  const updated = formatUpdated(nowBuilding.updatedAt);
+  const progress = Number.isFinite(Number(now?.progress)) && now?.progress !== ''
+    ? Math.max(0, Math.min(100, Number(now.progress)))
+    : null;
 
   return (
-    <section className="now-block" ref={ref} aria-label={t('now.eyebrow')}>
-      <div className="container now-block-inner">
-        <motion.div
-          className="now-block-strip"
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <span className="now-block-indicator" aria-hidden="true">
-            <span className="now-block-dot" />
-          </span>
+    <section className="now" aria-label={t('now.eyebrow')}>
+      <div className="container now-inner">
+        <article className="now-note">
+          <span className="now-pin" aria-hidden="true" />
+          <header className="now-head">
+            <span className="now-eyebrow">
+              <span className="now-dot" aria-hidden="true" /> {t('now.eyebrow')}
+            </span>
+            {updated && <span className="now-updated">{updated}</span>}
+          </header>
 
-          <span className="mono now-block-eyebrow">{t('now.eyebrow')}</span>
-
-          <span className="now-block-divider" aria-hidden="true" />
-
-          <div className="now-block-text">
-            <span className="now-block-title"><TypingText text={nowBuilding.title} /></span>
-            {nowBuilding.description && (
-              <span className="now-block-desc">{nowBuilding.description}</span>
-            )}
-          </div>
-
-          {updated && (
-            <span className="mono now-block-updated">{t('now.updated', { when: updated })}</span>
+          {now?.title ? (
+            <>
+              <h2 className="now-title">
+                {now.emoji && <span className="now-emoji" aria-hidden="true">{now.emoji}</span>} {now.title}
+              </h2>
+              {now.description && <p className="now-desc">{now.description}</p>}
+              {progress !== null && (
+                <div className="now-progress">
+                  <div
+                    className="now-bar"
+                    role="progressbar"
+                    aria-valuenow={progress}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={t('now.progress')}
+                  >
+                    <span style={{ width: `${progress}%` }} />
+                  </div>
+                  <span className="now-percent">{t('now.done', { percent: progress })}</span>
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="now-desc">{t('now.emptyOwner')}</p>
           )}
-        </motion.div>
+          <EditHere view="now" className="now-edit" />
+        </article>
       </div>
     </section>
   );

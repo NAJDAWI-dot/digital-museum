@@ -1,14 +1,8 @@
 /* ============================================
    Playful layer — loaded after every component
-   stylesheet. Rounds things off, swaps the
-   formal museum details for softer ones, and
-   keeps both light and dark mode readable.
-   (`:root` prefixes win over the lazily loaded
-   editor/guestbook styles.)
+   stylesheet. Softens the shared bits (labels,
+   buttons, cards) that several sections use.
    ============================================ */
-
-/* No film grain on a pastel page */
-.grain-overlay::before { display: none; }
 
 /* A project's own colour as a background: full pastel in light mode,
    blended toward the night page in dark mode so text stays readable. */
@@ -16,14 +10,14 @@
   background: color-mix(in srgb, var(--proj) calc(100% - var(--card-tint)), var(--ink-light)) !important;
 }
 
-/* ── Less formal labels: no shouting capitals, gentle tracking ── */
+/* ── Friendly labels: no shouting capitals ── */
 .mono,
 .section-label {
   text-transform: none !important;
   letter-spacing: 0.02em !important;
-  font-weight: 600;
+  font-weight: 700;
 }
-.section-label { font-size: 0.9rem; }
+.section-label { font-size: 0.95rem; }
 .section-label::before {
   content: '♡' !important;
   width: auto !important;
@@ -33,150 +27,41 @@
   font-size: 1rem;
 }
 
-/* ── Hero ── */
-.hero-headline {
-  font-size: clamp(3rem, 8.5vw, 7.6rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.08;
-}
-.hero-headline--italic {
-  font-family: var(--font-script);
-  font-style: normal;
-  font-weight: 700;
-  color: var(--gold);
-}
-.hero-gold-outline {
-  font-family: var(--font-serif);
-  font-style: normal;
-  font-weight: 600;
-  color: var(--blush);
-  -webkit-text-stroke: 2px var(--gold);
-  paint-order: stroke fill;
-}
-.hero-orb--1 { background: color-mix(in srgb, var(--blush) 70%, transparent); }
-.hero-orb--2 { background: color-mix(in srgb, var(--lilac) 60%, transparent); }
-.hero-orb--3 { background: color-mix(in srgb, var(--mint) 55%, transparent); }
-.hero-desc { font-size: 1.08rem; }
-[dir='rtl'] .hero-headline--italic { font-family: var(--font-serif-ar); }
-[dir='rtl'] .hero-gold-outline { font-family: var(--font-serif-ar); }
-
-/* ── Buttons become pills ── */
-.hero-btn,
+/* ── Pills & rounded corners for the remaining shared pieces ── */
 .contact-btn,
-.featured-cta,
 .modal-btn,
 .tour-btn,
-.vol-more,
-.navbar-editor-btn,
-.navbar-admin-link,
 .footer-share-btn,
-:root .guestbook-submit,
-:root .form-btn-save,
-:root .form-btn-cancel,
-:root .admin-submit-btn,
-:root .admin-reset-btn,
-:root .admin-export-btn,
-:root .tech-add-btn {
+:root .guestbook-submit {
   border-radius: 999px !important;
+  text-transform: none !important;
+  letter-spacing: 0.02em !important;
+  font-weight: 800;
 }
-.hero-btn,
-.contact-btn.primary,
-.featured-cta {
+.contact-btn { font-size: 0.95rem !important; }
+.contact-btn.primary {
   background: var(--gold);
   border-color: var(--gold);
   color: var(--on-accent);
-  font-weight: 700;
   box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--gold) 70%, transparent);
 }
-.hero-btn:hover,
-.contact-btn.primary:hover,
-.featured-cta:hover {
-  background: var(--gold-dark);
-  border-color: var(--gold-dark);
-  color: var(--on-accent);
-}
-.navbar-theme-btn {
-  font-size: 1.05rem;
-  background: none;
-  border: 0;
-  min-width: 36px;
-  color: var(--gold);
-}
+.contact-btn.primary:hover { background: var(--gold-dark); border-color: var(--gold-dark); color: var(--on-accent); }
 
-/* ── Rounder cards & panels ── */
-.featured-card { border-radius: 32px; }
-.featured-image-wrap,
-.featured-image { border-radius: 22px; }
-.timeline-content,
 .testimonial-card,
-.tour-card,
-.now-block-strip,
-.status-room,
-.exhibit-dolly-panel,
-.ecm-card,
-.ecm-static-card { border-radius: 24px !important; }
-.vol-plaque,
-.vol-plaque-inner { border-radius: 26px !important; }
-.vol-print,
-.vol-print img { border-radius: 14px; }
+.tour-card { border-radius: 24px !important; }
+.testimonial-card {
+  background: var(--pill) !important;
+  box-shadow: 0 16px 36px -22px color-mix(in srgb, var(--shadow) 45%, transparent);
+}
 .modal-panel { border-radius: 28px !important; }
 .modal-swatch { border-radius: 28px 28px 0 0; }
 .modal-thumb,
 .modal-thumb img { border-radius: 16px; }
-.modal-tech-tag,
-.featured-tech-tag,
-.timeline-year,
-.vol-year { border-radius: 999px !important; }
+.modal-tech-tag { border-radius: 999px !important; }
 :root .guestbook-widget,
 :root .guestbook-placeholder { border-radius: 28px; }
 :root .guestbook-input,
 :root .guestbook-name-input { border-radius: 16px; }
-:root .admin-input { border-radius: 12px; }
-:root .admin-panel { border-radius: 28px 0 0 28px; }
-
-/* Cards sit on a soft surface instead of a hairline frame */
-.timeline-content,
-.testimonial-card,
-.vol-plaque {
-  background: var(--pill) !important;
-  box-shadow: 0 16px 36px -22px color-mix(in srgb, var(--shadow) 45%, transparent);
-}
-
-/* ── Readable text on the featured card in both modes ── */
-.featured-title { color: var(--linen); }
-.featured-subtitle,
-.featured-desc { color: var(--mist); }
-.featured-cat,
-.featured-year { color: var(--gold); }
-.featured-tech-tag { color: var(--mist); border-color: color-mix(in srgb, var(--gold) 25%, transparent); }
-
-/* ── Timeline ── */
-.timeline-role { color: var(--linen); }
-.timeline-org { color: var(--gold); }
-.timeline-desc { color: var(--silver); }
 
 /* ── Dark mode touch-ups ── */
-:root[data-theme='dark'] .hero-gold-outline { color: color-mix(in srgb, var(--gold) 18%, transparent); }
 :root[data-theme='dark'] img { filter: brightness(0.94); }
-:root[data-theme='dark'] .kitty-body img { filter: none; }
-
-/* Buttons speak in sentence case too */
-.hero-btn,
-.contact-btn,
-.featured-cta,
-.modal-btn,
-.tour-btn,
-.vol-more,
-.navbar-link,
-.navbar-editor-btn,
-.footer-share-btn,
-:root .guestbook-submit,
-:root .form-btn-save,
-:root .admin-submit-btn {
-  text-transform: none !important;
-  letter-spacing: 0.02em !important;
-  font-weight: 700;
-}
-.hero-btn,
-.contact-btn { font-size: 0.95rem !important; }

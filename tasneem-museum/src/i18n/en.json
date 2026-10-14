@@ -6,26 +6,43 @@
     "editorAccess": "Editor Access",
     "arrow": "→",
     "lightMode": "Switch to light mode",
-    "darkMode": "Switch to dark mode"
+    "darkMode": "Switch to dark mode",
+    "story": "My story",
+    "contact": "Say hi",
+    "label": "Main",
+    "edit": "Edit",
+    "menu": "Menu"
   },
   "hero": {
-    "eyebrow": "{{name}}'s little museum · est. {{year}}",
-    "line1": "Hi, I'm {{name}}",
-    "line2": "and this is my",
-    "line3": "little museum",
-    "desc": "Mechatronics engineering student who loves building robots, tinkering with circuits, and making things that move. Come say hi and look around! ♡",
-    "enter": "Explore my projects",
-    "tour": "Take a little tour ✨",
-    "scroll": "Scroll",
-    "catalogue": "{{exhibits}} projects · {{disciplines}} categories · made with love since {{year}}"
+    "desc": "I love building robots, tinkering with circuits and designing things that move. This is my little museum of everything I've made so far. Have a look around!",
+    "enter": "See my projects",
+    "tour": "Take a quick tour",
+    "hello": "Hello there!",
+    "im": "I'm",
+    "sayHi": "Say hi ♡",
+    "interests": "Things I love",
+    "pass": "MUSEUM PASS",
+    "editPhoto": "Change photo",
+    "statProjects": "Projects",
+    "statCategories": "Categories",
+    "statSince": "Since"
   },
   "featured": {
-    "eyebrow": "My favourite ♡",
-    "explore": "Open it"
+    "eyebrow": "My favourite project",
+    "explore": "Open the project",
+    "badge": "Fave",
+    "why": "Why I love it",
+    "openLabel": "Open {{title}}"
   },
   "now": {
     "eyebrow": "Currently working on",
-    "updated": "Updated {{when}}"
+    "today": "updated today",
+    "yesterday": "updated yesterday",
+    "daysAgo_one": "updated {{count}} day ago",
+    "daysAgo_other": "updated {{count}} days ago",
+    "progress": "Progress",
+    "done": "{{percent}}% done",
+    "emptyOwner": "Nothing here yet — click Edit to tell visitors what you're working on."
   },
   "gallery": {
     "title1": "Things I've",
@@ -43,15 +60,19 @@
   },
   "timeline": {
     "title": "My story so far",
-    "subtitle": "Where I've been & where I'm going"
+    "subtitle": "Swipe along the road — oldest to newest",
+    "prev": "Earlier",
+    "next": "Later",
+    "here": "📍 I'm here now"
   },
   "vol": {
     "title": "Giving back",
     "subtitle": "Volunteering & community stuff I love",
-    "entries_one": "entry",
-    "entries_other": "entries",
     "showFewer": "Show fewer ↑",
-    "showMore": "Show {{count}} more ↓"
+    "showMore": "Show {{count}} more ↓",
+    "count_one": "{{count}} adventure",
+    "count_other": "{{count}} adventures",
+    "photoLabel": "{{name}} — photo {{n}} of {{total}}"
   },
   "testimonials": {
     "eyebrow": "Kind words",
@@ -154,5 +175,10 @@
     "like": "Send a little love",
     "photos_one": "{{count}} photo",
     "photos_other": "{{count}} photos"
+  },
+  "parade": {
+    "label": "All my projects, gliding by",
+    "title": "A little parade of my projects",
+    "hint": "Hover to pause · tap one to open it"
   }
 }

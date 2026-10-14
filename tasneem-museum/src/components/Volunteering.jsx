@@ -3,114 +3,97 @@ import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useMuseum } from '../context/MuseumContext';
 import { resolveAsset } from '../lib/assets';
-import { Lightbox } from './ProjectModal';
-import ShimmeringText from './anim/ShimmeringText';
+import { Lightbox } from './Lightbox';
+import EditHere from './EditHere';
 import './Volunteering.css';
 
-/* Static tilts for the print stack — indexed, not random, so SSR/replay stay stable. */
-const TILTS = [-2.4, 1.8, -1.2, 2.6];
+const VISIBLE_DEFAULT = 6;
+const BANNERS = ['var(--blush)', 'var(--lilac)', 'var(--mint)', 'var(--butter)'];
 
-/* "2025 - Present" → "2025" for the engraved ghost numeral. */
-const ghostYear = (year) => (String(year).match(/\d{4}/) || [String(year).slice(0, 4)])[0];
-
-/* The wing of service — engraved plaques on the museum wall. Each entry is a
-   double-framed plaque with an oversized ghost year (the hero's gold-outline
-   treatment) and its photos stacked like mat-framed prints on a curator's desk. */
-/* The wall shows the latest few plaques; the rest wait behind "Show more". */
-const VISIBLE_DEFAULT = 3;
-
+/** Giving back — a grid of cards, each with a photo strip (or a colourful
+ * banner when there are no photos), a year badge, the role and the story. */
 export default function Volunteering() {
   const { volunteering } = useMuseum();
   const { t } = useTranslation();
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-  // { photos: [...], idx: number } while the lightbox is open, else null
-  const [lightbox, setLightbox] = useState(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+  const [lightbox, setLightbox] = useState(null); // { photos, idx }
   const [showAll, setShowAll] = useState(false);
 
   if (!volunteering || volunteering.length === 0) return null;
 
-  // Entries are stored newest-first, so the first three are the latest.
   const visible = showAll ? volunteering : volunteering.slice(0, VISIBLE_DEFAULT);
-  const hiddenCount = volunteering.length - VISIBLE_DEFAULT;
+  const hidden = volunteering.length - VISIBLE_DEFAULT;
 
   return (
-    <section id="volunteering" className="volunteering-section" ref={ref}>
+    <section id="volunteering" className="give" ref={ref}>
       <div className="container">
-        <header className="vol-header">
+        <div className="give-head">
           <div>
-            <h2 className="vol-title serif">{t('vol.title')}</h2>
-            <p className="vol-subtitle mono"><ShimmeringText text={t('vol.subtitle')} /></p>
+            <h2 className="give-title">{t('vol.title')} <span aria-hidden="true">🤝</span></h2>
+            <p className="give-subtitle">{t('vol.subtitle')}</p>
           </div>
-          <span className="vol-count mono">
-            {String(volunteering.length).padStart(2, '0')} {t('vol.entries', { count: volunteering.length })}
-          </span>
-        </header>
-        <div className="animated-rule vol-rule"></div>
+          <div className="give-head-side">
+            <span className="give-count">{t('vol.count', { count: volunteering.length })}</span>
+            <EditHere view="volunteering" />
+          </div>
+        </div>
 
-        <ul className="vol-wall">
-          {visible.map((item, i) => (
-            <motion.li
-              key={item.id}
-              className={`vol-plaque ${i % 2 === 1 ? 'vol-plaque--flip' : ''}`}
-              initial={{ opacity: 0, y: 40 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: (i % VISIBLE_DEFAULT) * 0.12, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <span className="vol-ghost serif" aria-hidden="true">{ghostYear(item.year)}</span>
-
-              <div className="vol-plaque-inner">
-                <div className="vol-text">
-                  <span className="vol-year mono">{item.year}</span>
-                  {/* The opportunity name headlines the plaque; the role becomes
-                      its byline. Entries without one keep the old role-as-headline
-                      layout, and duplicate lines (title === eventTitle, or org
-                      restating the event) collapse away. */}
-                  <h3 className="vol-role serif">{item.eventTitle || item.title}</h3>
-                  {item.eventTitle && item.eventTitle !== item.title && (
-                    <span className="vol-roleline mono">{item.title}</span>
-                  )}
-                  {item.organization && item.organization !== item.eventTitle && (
-                    <span className="vol-org">{item.organization}</span>
-                  )}
-                  {item.description && <p className="vol-desc">{item.description}</p>}
-                </div>
-
-                {item.photos?.length > 0 && (
-                  <div className="vol-prints" role="group" aria-label={`Photos from ${item.eventTitle || item.title}`}>
-                    {item.photos.map((src, pi) => (
+        <ul className="give-grid">
+          {visible.map((item, i) => {
+            const photos = item.photos || [];
+            const name = item.eventTitle || item.title;
+            return (
+              <motion.li
+                key={item.id}
+                className="give-card"
+                initial={{ opacity: 0, y: 30 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.55, delay: (i % VISIBLE_DEFAULT) * 0.06, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {photos.length > 0 ? (
+                  <div className={`give-photos give-photos--${Math.min(photos.length, 3)}`}>
+                    {photos.slice(0, 3).map((src, pi) => (
                       <button
                         key={pi}
                         type="button"
-                        className="vol-print"
-                        style={{ '--tilt': `${TILTS[pi % TILTS.length]}deg` }}
-                        onClick={() => setLightbox({ photos: item.photos, idx: pi })}
-                        data-cursor
+                        className="give-photo"
+                        onClick={() => setLightbox({ photos, idx: pi })}
+                        aria-label={t('vol.photoLabel', { name, n: pi + 1, total: photos.length })}
                       >
-                        <img
-                          src={resolveAsset(src)}
-                          alt={`${item.eventTitle || item.title} — photo ${pi + 1} of ${item.photos.length}`}
-                          loading="lazy"
-                          decoding="async"
-                        />
+                        <img src={resolveAsset(src)} alt="" loading="lazy" decoding="async" />
+                        {pi === 2 && photos.length > 3 && <span className="give-more-photos">+{photos.length - 3}</span>}
                       </button>
                     ))}
                   </div>
+                ) : (
+                  <div className="give-banner" style={{ '--banner': BANNERS[i % BANNERS.length] }} aria-hidden="true">
+                    <span>🤝</span><span>💖</span><span>✨</span>
+                  </div>
                 )}
-              </div>
-            </motion.li>
-          ))}
+
+                <div className="give-body">
+                  {item.year && <span className="give-year">{item.year}</span>}
+                  <h3 className="give-name">{name}</h3>
+                  <div className="give-meta">
+                    {item.eventTitle && item.title && item.title !== item.eventTitle && (
+                      <span className="give-role">{item.title}</span>
+                    )}
+                    {item.organization && item.organization !== item.eventTitle && (
+                      <span className="give-org">{item.organization}</span>
+                    )}
+                  </div>
+                  {item.description && <p className="give-desc">{item.description}</p>}
+                </div>
+              </motion.li>
+            );
+          })}
         </ul>
 
-        {volunteering.length > VISIBLE_DEFAULT && (
-          <div className="vol-more-wrap">
-            <button
-              type="button"
-              className="vol-more mono"
-              onClick={() => setShowAll(s => !s)}
-              aria-expanded={showAll}
-            >
-              {showAll ? t('vol.showFewer') : t('vol.showMore', { count: hiddenCount })}
+        {hidden > 0 && (
+          <div className="give-more-wrap">
+            <button type="button" className="give-more" onClick={() => setShowAll(s => !s)} aria-expanded={showAll}>
+              {showAll ? t('vol.showFewer') : t('vol.showMore', { count: hidden })}
             </button>
           </div>
         )}
@@ -118,11 +101,7 @@ export default function Volunteering() {
 
       <AnimatePresence>
         {lightbox && (
-          <Lightbox
-            images={lightbox.photos}
-            startIndex={lightbox.idx}
-            onClose={() => setLightbox(null)}
-          />
+          <Lightbox images={lightbox.photos} startIndex={lightbox.idx} onClose={() => setLightbox(null)} />
         )}
       </AnimatePresence>
     </section>

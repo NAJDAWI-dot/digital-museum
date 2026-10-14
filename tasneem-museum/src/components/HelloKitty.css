@@ -23,7 +23,7 @@
   border: 0;
   background: none;
   pointer-events: auto;
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
   filter: drop-shadow(0 6px 10px color-mix(in srgb, var(--shadow) 25%, transparent));
   animation: kitty-peek var(--kitty-peek-ms, 7000ms) cubic-bezier(0.34, 1.4, 0.64, 1) both;
 }

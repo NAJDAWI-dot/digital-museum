@@ -131,8 +131,10 @@ export const SITE_SETTINGS = {
     "website": ""
   },
   "nowBuilding": {
-    "title": "Setting up my digital museum ✿",
+    "emoji": "🎀",
+    "title": "Setting up my digital museum",
     "description": "Adding my first projects — more coming soon!",
+    "progress": 60,
     "updatedAt": "2026-10-14"
   }
 };

@@ -62,7 +62,7 @@
   font-family: inherit;
   font-size: 0.9rem;
   color: var(--silver);
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
   transition: color 0.3s;
 }
 .footer-ticket-link:hover { color: var(--gold); }

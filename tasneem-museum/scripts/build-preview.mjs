@@ -1,5 +1,6 @@
 // Builds a test copy of the site that opens by double-clicking — no server,
-// no install on the viewing computer. Output: preview/index.html (all code
+// no install on the viewing computer. Its editor is a demo: any password
+// opens it and nothing is published. Output: preview/index.html (all code
 // and styles inlined) next to preview/images/.
 //
 //   npm run build:preview
@@ -16,6 +17,9 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = path.join(root, 'preview');
 
 process.env.VITE_BASE = './';
+// The test copy gets a demo editor (any password, never publishes) so the
+// editor can be tried without a Supabase account. Normal builds never set this.
+process.env.VITE_DEMO_EDITOR = 'true';
 rmSync(outDir, { recursive: true, force: true });
 
 await build({

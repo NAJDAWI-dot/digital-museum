@@ -1,67 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMuseum } from '../context/MuseumContext';
-import { SITE } from '../../site.config.js';
+import { SITE, FIRST_NAME } from '../../site.config.js';
 import { getTheme, setTheme } from '../lib/theme';
 import './Navbar.css';
 
 export default function Navbar({ revealed = true }) {
-  const { isAdmin, logout, setAdminPanel, adminPanel } = useMuseum();
+  const { isAdmin, setAdminPanel, openEditor } = useMuseum();
   const { t, i18n } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setThemeState] = useState(getTheme);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     setThemeState(next);
   };
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-
-  const navLinks = [
+  const links = [
     { href: '#gallery', label: t('nav.gallery') },
     { href: '#featured', label: t('nav.featured') },
-    { href: '#about', label: t('nav.about') },
+    { href: '#career', label: t('nav.story') },
+    { href: '#contact', label: t('nav.contact') },
   ];
 
   return (
-    <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''} ${revealed ? 'navbar--in' : 'navbar--out'}`}>
-      <div className="container navbar-inner">
-        <a href="#" className="navbar-logo serif" aria-label={`${SITE.ownerName} — home`}>
-          {SITE.ownerName}
+    <nav className={`nav ${scrolled ? 'is-scrolled' : ''} ${revealed ? 'is-in' : ''}`} aria-label={t('nav.label')}>
+      <div className="nav-pill">
+        <a href="#hero" className="nav-brand" aria-label={`${SITE.ownerName} — ${t('footer.home')}`}>
+          <span className="nav-mono" aria-hidden="true">{SITE.initials}</span>
+          <span className="nav-name">{FIRST_NAME}</span>
         </a>
 
-        <div className={`navbar-links ${menuOpen ? 'open' : ''}`}>
-          {navLinks.map(l => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="navbar-link mono"
-              onClick={(e) => {
-                e.preventDefault();
-                setMenuOpen(false);
-                window.dispatchEvent(new CustomEvent('liquid-nav', { detail: { target: l.href } }));
-              }}
-            >
+        <div id="nav-links" className={`nav-links ${menuOpen ? 'is-open' : ''}`}>
+          {links.map(l => (
+            <a key={l.href} href={l.href} className="nav-link" onClick={() => setMenuOpen(false)}>
               {l.label}
             </a>
           ))}
+        </div>
+
+        <div className="nav-tools">
           <button
-            className="navbar-link mono navbar-lang-btn"
+            type="button"
+            className="nav-icon"
             onClick={() => i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar')}
             aria-label={i18n.language === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
+            title={i18n.language === 'ar' ? 'English' : 'العربية'}
           >
             {i18n.language === 'ar' ? 'EN' : 'ع'}
           </button>
           <button
             type="button"
-            className="navbar-link navbar-theme-btn"
+            className="nav-icon"
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')}
             title={theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')}
@@ -69,35 +68,33 @@ export default function Navbar({ revealed = true }) {
             {theme === 'dark' ? '☀︎' : '☾'}
           </button>
           {isAdmin ? (
-            <div className="navbar-admin-group">
-              <button
-                className={`navbar-editor-btn ${adminPanel ? 'active' : ''}`}
-                onClick={() => setAdminPanel(!adminPanel)}
-              >
-                Editor
-              </button>
-              <button className="navbar-logout-btn" onClick={logout} title="Sign Out">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                  <polyline points="16 17 21 12 16 7"/>
-                  <line x1="21" y1="12" x2="9" y2="12"/>
-                </svg>
-              </button>
-            </div>
+            <button type="button" className="nav-edit" onClick={() => openEditor()}>
+              ✎ <span>{t('nav.edit')}</span>
+            </button>
           ) : (
             <button
-              className="navbar-link mono navbar-admin-link"
+              type="button"
+              className="nav-icon nav-key"
               onClick={() => setAdminPanel(true)}
+              aria-label={t('nav.editorAccess')}
+              title={t('nav.editorAccess')}
             >
-              {t('nav.editorAccess')}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="8" cy="15" r="4" /><path d="M10.8 12.2 20 3m-3 3 2 2m-4 0 2 2" />
+              </svg>
             </button>
           )}
+          <button
+            type="button"
+            className={`nav-burger ${menuOpen ? 'is-open' : ''}`}
+            onClick={() => setMenuOpen(o => !o)}
+            aria-expanded={menuOpen}
+            aria-controls="nav-links"
+            aria-label={t('nav.menu')}
+          >
+            <span /><span />
+          </button>
         </div>
-
-        <button className="navbar-hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
-          <span className={menuOpen ? 'open' : ''}></span>
-          <span className={menuOpen ? 'open' : ''}></span>
-        </button>
       </div>
     </nav>
   );

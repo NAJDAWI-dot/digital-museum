@@ -8,8 +8,8 @@ You don't need to write any code.
 
 **What you'll end up with:**
 - A site at `https://YOUR-USERNAME.github.io/tasneem-museum/`
-- An **Editor Access** button on the site where you log in and add projects,
-  photos, your timeline and more. Every change goes live in about a minute.
+- A private editor (the 🔑 in the top bar) where you add projects, photos,
+  your story and more. Every change goes live in about a minute.
 - A guestbook where visitors can leave you notes (you approve them first).
 
 ---
@@ -108,34 +108,46 @@ The Editor login and the guestbook use **Supabase**, a free service.
 ## Part 3: Make it yours (as long as you like 💕)
 
 ### 1. Log in
-On your site, click **Editor Access** and enter the password from Part 2.
+On your site, click the little **🔑 key** in the top bar and type the
+password from Part 2.
 
-### 2. Set your email (do this first)
-In the editor, open **⚙ Settings**. Set **Contact Email** to **the same
-email you log in with**, because the login checks it. Add your CV link and
-your Instagram / LinkedIn / GitHub links, then click **Save**.
+Once you're in, you'll see:
+- a floating **editing bar** at the bottom of the page (*Open editor*,
+  *＋ Project*, and 👋 to log out), and
+- small **✎ Edit** buttons on each section of your site. Click one to jump
+  straight to the right place in the editor.
 
-### 3. Let the editor publish
-The editor needs permission to save changes to your site:
-1. On GitHub, click your photo (top right) → **Settings → Developer
-   settings → Personal access tokens → Fine-grained tokens → Generate new token**.
-2. Name it `museum editor` and set an expiry (one year is fine).
-3. **Repository access:** *Only select repositories* → `tasneem-museum`.
-4. **Permissions → Repository permissions → Contents:** *Read and write*.
-5. Click **Generate token** and copy it.
-6. Back in your editor, paste it into the **GitHub PAT** box at the top.
+The editor has a menu down the side: 🖼️ Projects, 📌 Working on, ⏳ My
+story, 🤝 Giving back, 💬 Kind words, 📖 Guestbook, 🙋‍♀️ About me and
+🚀 Publishing. Every page has a **Save changes** button at the bottom that
+tells you when something isn't saved yet.
 
-You paste the token again each time you open the editor in a new browser
-tab. Keep it secret, like a password. If no token is pasted, your edits are
+### 2. About me (do this first)
+Open **🙋‍♀️ About me**. Set **Email** to **the same email you log in
+with**, because the login checks it. Add your profile photo (it goes on your
+museum pass), your CV link, and your social links, then **Save changes**.
+
+### 3. Turn on publishing
+Open **🚀 Publishing** and follow the three steps on screen: make a key on
+GitHub (the page links straight to the right GitHub screen and tells you
+what to tick), paste it in, then press **Test connection**. When it says
+*Connected!*, the pill at the top turns green: **● Publishing is on**.
+
+You paste the key again each time you open the editor in a new browser tab.
+Keep it secret, like a password. While publishing is off, your edits are
 only saved in that browser and don't go live.
 
 ### 4. Replace the samples
-- **Projects:** click a project on the left to edit it, or **+ New**. Drag
-  projects to reorder them. Tick *Featured* on the one you want shown big
-  near the top. Upload a cover photo and up to 6 more pictures under
-  **Media**.
-- **⏳ Timeline:** your studies, teams, internships and awards.
-- **🤝 Volunteering**, **💬 Testimonials** and **✨ Now Working On**.
+- **🖼️ Projects:** click a project tile to edit it, or **＋ Add a
+  project**. Everything is on one page: name, category, the story, photos,
+  links and teammates. Flip **Make this my favourite ♡** on the project you
+  want shown big near the top. The arrows under each tile change the order.
+- **📌 Working on:** the sticky note under your intro. Pick an emoji and
+  slide the progress bar.
+- **⏳ My story:** your studies, teams, internships and awards. Put the
+  newest at the top; the site shows them as a road, oldest first.
+- **🤝 Giving back** and **💬 Kind words:** add, reorder with ↑ ↓, or
+  remove with 🗑.
 - **📖 Guestbook:** approve or remove visitors' notes.
 
 Each save goes live in about a minute. Refresh your site to see it.
@@ -164,11 +176,11 @@ To change a file on your computer:
 
 - **The site shows a 404 page:** check Part 1, step 5. Pages must be set to
   *GitHub Actions*, and the deploy needs a green tick.
-- **"Incorrect password":** the Contact Email in ⚙ Settings must match your
-  Supabase user's email, and that user must be confirmed.
+- **"That didn't work" when logging in:** the Email in 🙋‍♀️ About me must
+  match your Supabase user's email, and that user must be confirmed.
 - **The guestbook says "not configured yet":** re-check the two secrets in
   Part 2, step 4, then run the deploy again.
-- **Edits disappear after a while:** paste your GitHub token (Part 3,
+- **Edits disappear after a while:** turn on 🚀 Publishing (Part 3,
   step 3). Without it, edits are only saved in your browser.
 - **A deploy has a red ✗:** open it in the Actions tab to read what failed,
   or ask whoever gave you this site 💌

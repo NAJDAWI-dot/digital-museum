@@ -27,7 +27,7 @@ export default function CollaboratorsField({ value, onChange }) {
 
   return (
     <div className="form-group collab-field">
-      <label className="form-label mono">Collaborators <span className="form-hint">— credited contributors on this project</span></label>
+      <span className="form-label">Teammates <span className="form-hint">— people who built it with you</span></span>
 
       <div className="collab-rows">
         {rows.map((c, i) => (
@@ -35,7 +35,7 @@ export default function CollaboratorsField({ value, onChange }) {
             <button type="button" className="collab-row-remove" onClick={() => removeRow(i)} aria-label="Remove collaborator">×</button>
             <div className="form-row">
               <div className="form-group">
-                <label className="form-label mono">Name</label>
+                <label className="form-label">Name</label>
                 <input
                   className="admin-input"
                   value={c.name || ''}
@@ -44,7 +44,7 @@ export default function CollaboratorsField({ value, onChange }) {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label mono">Role</label>
+                <label className="form-label">Role</label>
                 <input
                   className="admin-input"
                   value={c.role || ''}
@@ -54,7 +54,7 @@ export default function CollaboratorsField({ value, onChange }) {
               </div>
             </div>
             <div className="form-group">
-              <label className="form-label mono">Link <span className="form-hint">— optional</span></label>
+              <label className="form-label">Link <span className="form-hint">— optional</span></label>
               <input
                 className="admin-input"
                 value={c.url || ''}
@@ -64,10 +64,10 @@ export default function CollaboratorsField({ value, onChange }) {
             </div>
           </div>
         ))}
-        {rows.length === 0 && <p className="mono collab-empty">No collaborators added yet.</p>}
+        {rows.length === 0 && <p className="collab-empty">No teammates added yet.</p>}
       </div>
 
-      <button type="button" className="tech-add-btn mono collab-add-btn" onClick={addRow}>+ Add Collaborator</button>
+      <button type="button" className="tech-add-btn collab-add-btn" onClick={addRow}>＋ Add a teammate</button>
     </div>
   );
 }

@@ -123,7 +123,7 @@ export default function CuratorChat({ project, onClose }) {
         <button type="button" className="curator-close" onClick={onClose} aria-label="Close">×</button>
       </div>
 
-      <div className="curator-thread" ref={threadRef} data-lenis-prevent="true">
+      <div className="curator-thread" ref={threadRef}>
         {messages.length === 0 && (
           <p className="curator-empty mono">Ask anything about this exhibit — how it was built, what it does, the tech behind it.</p>
         )}

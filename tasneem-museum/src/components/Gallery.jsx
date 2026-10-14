@@ -14,7 +14,7 @@ const haystack = (p) =>
     .filter(Boolean).join(' ').toLowerCase();
 
 export default function Gallery() {
-  const { projects, isAdmin, setEditingProject, setAdminPanel } = useMuseum();
+  const { projects, isAdmin, openEditor } = useMuseum();
   const { t } = useTranslation();
   const [filter, setFilter] = useState(ALL);
   const [query, setQuery] = useState('');
@@ -33,10 +33,7 @@ export default function Gallery() {
   );
   const isFiltered = filter !== ALL || q;
 
-  const handleEdit = (project) => {
-    setEditingProject(project);
-    setAdminPanel(true);
-  };
+  const handleEdit = (project) => openEditor('projects', project);
 
   const clear = () => { setFilter(ALL); setQuery(''); };
 
@@ -52,7 +49,7 @@ export default function Gallery() {
           {isAdmin && (
             <button
               className="gallery-add-btn"
-              onClick={() => { setEditingProject(null); setAdminPanel(true); }}
+              onClick={() => openEditor('projects', 'new')}
             >
               + {t('gallery.add')}
             </button>

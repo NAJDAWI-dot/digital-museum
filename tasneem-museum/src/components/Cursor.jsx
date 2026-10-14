@@ -1,75 +1,44 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import './Cursor.css';
 
-const isCoarsePointer = () =>
-  typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+const MAX_SPARKS = 14;
+const GAP_PX = 26;   // distance the pointer must travel between sparkles
+const SHAPES = ['♥', '✦', '♡', '✧'];
 
+/** The cursor itself is pure CSS (see index.css). This only adds a light
+ * sparkle trail: a few tiny elements dropped behind the pointer as it moves,
+ * each removed when its fade ends. Mouse/trackpad only, never under
+ * reduced motion, and no work at all while the pointer is still. */
 export default function Cursor() {
-  const dotRef  = useRef(null);
-  const ringRef = useRef(null);
-
   useEffect(() => {
-    // Disable on mobile/touch devices completely to save CPU
-    if (isCoarsePointer()) return;
-    let mx = 0, my = 0;
-    let rx = 0, ry = 0;
-    let raf;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let lastX = 0;
+    let lastY = 0;
+    let live = 0;
 
     const onMove = (e) => {
-      mx = e.clientX;
-      my = e.clientY;
-      if (dotRef.current) {
-        dotRef.current.style.translate = `${mx}px ${my}px`;
-      }
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      if (dx * dx + dy * dy < GAP_PX * GAP_PX || live >= MAX_SPARKS) return;
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      const spark = document.createElement('span');
+      spark.className = 'cursor-spark';
+      spark.textContent = SHAPES[(Math.random() * SHAPES.length) | 0];
+      spark.style.left = `${e.clientX}px`;
+      spark.style.top = `${e.clientY}px`;
+      spark.style.setProperty('--drift', `${(Math.random() - 0.5) * 30}px`);
+      spark.addEventListener('animationend', () => { spark.remove(); live--; }, { once: true });
+      document.body.appendChild(spark);
+      live++;
     };
 
-    const lerp = (a, b, t) => a + (b - a) * t;
-
-    const tick = () => {
-      rx = lerp(rx, mx, 0.08);
-      ry = lerp(ry, my, 0.08);
-      if (ringRef.current) {
-        ringRef.current.style.translate = `${rx}px ${ry}px`;
-      }
-      raf = requestAnimationFrame(tick);
-    };
-
-    const onEnterInteractive = () => {
-      ringRef.current?.classList.add('hover');
-      dotRef.current?.classList.add('hover');
-    };
-    const onLeaveInteractive = () => {
-      ringRef.current?.classList.remove('hover');
-      dotRef.current?.classList.remove('hover');
-    };
-
-    window.addEventListener('mousemove', onMove);
-    tick();
-
-    const addListeners = () => {
-      document.querySelectorAll('a,button,input,textarea,[data-cursor]').forEach(el => {
-        el.addEventListener('mouseenter', onEnterInteractive);
-        el.addEventListener('mouseleave', onLeaveInteractive);
-      });
-    };
-    addListeners();
-    const observer = new MutationObserver(addListeners);
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    return () => {
-      window.removeEventListener('mousemove', onMove);
-      cancelAnimationFrame(raf);
-      observer.disconnect();
-    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => window.removeEventListener('pointermove', onMove);
   }, []);
 
-  // Hooks above always run; only the render is skipped on touch devices.
-  if (isCoarsePointer()) return null;
-
-  return (
-    <>
-      <div className="cursor-dot" ref={dotRef}></div>
-      <div className="cursor-ring" ref={ringRef}></div>
-    </>
-  );
+  return null;
 }

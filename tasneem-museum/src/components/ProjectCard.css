@@ -11,7 +11,7 @@
     0 2px 0 color-mix(in srgb, var(--gold) 8%, transparent),
     0 18px 40px -18px color-mix(in srgb, var(--shadow) 35%, transparent);
   rotate: var(--tilt);
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
   transition: rotate 0.45s var(--ease-smooth), translate 0.45s var(--ease-smooth), box-shadow 0.45s var(--ease-smooth);
 }
 .pc:hover,
@@ -113,7 +113,7 @@
 }
 .pc-title-btn {
   all: unset;
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
 }
 .pc-title-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; border-radius: 6px; }
 

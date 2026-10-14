@@ -28,13 +28,16 @@ export default function HelloKitty() {
   const scheduleNext = useCallback((delay) => {
     clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
-      const side = pick(SIDES, lastSide.current);
+      // The navbar floats along the top centre; only peek from the top on
+      // wide screens, beside it rather than behind it.
+      const sides = window.innerWidth >= 1300 ? SIDES : SIDES.filter(x => x !== 'top');
+      const side = pick(sides, lastSide.current);
       lastSide.current = side;
       // Keep clear of the corners (and the navbar along the top).
       const pos = side === 'left' || side === 'right'
         ? 25 + Math.random() * 55
         : side === 'top'
-          ? 30 + Math.random() * 25 // between the name and the menu links
+          ? (Math.random() < 0.5 ? 2 : 94) + Math.random() * 4 // either side of the navbar
           : 12 + Math.random() * 76;
       setPeek({ side, pos, key: Date.now() });
     }, delay);
