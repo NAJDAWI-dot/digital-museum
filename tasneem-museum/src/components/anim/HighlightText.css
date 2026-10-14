@@ -1,0 +1,19 @@
+.highlight-text {
+  display: inline;
+  background-image: linear-gradient(0deg, color-mix(in srgb, var(--pill) 80%, transparent), color-mix(in srgb, var(--pill) 80%, transparent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 0.42em;
+  border-radius: 2px;
+  transition: background-size 0.9s var(--ease-smooth);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.highlight-text.in {
+  background-size: 100% 0.42em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .highlight-text { transition: none; background-size: 100% 0.42em; }
+}
