@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+<defs>
+<radialGradient id="g" cx="30%" cy="35%" r="85%"><stop offset="0%" stop-color="#7a3b55"/><stop offset="100%" stop-color="#2a1420"/></radialGradient>
+<linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e9a8b4" stop-opacity="0.85"/><stop offset="100%" stop-color="#f2b8c6" stop-opacity="0.25"/></linearGradient>
+<filter id="b"><feGaussianBlur stdDeviation="40"/></filter>
+</defs>
+<rect width="1600" height="900" fill="url(#g)"/>
+<g filter="url(#b)"><circle cx="1496" cy="244" r="151" fill="#7a3b55" opacity="0.12"/><circle cx="315" cy="369" r="49" fill="#f2b8c6" opacity="0.18"/><circle cx="90" cy="622" r="201" fill="#f2b8c6" opacity="0.08"/><circle cx="98" cy="347" r="149" fill="#f2b8c6" opacity="0.25"/><circle cx="192" cy="171" r="175" fill="#e9a8b4" opacity="0.12"/><circle cx="916" cy="650" r="133" fill="#7a3b55" opacity="0.12"/><circle cx="430" cy="344" r="92" fill="#e9a8b4" opacity="0.25"/></g>
+<path d="M620 900 V430 a180 180 0 0 1 360 0 V900" fill="none" stroke="url(#a)" stroke-width="3"/>
+<path d="M660 900 V440 a140 140 0 0 1 280 0 V900" fill="#f2b8c6" fill-opacity="0.06"/>
+<circle cx="800" cy="520" r="62" fill="url(#a)" opacity="0.9"/>
+<line x1="540" y1="900" x2="1060" y2="900" stroke="#e9a8b4" stroke-opacity="0.4" stroke-width="2"/>
+</svg>

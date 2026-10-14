@@ -1,0 +1,14 @@
+.splitting-text {
+  display: inline;
+}
+
+/* Words stay whole across line breaks; characters animate inside them. */
+.splitting-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.splitting-unit {
+  display: inline-block;
+  will-change: transform, filter;
+}

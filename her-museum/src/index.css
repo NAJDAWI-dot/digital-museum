@@ -1,0 +1,229 @@
+/* ============================================
+   Her Museum — Global Design System
+   Palette: deep plum ink, blush linen, rose gold.
+   The accent tokens keep their historical --gold
+   names so every component picks up the rose gold
+   automatically — change the hex values here to
+   re-theme the whole museum.
+   ============================================ */
+
+:root {
+  --ink:        #160e14;
+  --ink-light:  #21151d;
+  --ink-mid:    #36252f;
+  --silver:     #ab95a1; /* ≥4.5:1 on --ink for AA body text */
+  --dust:       #b9a5b0;
+  --mist:       #dccbd3;
+  --linen:      #f8ece9;
+  --paper:      #fcf4f2;
+  --white:      #ffffff;
+
+  --gold:       #e9a8b4;
+  --gold-light: #f6cdd3;
+  --gold-dark:  #c27d8a;
+
+  --font-serif:  'Cormorant Garamond', Georgia, serif;
+  --font-sans:   'DM Sans', system-ui, sans-serif;
+  --font-mono:   'DM Mono', 'Courier New', monospace;
+  /* Arabic counterparts: Amiri pairs with the Cormorant display voice
+     (a calligraphic serif built for the same kind of headline elegance),
+     Noto Sans Arabic pairs with DM Sans for body/UI text. */
+  --font-serif-ar: 'Amiri', 'Cormorant Garamond', serif;
+  --font-sans-ar:  'Noto Sans Arabic', 'DM Sans', system-ui, sans-serif;
+
+  --ease-smooth:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-precise: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Stacking order, lowest to highest */
+  --z-nav:            10;
+  --z-admin-backdrop: 20;
+  --z-admin:          21;
+  --z-modal:          30;
+  --z-lightbox:       40;
+  --z-curator-fab:    42;
+  --z-curator-panel:  43;
+  --z-grain:          50;
+  --z-preloader:      60;
+  --z-cursor:         70;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { -webkit-tap-highlight-color: transparent; }
+
+/* Touch feedback: taps get an immediate pressed state instead of the
+   (nonexistent) hover state — hover styles only apply where hover exists. */
+@media (pointer: coarse) {
+  a:active, button:active { opacity: 0.7; }
+}
+/* Smooth scrolling is owned by Lenis; a CSS rule here would fight it on anchor jumps. */
+
+/* Keyboard-focus ring, tuned for the dark theme — the browser default is a
+   thin, low-contrast outline that's easy to lose against --ink. Only shows
+   for keyboard focus (:focus-visible), never on a mouse click. */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--ink);
+  color: var(--linen);
+  line-height: 1.6;
+  font-weight: 300;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; }
+input, textarea, select { font-family: inherit; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--ink); }
+::-webkit-scrollbar-thumb { background: #3a2833; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dark); }
+
+/* ── Utilities ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 5vw, 5rem);
+}
+@media (max-width: 768px) {
+  .container { padding: 0 1.2rem; }
+}
+
+.serif { font-family: var(--font-serif); }
+.mono  { font-family: var(--font-mono); }
+
+/* ── Arabic ──
+   Arabic script doesn't have a monospace tradition — Noto Sans Arabic
+   stands in for `.mono` labels too, at the same size/tracking, rather
+   than rendering Arabic in a Latin monospace font (which breaks shaping)
+   or forcing Latin-only mono tokens through Arabic text (which is empty
+   for RTL runs anyway, since numerals/labels are what .mono marks here). */
+:lang(ar) { font-family: var(--font-sans-ar); }
+:lang(ar) .serif { font-family: var(--font-serif-ar); font-style: normal; }
+:lang(ar) .mono { font-family: var(--font-sans-ar); letter-spacing: 0; text-transform: none; }
+
+/* RTL: logical flow first. Flexbox/grid direction already mirrors under
+   dir="rtl" natively; these are the few spots that hardcode a physical
+   side and need an explicit flip. */
+[dir='rtl'] .hero-headline--italic { font-style: normal; } /* Arabic has no italic tradition */
+
+/* ── Grain overlay ── */
+.grain-overlay::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: var(--z-grain);
+}
+
+@media (max-width: 768px) {
+  .grain-overlay::before { display: none; }
+}
+
+/* ── Section Labels ── */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 2rem;
+  height: 1px;
+  background: var(--gold);
+}
+
+/* ── Hover underline ── */
+.hover-underline { position: relative; }
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 100%; height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s var(--ease-smooth);
+}
+.hover-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ── Animated divider ── */
+.animated-rule {
+  width: 100%; height: 1px;
+  background: rgba(255,255,255,0.06);
+  position: relative; overflow: hidden;
+}
+.animated-rule::after {
+  content: '';
+  position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, var(--gold-dark), transparent);
+  animation: rule-sweep 4.5s ease-in-out infinite;
+}
+@keyframes rule-sweep {
+  0%   { left: -100%; opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* ── Reveal animation ── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  animation: fade-up 0.9s var(--ease-smooth) forwards;
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+
+/* ── Balanced headings ── */
+h1, h2, h3 { text-wrap: balance; }
+
+/* ── Reduced motion: everything settles instantly ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
