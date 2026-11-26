@@ -1,4 +1,3 @@
-{"ts":"2026-07-21T16:59:30Z","site":"ok","db":"ok","counters":"ok","runner":"ok","ttfb":0.030287}
 {"ts":"2026-07-21T18:52:13Z","site":"ok","db":"ok","counters":"ok","runner":"ok","ttfb":0.036994}
 {"ts":"2026-07-21T20:47:21Z","site":"ok","db":"ok","counters":"ok","runner":"ok","ttfb":0.078622}
 {"ts":"2026-07-21T22:31:38Z","site":"ok","db":"ok","counters":"ok","runner":"ok","ttfb":0.033006}
@@ -998,3 +997,4 @@
 {"ts":"2026-11-25T17:35:28Z","site":"ok","db":"ok","counters":"down","runner":"down","ttfb":0.307177}
 {"ts":"2026-11-26T01:09:39Z","site":"ok","db":"ok","counters":"down","runner":"down","ttfb":0.025187}
 {"ts":"2026-11-26T10:00:42Z","site":"ok","db":"ok","counters":"down","runner":"down","ttfb":0.101822}
+{"ts":"2026-11-26T19:48:04Z","site":"ok","db":"ok","counters":"down","runner":"down","ttfb":0.022405}
